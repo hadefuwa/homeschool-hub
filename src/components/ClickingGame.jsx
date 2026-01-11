@@ -51,10 +51,16 @@ function ClickingGame({ lesson }) {
     if (gameTimerRef.current) clearInterval(gameTimerRef.current);
     if (targetTimerRef.current) clearTimeout(targetTimerRef.current);
     
-    setIsPlaying(true);
-    setIsGameOver(false);
+    // Batch all state updates together to avoid multiple re-renders
     isPlayingRef.current = true;
     isGameOverRef.current = false;
+    targetSizeRef.current = initialTargetSize;
+    spawnIntervalRef.current = initialSpawnInterval;
+    targetLifetimeRef.current = initialTargetLifetime;
+    
+    // Use a single state update batch
+    setIsPlaying(true);
+    setIsGameOver(false);
     setScore(0);
     setHits(0);
     setMisses(0);
@@ -63,9 +69,6 @@ function ClickingGame({ lesson }) {
     setTargetSize(initialTargetSize);
     setSpawnInterval(initialSpawnInterval);
     setTargetLifetime(initialTargetLifetime);
-    targetSizeRef.current = initialTargetSize;
-    spawnIntervalRef.current = initialSpawnInterval;
-    targetLifetimeRef.current = initialTargetLifetime;
 
     // Game countdown timer
     gameTimerRef.current = setInterval(() => {
@@ -172,13 +175,15 @@ function ClickingGame({ lesson }) {
         completedAt: new Date(),
         score: finalScore,
       });
-      // Save progress asynchronously
+      // Save progress asynchronously - use setTimeout to ensure it's not during render
       setLessonCompleted(true);
-      addProgress(progress).then(() => {
-        saveData();
-      }).catch(err => {
-        console.error('Error saving progress:', err);
-      });
+      setTimeout(() => {
+        addProgress(progress).then(() => {
+          saveData();
+        }).catch(err => {
+          console.error('Error saving progress:', err);
+        });
+      }, 0);
     }
   };
 
@@ -195,14 +200,19 @@ function ClickingGame({ lesson }) {
 
   // Auto-start the game when component mounts
   useEffect(() => {
-    // Small delay to ensure component is fully mounted
+    // Small delay to ensure component is fully mounted and render is complete
     const timer = setTimeout(() => {
       if (!isPlayingRef.current && !isGameOverRef.current) {
-        startGame();
+        // Use requestAnimationFrame to ensure we're not in the middle of a render
+        requestAnimationFrame(() => {
+          if (!isPlayingRef.current && !isGameOverRef.current) {
+            startGame();
+          }
+        });
       }
     }, 300);
     return () => clearTimeout(timer);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isGameOver) {
     return (

@@ -44,13 +44,13 @@ function KeyboardGame({ lesson }) {
   const arrowTimerRef = useRef(null);
   const isPlayingRef = useRef(false);
   const isGameOverRef = useRef(false);
-  const arrowIntervalRef = useRef(3000);
-  const arrowLifetimeRef = useRef(3000);
+  const arrowIntervalRef = useRef(2000);
+  const arrowLifetimeRef = useRef(2500);
   
-  const initialArrowInterval = 3000;
-  const minArrowInterval = 1500;
-  const initialArrowLifetime = 3000;
-  const minArrowLifetime = 2000;
+  const initialArrowInterval = 2000; // Start at 2 seconds
+  const minArrowInterval = 800; // Get down to 0.8 seconds (much faster)
+  const initialArrowLifetime = 2500; // Arrows stay for 2.5 seconds initially
+  const minArrowLifetime = 1200; // Get down to 1.2 seconds (much faster)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -109,20 +109,24 @@ function KeyboardGame({ lesson }) {
     arrowIntervalRef.current = initialArrowInterval;
     arrowLifetimeRef.current = initialArrowLifetime;
 
-    // Game countdown timer
+    // Game countdown timer - strict 45 second limit
     gameTimerRef.current = setInterval(() => {
       setTimeRemaining(prev => {
-        if (prev <= 1) {
+        const newTime = prev - 1;
+        if (newTime <= 0) {
+          // Immediately end game when time reaches 0
           endGame();
           return 0;
         }
-        // Update difficulty
-        const progress = (45 - prev + 1) / 45.0;
-        const newInterval = initialArrowInterval - (initialArrowInterval - minArrowInterval) * progress;
-        const newLifetime = initialArrowLifetime - (initialArrowLifetime - minArrowLifetime) * progress;
-        arrowIntervalRef.current = newInterval;
-        arrowLifetimeRef.current = newLifetime;
-        return prev - 1;
+        // Update difficulty - more aggressive progression
+        const progress = (45 - newTime) / 45.0;
+        // Use exponential curve for more aggressive difficulty increase
+        const easedProgress = progress * progress; // Quadratic easing for faster progression
+        const newInterval = initialArrowInterval - (initialArrowInterval - minArrowInterval) * easedProgress;
+        const newLifetime = initialArrowLifetime - (initialArrowLifetime - minArrowLifetime) * easedProgress;
+        arrowIntervalRef.current = Math.max(newInterval, minArrowInterval);
+        arrowLifetimeRef.current = Math.max(newLifetime, minArrowLifetime);
+        return newTime;
       });
     }, 1000);
 
@@ -174,27 +178,29 @@ function KeyboardGame({ lesson }) {
     setCurrentArrow(null);
     setArrowId(null);
 
-    // Mark lesson as complete if score is good enough
+    // Mark lesson as complete if score is good enough - use setTimeout to ensure it's not during render
     if (lesson && finalScore >= 150) {
-      const userId = getUserId();
-      const progressId = getNextProgressId();
-      const progress = new Progress({
-        id: progressId,
-        studentId: userId,
-        activityType: 'Lesson',
-        activityId: lesson.id,
-        yearId: lesson.yearId,
-        subjectId: lesson.subjectId,
-        lessonNumber: lesson.lessonNumber,
-        isCompleted: true,
-        completedAt: new Date(),
-        score: finalScore,
-      });
-      addProgress(progress).then(() => {
-        saveData();
-      }).catch(err => {
-        console.error('Error saving progress:', err);
-      });
+      setTimeout(() => {
+        const userId = getUserId();
+        const progressId = getNextProgressId();
+        const progress = new Progress({
+          id: progressId,
+          studentId: userId,
+          activityType: 'Lesson',
+          activityId: lesson.id,
+          yearId: lesson.yearId,
+          subjectId: lesson.subjectId,
+          lessonNumber: lesson.lessonNumber,
+          isCompleted: true,
+          completedAt: new Date(),
+          score: finalScore,
+        });
+        addProgress(progress).then(() => {
+          saveData();
+        }).catch(err => {
+          console.error('Error saving progress:', err);
+        });
+      }, 0);
     }
   };
 
@@ -211,13 +217,19 @@ function KeyboardGame({ lesson }) {
 
   // Auto-start the game when component mounts
   useEffect(() => {
+    // Small delay to ensure component is fully mounted and render is complete
     const timer = setTimeout(() => {
       if (!isPlayingRef.current && !isGameOverRef.current) {
-        startGame();
+        // Use requestAnimationFrame to ensure we're not in the middle of a render
+        requestAnimationFrame(() => {
+          if (!isPlayingRef.current && !isGameOverRef.current) {
+            startGame();
+          }
+        });
       }
     }, 300);
     return () => clearTimeout(timer);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isGameOver) {
     return (
