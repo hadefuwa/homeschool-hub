@@ -1,21 +1,21 @@
-# Homeschool Hub - Flutter
+# Homeschool Hub - Electron
 
-A cross-platform homeschool learning management application built with Flutter. This app allows students to access lessons, take quizzes, watch educational videos, and track their progress.
+A cross-platform homeschool learning management application built with Electron. This app allows students to access lessons, take quizzes, watch educational videos, and track their progress.
 
-## Migration from WinUI 3 to Flutter
+## Migration to Electron
 
-**This application has been migrated from WinUI 3 (C#) to Flutter** to enable cross-platform support. The original WinUI 3 version was Windows-only, but the Flutter version runs on Windows, macOS, Linux, iOS, and Android.
+**This application has been converted to Electron** for easy desktop distribution. The app uses Electron to wrap a web-based interface, providing native desktop experience on Windows, macOS, and Linux.
 
-### Key Changes:
-- **Framework**: WinUI 3 (C#) → Flutter (Dart)
-- **UI Framework**: XAML → Flutter Widgets
-- **Navigation**: Frame Navigation → GoRouter
-- **State Management**: No built-in → Provider
-- **Platform Support**: Windows only → Cross-platform (Windows, macOS, Linux, iOS, Android)
-- **Data Storage**: JSON file (same approach, different implementation)
-- **Video Embedding**: WebView2 → youtube_player_flutter
+### Key Features:
+- **Framework**: Electron (Node.js + Chromium)
+- **UI Framework**: Web-based interface
+- **Navigation**: Client-side routing
+- **State Management**: Provider pattern
+- **Platform Support**: Cross-platform desktop (Windows, macOS, Linux)
+- **Data Storage**: JSON file (local storage)
+- **Video Embedding**: Web-based video players
 
-All features from the original WinUI 3 version have been preserved and enhanced in the Flutter version.
+All features have been preserved and enhanced in the Electron version.
 
 ## Features
 
@@ -24,7 +24,7 @@ All features from the original WinUI 3 version have been preserved and enhanced 
 - **Quizzes**: Take interactive quizzes with automatic scoring
 - **Video Resources**: Watch educational videos (Fusion 360 tutorials, etc.)
 - **Progress Tracking**: View completion history and quiz scores
-- **Cross-Platform**: Runs on Windows, macOS, Linux, iOS, and Android
+- **Cross-Platform Desktop**: Runs on Windows, macOS, and Linux
 
 ## Prerequisites
 
@@ -239,12 +239,12 @@ The app comes with sample data:
 While the app is running, press `r` in the terminal to hot reload, or `R` for a full restart.
 
 ### Debugging
-Use Flutter's built-in debugging tools or your IDE's debugger.
+Use Electron DevTools (press F12 or Cmd+Option+I) or your IDE's debugger.
 
 ## Troubleshooting
 
-### Flutter not found
-Make sure Flutter is installed and added to your PATH.
+### Node.js/Electron not found
+Make sure Node.js is installed and added to your PATH.
 
 ### Dependencies not installing
 Run `flutter pub get` again. If issues persist, try:
@@ -260,7 +260,7 @@ flutter pub get
 
 ## License
 
-This project is part of a migration from WinUI 3 C# to Flutter for cross-platform support.
+This project is an Electron-based desktop application for cross-platform homeschool management.
 
 ## Notes
 

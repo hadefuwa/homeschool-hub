@@ -5223,7 +5223,7 @@ Let's learn about the Vikings!
 
       ''',
 
-      quizId: quizId++,
+      quizId: 100,
 
       assessmentType: 'quiz',
 

@@ -51,15 +51,21 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
-      webSecurity: true
+      webSecurity: true,
+      allowRunningInsecureContent: false
     },
     icon: iconPath,
     show: false // Don't show until ready
   });
 
-  // Load the Flutter web app
-  console.log('Loading Flutter web app from:', webPath);
-  mainWindow.loadFile(webPath);
+  // Load the Electron web app
+  // Convert Windows path to file:// URL format
+  const fileUrl = path.isAbsolute(webPath) 
+    ? `file:///${webPath.replace(/\\/g, '/').replace(/^\/+/, '')}`
+    : `file://${path.resolve(__dirname, webPath).replace(/\\/g, '/')}`;
+  
+  console.log('Loading Electron web app from:', fileUrl);
+  mainWindow.loadURL(fileUrl);
 
   // Show window when ready to prevent visual flash
   mainWindow.once('ready-to-show', () => {

@@ -2,13 +2,16 @@
   "name": "homeschool-hub",
   "version": "1.0.0",
   "description": "A cross-platform homeschool learning management application",
-  "main": "main.js",
+  "main": "electron/main.js",
+  "type": "module",
   "scripts": {
-    "start": "electron .",
-    "build": "flutter build web && electron-builder",
-    "build:web": "flutter build web",
-    "package": "electron-builder",
-    "dist": "npm run build:web && electron-builder"
+    "dev": "vite",
+    "electron": "electron .",
+    "start": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "package": "npm run build && electron-builder",
+    "dist": "npm run build && electron-builder"
   },
   "keywords": [
     "homeschool",
@@ -18,9 +21,22 @@
   ],
   "author": "",
   "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "zustand": "^4.4.7",
+    "react-markdown": "^9.0.1"
+  },
   "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
+    "electron-builder": "^24.9.1",
+    "vite": "^5.0.8",
+    "wait-on": "^7.2.0"
   },
   "build": {
     "appId": "com.homeschoolhub.app",
@@ -29,8 +45,8 @@
       "output": "dist"
     },
     "files": [
-      "main.js",
-      "build/web/**/*",
+      "electron/**/*",
+      "dist/**/*",
       "package.json"
     ],
     "win": {

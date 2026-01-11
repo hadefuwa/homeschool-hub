@@ -4,7 +4,7 @@ This guide explains how to use the Electron version of Homeschool Hub.
 
 ## Overview
 
-The app has been converted to Electron, which wraps the Flutter web build in a native desktop application. This provides:
+The app is built with Electron, which wraps a web-based interface in a native desktop application. This provides:
 - Easy distribution as a standalone executable
 - Cross-platform support (Windows, macOS, Linux)
 - Native desktop experience
@@ -32,7 +32,7 @@ The app has been converted to Electron, which wraps the Flutter web build in a n
 
 ### Running in Development
 
-1. Make changes to your Flutter code in `lib/`
+1. Make changes to your code in `lib/`
 2. Rebuild the web app:
    ```bash
    flutter build web
@@ -42,11 +42,11 @@ The app has been converted to Electron, which wraps the Flutter web build in a n
    npm start
    ```
 
-### Hot Reload (Flutter Web)
+### Hot Reload (Web Development)
 
-For faster development, you can run Flutter web in development mode and point Electron to it:
+For faster development, you can run a web dev server and point Electron to it:
 
-1. Start Flutter web dev server:
+1. Start web dev server:
    ```bash
    flutter run -d chrome --web-port=8080
    ```
@@ -61,7 +61,7 @@ npm run dist
 ```
 
 This command will:
-1. Build the Flutter web app (`flutter build web`)
+1. Build the web app (`flutter build web`)
 2. Package it with Electron Builder
 3. Create installers for:
    - **Windows**: NSIS installer (`.exe`)
@@ -92,8 +92,8 @@ npm run dist -- --linux
 ├── main.js              # Electron main process
 ├── package.json         # Node.js dependencies and build config
 ├── build/
-│   └── web/            # Flutter web build output (generated)
-├── lib/                # Flutter source code
+│   └── web/            # Web build output (generated)
+├── lib/                # Source code
 └── dist/               # Electron build output (generated)
 ```
 
@@ -119,12 +119,12 @@ Edit `package.json` under the `build` section to customize:
 
 ### Electron app shows blank screen
 
-1. Check that Flutter web build exists:
+1. Check that web build exists:
    ```bash
    ls build/web/index.html
    ```
 
-2. Rebuild Flutter web:
+2. Rebuild web app:
    ```bash
    flutter clean
    flutter build web
@@ -180,5 +180,4 @@ The Electron app is configured with security best practices:
 
 - [Electron Documentation](https://www.electronjs.org/docs)
 - [Electron Builder Documentation](https://www.electron.build/)
-- [Flutter Web Documentation](https://docs.flutter.dev/platform-integration/web)
 
