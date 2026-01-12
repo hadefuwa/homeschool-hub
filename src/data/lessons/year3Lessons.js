@@ -806,7 +806,7 @@ Let's learn about prehistoric Britain!
 - They built hill forts
 
 - Celtic people lived there!`,
-      quizId: quizId++,
+      quizId: 61,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -921,7 +921,7 @@ Let's learn about the kings and prophets from the Bible!
 - Prophets were messengers
 
 - These are important stories!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1050,7 +1050,7 @@ Let's learn about ancient Greece!
 - They started the Olympics
 
 - They influenced the world!`,
-      quizId: quizId++,
+      quizId: 70,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1165,7 +1165,7 @@ Let's learn about how people lived in ancient Greece!
 - Athens created democracy
 
 - Greeks loved art and theater!`,
-      quizId: quizId++,
+      quizId: 70,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1294,7 +1294,7 @@ Let's learn about the Roman Empire!
 - They built amazing things
 
 - Rome was very powerful!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1409,7 +1409,7 @@ Let's learn about how people lived in ancient Rome!
 - They enjoyed entertainment
 
 - Life was different then!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1524,7 +1524,7 @@ Let's learn about why the Roman Empire fell!
 - Barbarians attacked
 
 - It was the end of an era!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     })

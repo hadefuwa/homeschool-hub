@@ -707,7 +707,7 @@ Dinosaurs were huge animals that lived a very, very long time ago!
 - They don't live anymore
 
 - We learn about them from fossils!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -794,7 +794,7 @@ Let's learn about the first people in the world!
 - They were the first family
 
 - This is a special story!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -871,7 +871,7 @@ Look at old family photos together!
 - Everyone has a family history
 
 - Stories from the past are important!`,
-      quizId: quizId++,
+      quizId: 31,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -954,7 +954,7 @@ There are seven days in a week!
 - Each day has a name
 
 - Days help us know what to do!`,
-      quizId: quizId++,
+      quizId: 33,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1025,7 +1025,7 @@ You are growing bigger every day!
 - You learn new things every day
 
 - Growing up is exciting!`,
-      quizId: quizId++,
+      quizId: 32,
       assessmentType: 'quiz',
       categoryId: null,
     })

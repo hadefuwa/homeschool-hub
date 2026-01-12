@@ -1020,7 +1020,7 @@ World War I lasted from 1914 to 1918.
 - Very difficult time
 
 - Important to remember!`,
-      quizId: quizId++,
+      quizId: 82,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1145,7 +1145,7 @@ Let's learn about the time between the world wars!
 - Dictators rose to power
 
 - It led to World War II!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1290,7 +1290,7 @@ World War II lasted from 1939 to 1945.
 - People showed courage
 
 - Important to remember!`,
-      quizId: quizId++,
+      quizId: 83,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1441,7 +1441,7 @@ Let's learn about the Cold War!
 - It was tense
 
 - It ended peacefully!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1582,7 +1582,7 @@ Let's learn about the fight for civil rights!
 - They made progress
 
 - We must continue the fight!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1707,7 +1707,7 @@ Let's learn about the modern world!
 - World became connected
 
 - Life changed a lot!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -1848,7 +1848,7 @@ Let's learn about recent history!
 - We're making history now
 
 - The future is ahead!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -2019,7 +2019,7 @@ Historical sources are evidence from the past that help us understand history.
 - Evaluate sources carefully
 
 - Sources help us understand history!`,
-      quizId: quizId++,
+      quizId: 96,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -2146,7 +2146,7 @@ Let's learn how historians study the past!
 - They think critically
 
 - History helps us understand!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -2289,7 +2289,7 @@ Let's learn about how history changes!
 - You're part of history
 
 - You can make a difference!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     })

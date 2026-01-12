@@ -428,7 +428,7 @@ Let's learn about different types of dinosaurs!
 - They lived long ago
 
 - We learn about them from fossils!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -529,7 +529,7 @@ Let's learn more about Adam and Eve's story!
 - They had children
 
 - This is an important story!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -644,7 +644,7 @@ Let's learn about Noah and his big boat!
 - The rainbow was a promise
 
 - This is a special story!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -745,7 +745,7 @@ Long, long ago, people started living in cities!
 - People lived together
 
 - Cities are important!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -846,7 +846,7 @@ Life was very different long ago!
 - No electricity
 
 - We can learn about the past!`,
-      quizId: quizId++,
+      quizId: 44,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -947,7 +947,7 @@ Let's learn about famous people from stories!
 - History is full of interesting people
 
 - Stories teach us lessons!`,
-      quizId: quizId++,
+      quizId: 43,
       assessmentType: 'quiz',
       categoryId: null,
     }),

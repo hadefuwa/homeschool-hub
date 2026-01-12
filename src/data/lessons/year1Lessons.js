@@ -245,7 +245,7 @@ Let's learn about when dinosaurs lived!
 - Fossils tell us about them
 
 - We can learn from the past!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -362,7 +362,7 @@ Let's learn about stories from the Bible!
 - They teach us lessons
 
 - History includes these stories!`,
-      quizId: quizId++,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -477,7 +477,7 @@ Let's learn about ancient Egypt!
 - Pharaohs were powerful rulers
 
 - We can learn from ancient Egypt!`,
-      quizId: quizId++,
+      quizId: 53,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -634,7 +634,7 @@ Let's compare life in the past and life today!
 - We can learn from the past
 
 - History shows us change!`,
-      quizId: quizId++,
+      quizId: 44,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -735,7 +735,7 @@ Let's learn about important people from the past!
 - History is full of interesting people
 
 - They inspire us today!`,
-      quizId: quizId++,
+      quizId: 43,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -836,7 +836,7 @@ Let's learn about the history of where we live!
 - We can learn from the past
 
 - History is everywhere!`,
-      quizId: quizId++,
+      quizId: 45,
       assessmentType: 'quiz',
       categoryId: null,
     }),
