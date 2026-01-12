@@ -8,7 +8,7 @@ import { extractYouTubeVideosFromContent } from '../utils/youtube';
  * Markdown component that automatically embeds YouTube videos
  * Replaces YouTube links with embedded video players
  */
-function MarkdownWithYouTube({ content, removeTitle = true }) {
+function MarkdownWithYouTube({ content, removeTitle = true, onQuestionAnswer }) {
   if (!content) return null;
 
   // Extract all YouTube videos from content
@@ -163,10 +163,12 @@ function MarkdownWithYouTube({ content, removeTitle = true }) {
             return (
               <InteractiveQuestion
                 key={`question-${segment.questionIndex}-${idx}`}
+                questionId={segment.questionIndex}
                 question={question.question}
                 options={question.options}
                 correctIndex={question.correctIndex}
                 explanation={question.explanation}
+                onAnswer={onQuestionAnswer}
               />
             );
           }

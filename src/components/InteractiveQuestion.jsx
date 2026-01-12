@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 /**
  * Interactive Question Component
  * Displays a multiple choice question with immediate feedback
+ * Once answered, cannot be changed - requires lesson restart
  */
-function InteractiveQuestion({ question, options, correctIndex, explanation }) {
+function InteractiveQuestion({ question, options, correctIndex, explanation, questionId, onAnswer }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -16,6 +17,11 @@ function InteractiveQuestion({ question, options, correctIndex, explanation }) {
     const correct = index === correctIndex;
     setIsCorrect(correct);
     setShowFeedback(true);
+    
+    // Notify parent component of the answer
+    if (onAnswer && questionId !== undefined) {
+      onAnswer(questionId, correct);
+    }
   };
 
   const getOptionStyle = (index) => {
@@ -117,6 +123,16 @@ function InteractiveQuestion({ question, options, correctIndex, explanation }) {
           }}>
             {isCorrect ? '✓ Correct!' : '✗ Incorrect'}
           </div>
+          {!isCorrect && (
+            <div style={{
+              fontSize: '14px',
+              color: '#856404',
+              marginTop: '8px',
+              fontWeight: '600',
+            }}>
+              ⚠️ You must restart the lesson to try again.
+            </div>
+          )}
           {explanation && (
             <div style={{
               fontSize: '14px',
