@@ -41,7 +41,7 @@ function YouTubeEmbed({ videoId, width = '100%', height = '400px', options = {} 
         height={height}
         src={embedUrl}
         frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         style={{
           position: 'absolute',

@@ -11,6 +11,23 @@ function BlocklyEmbed({ url = 'https://blockly.games/?lang=en', width = '100%', 
 
   // Determine if this is a local file path
   const isLocalFile = isLocal || url.startsWith('/') || url.startsWith('./') || url.startsWith('../') || !url.startsWith('http');
+  
+  // Convert local file paths to use custom protocol in Electron
+  const getFinalUrl = () => {
+    if (isLocalFile && window.electronAPI) {
+      // In Electron, convert /blockly-games/... to blockly://blockly-games/...
+      if (url.startsWith('/blockly-games/')) {
+        return `blockly://${url.substring(1)}`;
+      }
+      // Handle other local paths
+      if (url.startsWith('/')) {
+        return `blockly://${url.substring(1)}`;
+      }
+    }
+    return url;
+  };
+  
+  const finalUrl = getFinalUrl();
 
   useEffect(() => {
     // For local files, skip internet check
@@ -28,7 +45,7 @@ function BlocklyEmbed({ url = 'https://blockly.games/?lang=en', width = '100%', 
     window.addEventListener('offline', checkOnline);
 
     // Try to fetch the URL to verify connectivity
-    fetch(url, { method: 'HEAD', mode: 'no-cors' })
+    fetch(finalUrl, { method: 'HEAD', mode: 'no-cors' })
       .then(() => {
         setIsOnline(true);
         setIsLoading(false);
@@ -43,7 +60,7 @@ function BlocklyEmbed({ url = 'https://blockly.games/?lang=en', width = '100%', 
       window.removeEventListener('online', checkOnline);
       window.removeEventListener('offline', checkOnline);
     };
-  }, [url, isLocalFile]);
+  }, [url, isLocalFile, finalUrl]);
 
   if (isLoading) {
     return (
@@ -110,9 +127,9 @@ function BlocklyEmbed({ url = 'https://blockly.games/?lang=en', width = '100%', 
       <iframe
         width={width}
         height={height}
-        src={url}
+        src={finalUrl}
         frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         style={{
           width: '100%',

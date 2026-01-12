@@ -60,6 +60,18 @@ Every Arduino program must have a \`setup()\` function. This function runs **onc
 
 
 
+<!-- QUESTION_START -->
+How many times does the setup() function execute in an Arduino program?
+<!-- OPTIONS -->
+Once at the start|Continuously in a loop|Only when called explicitly|Twice - once at start and once at end
+<!-- CORRECT -->
+0
+<!-- EXPLANATION -->
+The setup() function runs exactly once when the Arduino starts up, before the loop() function begins.
+<!-- QUESTION_END -->
+
+
+
 ## What is void setup()?
 
 
@@ -98,6 +110,18 @@ void setup() {
 
 
 
+<!-- QUESTION_START -->
+What does the "void" keyword in "void setup()" indicate?
+<!-- OPTIONS -->
+The function returns an integer|The function returns a boolean value|The function does not return any value|The function can be called multiple times
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+The "void" keyword means the function doesn't return any value. It's used for functions that perform actions but don't need to send data back.
+<!-- QUESTION_END -->
+
+
+
 ## Common Uses
 
 
@@ -109,6 +133,18 @@ void setup() {
 - Initializing variables
 
 - Setting up libraries
+
+
+
+<!-- QUESTION_START -->
+What is the primary purpose of the setup() function?
+<!-- OPTIONS -->
+To run the main program logic|To initialize pins and configure the Arduino|To create an infinite loop|To handle serial communication only
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The setup() function is primarily used to initialize pins, configure the Arduino, and set up any libraries or communication protocols needed for your program.
+<!-- QUESTION_END -->
 
 
 
@@ -130,6 +166,18 @@ Serial.begin(9600);   // Start serial at 9600 baud
 
 
 
+<!-- QUESTION_START -->
+Which of the following is typically done in setup() but NOT in loop()?
+<!-- OPTIONS -->
+Reading sensor values|Controlling LEDs|Setting pin modes with pinMode()|Using delay() functions
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+Setting pin modes with pinMode() should be done in setup() because it only needs to happen once. Reading sensors, controlling LEDs, and using delays are typically done in loop().
+<!-- QUESTION_END -->
+
+
+
 ## Important Notes
 
 
@@ -138,8 +186,20 @@ Serial.begin(9600);   // Start serial at 9600 baud
 
 - If setup is missing, your code will not compile
 
-- You can only have one setup function per sketch`,
-      quizId: quizId++,
+- You can only have one setup function per sketch
+
+
+
+<!-- QUESTION_START -->
+If you forget to include setup() in your Arduino sketch, what happens?
+<!-- OPTIONS -->
+The program runs normally|The code will not compile|Only the loop() function runs|The Arduino resets continuously
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The setup() function is required in every Arduino sketch. If it's missing, the code will not compile and you'll get an error.
+<!-- QUESTION_END -->`,
+      quizId: null,
       assessmentType: 'quiz',
       categoryId: null,
     }),
@@ -203,6 +263,18 @@ statement   // ERROR - missing semicolon!
 
 
 
+<!-- QUESTION_START -->
+Which of the following requires a semicolon?
+<!-- OPTIONS -->
+void setup() { }|if (condition) { }|int x = 5;|for (int i = 0; i < 10; i++) { }
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+Variable declarations like "int x = 5;" require a semicolon. Function definitions and control structures don't need semicolons after their closing braces.
+<!-- QUESTION_END -->
+
+
+
 ### NOT Required After:
 
 - Function definitions: \`void setup() { }\` (no semicolon after closing brace)
@@ -210,6 +282,18 @@ statement   // ERROR - missing semicolon!
 - Control structures: \`if (condition) { }\` (no semicolon after closing brace)
 
 - Loop structures: \`for (int i = 0; i < 10; i++) { }\` (no semicolon after closing brace)
+
+
+
+<!-- QUESTION_START -->
+Where should you NOT place a semicolon?
+<!-- OPTIONS -->
+After variable declarations|After function calls|After the closing brace of a function definition|After assignment statements
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+You should NOT place a semicolon after the closing brace of a function definition. Semicolons are required after variable declarations, function calls, and assignment statements.
+<!-- QUESTION_END -->
 
 
 
@@ -238,6 +322,30 @@ int x = 5;              // Correct
 digitalWrite(13, HIGH); // Correct
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+What happens if you forget a semicolon after a statement?
+<!-- OPTIONS -->
+The program runs normally|The code will not compile|The statement is ignored|The Arduino resets
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+If you forget a semicolon after a statement, the code will not compile. The compiler will give you an error message indicating where the semicolon is expected.
+<!-- QUESTION_END -->
+
+
+
+<!-- QUESTION_START -->
+Which line is CORRECT?
+<!-- OPTIONS -->
+digitalWrite(13, HIGH)|pinMode(13, OUTPUT)|int count = 10|Serial.begin(9600);
+<!-- CORRECT -->
+3
+<!-- EXPLANATION -->
+"Serial.begin(9600);" is correct because it has a semicolon at the end. The other options are missing semicolons.
+<!-- QUESTION_END -->
 
 
 
@@ -299,6 +407,18 @@ If you get a compilation error, check:
 
 
 
+<!-- QUESTION_START -->
+If you get a compilation error on line 10 saying "expected ';' before...", where is the actual problem likely to be?
+<!-- OPTIONS -->
+On line 10|On line 9 (the previous line)|In the setup() function|In the loop() function
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+When the compiler reports an error on a specific line saying "expected ';' before...", the actual problem is usually on the previous line (line 9 in this case) where a semicolon is missing. The compiler only detects the error when it reaches the next line.
+<!-- QUESTION_END -->
+
+
+
 ## Important Notes
 
 
@@ -308,8 +428,8 @@ If you get a compilation error, check:
 - One statement = one semicolon
 
 - Missing semicolons will prevent your code from compiling`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 
@@ -352,6 +472,18 @@ int temperature = -5;
 
 
 
+<!-- QUESTION_START -->
+What is the range of values an int variable can store?
+<!-- OPTIONS -->
+0 to 255|-32,768 to 32,767|-128 to 127|0 to 1023
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+An int variable can store whole numbers from -32,768 to 32,767. This is a 16-bit signed integer range.
+<!-- QUESTION_END -->
+
+
+
 ### float (Floating Point)
 
 Stores decimal numbers with 6-7 digits of precision.
@@ -365,6 +497,18 @@ float pi = 3.14159;
 float voltage = 5.5;
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+Which data type should you use to store a decimal number like 3.14?
+<!-- OPTIONS -->
+int|float|char|boolean
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The float data type is used to store decimal numbers (numbers with a decimal point) like 3.14. int stores whole numbers, char stores single characters, and boolean stores true/false values.
+<!-- QUESTION_END -->
 
 
 
@@ -472,6 +616,18 @@ String greeting = "Hi";    // String variable
 
 
 
+<!-- QUESTION_START -->
+Which variable name is INVALID in Arduino?
+<!-- OPTIONS -->
+myVariable|sensor_value|int|ledPin
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+"int" is a reserved word in Arduino/C++ and cannot be used as a variable name. Reserved words like int, void, if, for, etc. are part of the programming language itself.
+<!-- QUESTION_END -->
+
+
+
 ## Scope
 
 
@@ -481,6 +637,18 @@ Variables can be:
 - **Global**: Declared outside functions, accessible everywhere
 
 - **Local**: Declared inside functions, only accessible in that function
+
+
+
+<!-- QUESTION_START -->
+What is the difference between a global and local variable?
+<!-- OPTIONS -->
+Global variables are faster|Local variables can only be accessed within the function they are declared|Global variables use less memory|There is no difference
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+Local variables can only be accessed within the function they are declared. Global variables are accessible from anywhere in the program, but local variables are limited to their function scope.
+<!-- QUESTION_END -->
 
 
 
@@ -520,6 +688,18 @@ Serial.println(globalVar);  // Can access global
 
 
 
+<!-- QUESTION_START -->
+If you declare "int count = 5;" inside setup(), can you access it in loop()?
+<!-- OPTIONS -->
+Yes, always|No, it is local to setup()|Only if you use the extern keyword|Yes, but you must initialize it again
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+If you declare a variable inside setup(), it is local to that function and cannot be accessed in loop() or any other function. To access it from multiple functions, you need to declare it as a global variable (outside all functions).
+<!-- QUESTION_END -->
+
+
+
 ## Important Notes
 
 
@@ -531,8 +711,8 @@ Serial.println(globalVar);  // Can access global
 - Use float when you need decimals
 
 - Variables must be declared before use`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 
@@ -568,6 +748,18 @@ Configures a pin as either INPUT or OUTPUT. Must be called in \`setup()\`.
 pinMode(pinNumber, mode);
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+What does pinMode(13, OUTPUT) do?
+<!-- OPTIONS -->
+Sets pin 13 to HIGH|Configures pin 13 as an output pin|Reads the value from pin 13|Turns on an LED on pin 13
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+pinMode(13, OUTPUT) configures pin 13 as an output pin, which means it can be used to send signals (HIGH or LOW) to control devices like LEDs or motors. It doesn't set the pin to HIGH or read values - that's done with digitalWrite() and digitalRead().
+<!-- QUESTION_END -->
 
 
 
@@ -624,6 +816,18 @@ int value = digitalRead(pin);
 - \`HIGH\` (1): Pin is receiving voltage
 
 - \`LOW\` (0): Pin is at ground
+
+
+
+<!-- QUESTION_START -->
+What values can digitalRead() return?
+<!-- OPTIONS -->
+0 to 1023|HIGH or LOW|true or false|Any integer value
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+digitalRead() returns either HIGH or LOW. HIGH means the pin is receiving voltage (typically 5V or 3.3V), and LOW means the pin is at ground (0V). These are the only two possible values for digital pins.
+<!-- QUESTION_END -->
 
 
 
@@ -719,6 +923,30 @@ pinMode(2, INPUT_PULLUP);  // Internal pull-up resistor
 
 
 
+<!-- QUESTION_START -->
+Why would you use INPUT_PULLUP instead of INPUT?
+<!-- OPTIONS -->
+To make the pin read faster|To prevent the pin from floating and having uncertain values|To increase the voltage on the pin|To enable analog reading
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+INPUT_PULLUP uses an internal pull-up resistor that connects the pin to HIGH when nothing is connected. This prevents the pin from "floating" (having uncertain values) when no input is connected, which can cause unreliable readings.
+<!-- QUESTION_END -->
+
+
+
+<!-- QUESTION_START -->
+If you read a button connected with INPUT_PULLUP, what value indicates the button is pressed?
+<!-- OPTIONS -->
+HIGH|LOW|1|Both HIGH and 1 are correct
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+With INPUT_PULLUP, the pin is normally HIGH. When the button is pressed, it connects the pin to ground (LOW), so LOW indicates the button is pressed. This is the opposite of what you might expect!
+<!-- QUESTION_END -->
+
+
+
 ## Important Notes
 
 
@@ -731,9 +959,21 @@ pinMode(2, INPUT_PULLUP);  // Internal pull-up resistor
 
 - Use INPUT_PULLUP for buttons to avoid floating values
 
-- Digital pins can only be HIGH or LOW, nothing in between`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+- Digital pins can only be HIGH or LOW, nothing in between
+
+
+
+<!-- QUESTION_START -->
+What happens if you try to use digitalWrite() on a pin configured as INPUT?
+<!-- OPTIONS -->
+It works normally|It has no effect|The pin automatically switches to OUTPUT|The Arduino resets
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+If you try to use digitalWrite() on a pin configured as INPUT, it will have no effect. The pin must be configured as OUTPUT using pinMode() before digitalWrite() can control it.
+<!-- QUESTION_END -->`,
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 
@@ -781,6 +1021,30 @@ int sensorValue = analogRead(pin);
 - 5V (or 3.3V) = 1023
 
 - Values in between are proportional
+
+
+
+<!-- QUESTION_START -->
+What is the range of values returned by analogRead()?
+<!-- OPTIONS -->
+0 to 255|0 to 1023|-1023 to 1023|0 to 5
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+analogRead() returns values from 0 to 1023. This is a 10-bit resolution, meaning it can distinguish 1024 different voltage levels (0-1023).
+<!-- QUESTION_END -->
+
+
+
+<!-- QUESTION_START -->
+Which pins can be used with analogRead()?
+<!-- OPTIONS -->
+All digital pins|Only pins marked with ~|Only analog pins A0-A5|Pins 0-13
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+analogRead() can only be used with analog pins A0-A5. These are the dedicated analog input pins on the Arduino board.
+<!-- QUESTION_END -->
 
 
 
@@ -845,6 +1109,30 @@ analogWrite(pin, value);
 - 255 = Always HIGH (100% duty cycle)
 
 - 128 = 50% duty cycle (half brightness)
+
+
+
+<!-- QUESTION_START -->
+What does analogWrite() actually do?
+<!-- OPTIONS -->
+Creates a true analog voltage|Uses PWM (Pulse Width Modulation) to simulate analog|Converts digital to analog|Only works with analog pins
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+analogWrite() uses PWM (Pulse Width Modulation) to simulate analog output. It rapidly switches the pin between HIGH and LOW, varying the percentage of time it's HIGH to create the effect of different voltage levels.
+<!-- QUESTION_END -->
+
+
+
+<!-- QUESTION_START -->
+What is the range of values for analogWrite()?
+<!-- OPTIONS -->
+0 to 1023|0 to 255|-255 to 255|0 to 100
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+analogWrite() accepts values from 0 to 255. This is an 8-bit resolution, providing 256 different levels of PWM output.
+<!-- QUESTION_END -->
 
 
 
@@ -924,6 +1212,18 @@ analogWrite(9, brightness);
 
 
 
+<!-- QUESTION_START -->
+If you read a sensor value of 512 with analogRead(A0), and want to control an LED brightness with analogWrite(9, value), what should the value be to get 50% brightness?
+<!-- OPTIONS -->
+512|255|128|1023
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+To get 50% brightness, you need a value of 128 (half of 255). The sensor value of 512 is half of 1023, so you would use map(512, 0, 1023, 0, 255) which equals 128.
+<!-- QUESTION_END -->
+
+
+
 ## Important Notes
 
 
@@ -939,8 +1239,8 @@ analogWrite(9, brightness);
 - PWM creates a square wave, not a true analog voltage
 
 - Use map() to convert between ranges`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 
@@ -1053,6 +1353,18 @@ if (condition1) {
 
 
 
+<!-- QUESTION_START -->
+What is the difference between == and = in Arduino?
+<!-- OPTIONS -->
+There is no difference|== is for comparison, = is for assignment|= is for comparison, == is for assignment|Both are used for assignment
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+== is used for comparison (checking if two values are equal), while = is used for assignment (setting a variable to a value). This is a common mistake - using = instead of == in conditions will cause bugs!
+<!-- QUESTION_END -->
+
+
+
 ## Logical Operators
 
 
@@ -1062,6 +1374,18 @@ if (condition1) {
 - \`||\` : OR (at least one true)
 
 - \`!\`  : NOT (reverses true/false)
+
+
+
+<!-- QUESTION_START -->
+What does the && operator do?
+<!-- OPTIONS -->
+Logical OR - at least one condition must be true|Logical AND - both conditions must be true|Logical NOT - reverses the condition|Performs addition
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The && operator is logical AND, which means both conditions must be true for the overall expression to be true. If either condition is false, the result is false.
+<!-- QUESTION_END -->
 
 
 
@@ -1133,6 +1457,18 @@ Serial.println(i);  // Prints 0 through 9
 
 
 
+<!-- QUESTION_START -->
+How many times will this loop execute: for (int i = 0; i < 5; i++) { }?
+<!-- OPTIONS -->
+4 times|5 times|6 times|Infinite times
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The loop executes 5 times. It starts at i=0 and continues while i < 5, so it runs for i=0, 1, 2, 3, 4 (that's 5 iterations total).
+<!-- QUESTION_END -->
+
+
+
 ## while Loop
 
 
@@ -1150,6 +1486,18 @@ while (condition) {
 }
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+What happens if you write: while(true) { } in your loop() function?
+<!-- OPTIONS -->
+The program runs normally|The while loop never exits, blocking the rest of loop()|The Arduino resets|The setup() function runs again
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+If you write while(true) { } in your loop() function, the while loop will never exit because the condition is always true. This blocks the rest of the loop() function from executing, effectively freezing that part of your program.
+<!-- QUESTION_END -->
 
 
 
@@ -1229,6 +1577,18 @@ analogWrite(9, 255);        // Bright
 
 
 
+<!-- QUESTION_START -->
+In the condition "if (sensorValue > 500 && sensorValue < 800)", when will the code execute?
+<!-- OPTIONS -->
+When sensorValue is less than 500|When sensorValue is between 500 and 800 (exclusive)|When sensorValue is greater than 800|When sensorValue equals 500 or 800
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The condition sensorValue > 500 && sensorValue < 800 will be true when sensorValue is between 500 and 800 (exclusive), meaning greater than 500 AND less than 800. The && operator requires both conditions to be true.
+<!-- QUESTION_END -->
+
+
+
 ## Important Notes
 
 
@@ -1242,8 +1602,8 @@ analogWrite(9, 255);        // Bright
 - Be careful with infinite loops (while(true))
 
 - for loops are great when you know how many iterations`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 
@@ -1284,6 +1644,18 @@ return value;  // If returnType is not void
 
 
 
+<!-- QUESTION_START -->
+What does the "void" keyword in a function declaration mean?
+<!-- OPTIONS -->
+The function takes no parameters|The function does not return a value|The function can only be called once|The function is empty
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The "void" keyword means the function does not return a value. Functions that return values use data types like int, float, or boolean instead of void.
+<!-- QUESTION_END -->
+
+
+
 ## Function Types
 
 
@@ -1303,6 +1675,18 @@ return result;
 }
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+If you define a function "int add(int a, int b) { return a + b; }", what must you do when calling it?
+<!-- OPTIONS -->
+Nothing special|Store the result in a variable of type int|Call it only from setup()|Use the void keyword
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+Since the function returns an int value, you should store the result in a variable of type int (or use it directly in an expression). For example: int sum = add(5, 3);
+<!-- QUESTION_END -->
 
 
 
@@ -1484,6 +1868,18 @@ int x = 20;  // Different x, local to loop
 
 
 
+<!-- QUESTION_START -->
+What is the scope of a variable declared inside a function?
+<!-- OPTIONS -->
+Global - accessible everywhere|Local - only accessible within that function|Accessible in setup() and loop()|Accessible in all functions except the one it was declared in
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+Variables declared inside a function are local to that function - they can only be accessed within the function where they are declared. They are not accessible from other functions.
+<!-- QUESTION_END -->
+
+
+
 ## Global vs Local Variables
 
 
@@ -1520,6 +1916,30 @@ globalVar = 200;    // Can modify global
 
 
 
+<!-- QUESTION_START -->
+Can a function call another function?
+<!-- OPTIONS -->
+No, functions cannot call other functions|Yes, functions can call other functions|Only if both are void functions|Only if called from setup()
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+Yes, functions can call other functions! This is a powerful feature that allows you to build complex programs by combining simpler functions together.
+<!-- QUESTION_END -->
+
+
+
+<!-- QUESTION_START -->
+What happens if you try to return a value from a void function?
+<!-- OPTIONS -->
+It works normally|The code will not compile|The return value is ignored|The function automatically changes to int type
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+If you try to return a value from a void function, the code will not compile. Void functions cannot return values - if you need to return a value, you must change the return type (e.g., from void to int).
+<!-- QUESTION_END -->
+
+
+
 ## Important Notes
 
 
@@ -1533,8 +1953,8 @@ globalVar = 200;    // Can modify global
 - void functions don't return anything
 
 - Functions can call other functions`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 
@@ -1595,6 +2015,18 @@ int pins[] = {2, 4, 7, 8};         // Size determined automatically
 
 
 
+<!-- QUESTION_START -->
+How do you initialize an array with values: {10, 20, 30}?
+<!-- OPTIONS -->
+int arr[3] = 10, 20, 30;|int arr[3] = {10, 20, 30};|int arr = {10, 20, 30};|int arr[] = 10, 20, 30;
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+To initialize an array with values, you use curly braces: int arr[3] = {10, 20, 30}; The values are enclosed in curly braces and separated by commas.
+<!-- QUESTION_END -->
+
+
+
 ## Accessing Array Elements
 
 
@@ -1618,6 +2050,30 @@ int third = numbers[2];    // 30
 int last = numbers[4];     // 50
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+What is the index of the first element in an array?
+<!-- OPTIONS -->
+1|0|-1|It depends on the array size
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+The first element in an array is at index 0. Arrays in Arduino (and most programming languages) are zero-indexed, meaning counting starts at 0, not 1.
+<!-- QUESTION_END -->
+
+
+
+<!-- QUESTION_START -->
+If you declare "int numbers[5];", what is the valid index range?
+<!-- OPTIONS -->
+1 to 5|0 to 4|0 to 5|1 to 4
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+For an array declared as int numbers[5], the valid indices are 0 to 4. The array has 5 elements, but they are numbered 0, 1, 2, 3, and 4.
+<!-- QUESTION_END -->
 
 
 
@@ -1785,6 +2241,30 @@ int numbers[5] = {1, 2, 3, 4, 5};
 
 
 
+<!-- QUESTION_START -->
+What happens if you access numbers[5] when the array is declared as int numbers[5]?
+<!-- OPTIONS -->
+It returns 0|It causes undefined behavior - could crash or return garbage|It automatically extends the array|It returns the last valid element
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+Accessing numbers[5] when the array size is 5 is out of bounds (valid indices are 0-4). This causes undefined behavior - it could crash the program, return garbage data, or cause other unpredictable results.
+<!-- QUESTION_END -->
+
+
+
+<!-- QUESTION_START -->
+If you have "int leds[] = {2, 4, 7, 8};", what is the value of leds[2]?
+<!-- OPTIONS -->
+2|4|7|8
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+In the array {2, 4, 7, 8}, the indices are: leds[0] = 2, leds[1] = 4, leds[2] = 7, leds[3] = 8. So leds[2] equals 7.
+<!-- QUESTION_END -->
+
+
+
 ## Example: LED Chaser
 
 
@@ -1840,8 +2320,8 @@ for (int i = 0; i < numLEDs; i++) {
 - Use loops to iterate through arrays
 
 - Arrays can be passed to functions`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 
@@ -1873,6 +2353,18 @@ Libraries are collections of code that extend Arduino's functionality. They prov
 #include <LibraryName.h>  // Include the library
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+What does #include <LibraryName.h> do?
+<!-- OPTIONS -->
+Installs the library|Includes the library code so you can use its functions|Removes the library|Checks if the library exists
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+#include <LibraryName.h> includes the library code in your sketch, making all the library's functions and classes available for you to use. It doesn't install the library - that must be done separately through the Library Manager.
+<!-- QUESTION_END -->
 
 
 
@@ -1958,6 +2450,18 @@ Common baud rates: 9600, 115200
 
 
 
+<!-- QUESTION_START -->
+Where should you call Serial.begin()?
+<!-- OPTIONS -->
+In loop()|In setup()|Before including any libraries|It is not necessary
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+Serial.begin() should be called in setup() to initialize serial communication before you can use any Serial functions. It only needs to be called once when the Arduino starts.
+<!-- QUESTION_END -->
+
+
+
 ## Serial.print() and Serial.println()
 
 
@@ -1973,6 +2477,18 @@ Serial.print(value);      // Prints without newline
 Serial.println(value);    // Prints with newline
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+What is the difference between Serial.print() and Serial.println()?
+<!-- OPTIONS -->
+Serial.print() is faster|Serial.println() adds a newline character, Serial.print() does not|Serial.print() only works with numbers|There is no difference
+<!-- CORRECT -->
+1
+<!-- EXPLANATION -->
+Serial.println() adds a newline character after printing, which moves the cursor to the next line. Serial.print() does not add a newline, so subsequent prints appear on the same line.
+<!-- QUESTION_END -->
 
 
 
@@ -2023,6 +2539,18 @@ if (Serial.available() > 0) {
 }
 
 \`\`\`
+
+
+
+<!-- QUESTION_START -->
+What does Serial.available() return?
+<!-- OPTIONS -->
+The number of bytes available to read|true or false|The next byte of data|The baud rate
+<!-- CORRECT -->
+0
+<!-- EXPLANATION -->
+Serial.available() returns the number of bytes available to read from the serial buffer. If it returns 0, there's no data available. If it returns a number greater than 0, that many bytes are waiting to be read.
+<!-- QUESTION_END -->
 
 
 
@@ -2099,6 +2627,18 @@ The Serial Monitor (Tools → Serial Monitor) allows you to:
 - Send data to Arduino
 
 - Set baud rate (must match Serial.begin())
+
+
+
+<!-- QUESTION_START -->
+If Serial.begin(9600) is set, what must the Serial Monitor baud rate be?
+<!-- OPTIONS -->
+115200|4800|9600|Any value will work
+<!-- CORRECT -->
+2
+<!-- EXPLANATION -->
+The Serial Monitor baud rate must match the baud rate set in Serial.begin(). If you use Serial.begin(9600), the Serial Monitor must also be set to 9600 baud, otherwise the communication will be garbled.
+<!-- QUESTION_END -->
 
 
 
@@ -2185,8 +2725,8 @@ if (Serial.available() > 0) {
 - Libraries must be included at the top of your sketch
 
 - Check library documentation for proper usage`,
-      quizId: quizId++,
-      assessmentType: 'quiz',
+      quizId: null,
+      assessmentType: 'interactive',
       categoryId: null,
     }),
 

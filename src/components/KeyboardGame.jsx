@@ -104,11 +104,44 @@ function KeyboardGame({ lesson }) {
   const initialArrowLifetime = 2500; // Arrows stay for 2.5 seconds initially
   const fastArrowLifetime = 1500; // After 8 arrows, arrows stay for 1.5 seconds
 
+  // Reset game state when lesson changes
+  useEffect(() => {
+    // Clear any existing timers
+    if (arrowTimerRef.current) {
+      clearTimeout(arrowTimerRef.current);
+      arrowTimerRef.current = null;
+    }
+    
+    // Reset all game state
+    setIsPlaying(false);
+    setIsGameOver(false);
+    setScore(0);
+    setCorrectKeys(0);
+    setWrongKeys(0);
+    setArrowCount(0);
+    setCurrentArrow(null);
+    setCurrentLetter(null);
+    setCurrentNumber(null);
+    setCurrentSymbol(null);
+    setCurrentLetterIndex(0);
+    setCurrentNumberIndex(0);
+    setCurrentSymbolIndex(0);
+    setArrowId(null);
+    
+    // Reset refs
+    isPlayingRef.current = false;
+    isGameOverRef.current = false;
+    arrowCountRef.current = 0;
+    arrowIntervalRef.current = initialArrowInterval;
+    arrowLifetimeRef.current = initialArrowLifetime;
+  }, [lesson?.id]); // Reset when lesson ID changes
+
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (!isPlayingRef.current || isGameOverRef.current) return;
       
       const key = e.key;
+      const code = e.code;
       const isShiftPressed = e.shiftKey;
       
       // Handle A-Z mode
@@ -125,10 +158,13 @@ function KeyboardGame({ lesson }) {
           }
           
           // Move to next letter
-          if (currentLetterIndex < alphabet.length - 1) {
+          // After spawnNextLetter() is called, currentLetterIndex is incremented
+          // So currentLetterIndex already points to the next letter to show
+          // Check if there are more letters to show (currentLetterIndex < alphabet.length)
+          if (currentLetterIndex < alphabet.length) {
             spawnNextLetter();
           } else {
-            // Completed all letters
+            // Completed all letters (just pressed Z, which is the last one)
             setTimeout(() => {
               endGame();
             }, 0);
@@ -170,8 +206,20 @@ function KeyboardGame({ lesson }) {
       
       // Handle symbols mode
       if (isSymbolsMode && currentSymbol) {
+        // Ignore Shift key when pressed alone
+        if (key === 'Shift') {
+          return;
+        }
+        
         const expectedKey = symbolKeyMappings[currentSymbol];
-        if (isShiftPressed && key === expectedKey) {
+        const expectedCode = `Digit${expectedKey}`;
+        
+        // Check if the key matches the expected symbol character (when Shift+number is pressed, key is the symbol)
+        // Also check the code property as a fallback for better browser compatibility
+        const isCorrectSymbol = (isShiftPressed && key === currentSymbol) || 
+                                (isShiftPressed && code === expectedCode);
+        
+        if (isCorrectSymbol) {
           // Correct symbol pressed with shift
           setCorrectKeys(prev => prev + 1);
           setScore(prev => prev + 10);
@@ -190,12 +238,16 @@ function KeyboardGame({ lesson }) {
               endGame();
             }, 0);
           }
-        } else if (key === expectedKey && !isShiftPressed) {
-          // Correct key but missing shift
-          setWrongKeys(prev => prev + 1);
-        } else if (/[0-9]/.test(key) || key === 'Shift') {
-          // Wrong key pressed
-          setWrongKeys(prev => prev + 1);
+        } else {
+          // Check if they pressed the number key without shift
+          if (key === expectedKey && !isShiftPressed) {
+            // Correct key but missing shift
+            setWrongKeys(prev => prev + 1);
+          } else if (/[0-9]/.test(key) && !isShiftPressed) {
+            // Wrong number pressed (only count if shift is not pressed)
+            setWrongKeys(prev => prev + 1);
+          }
+          // Other keys (including Shift+wrong numbers) are ignored (not counted as wrong)
         }
         return;
       }
@@ -436,10 +488,32 @@ function KeyboardGame({ lesson }) {
   const accuracy = correctKeys + wrongKeys === 0 ? 0 : (correctKeys / (correctKeys + wrongKeys)) * 100;
 
   const getGrade = () => {
-    if (score >= 200) return { name: 'Platinum', color: '#E5E4E2' };
-    if (score >= 150) return { name: 'Gold', color: '#FFD700' };
-    if (score >= 100) return { name: 'Silver', color: '#C0C0C0' };
-    return { name: 'Bronze', color: '#CD7F32' };
+    // Different thresholds based on game mode
+    if (isAZMode) {
+      // A-Z game: 26 letters, max 260 points
+      if (score >= 250 && accuracy === 100) return { name: 'Platinum', color: '#E5E4E2' };
+      if (score >= 200 || (score >= 150 && accuracy === 100)) return { name: 'Gold', color: '#FFD700' };
+      if (score >= 100 || accuracy >= 90) return { name: 'Silver', color: '#C0C0C0' };
+      return { name: 'Bronze', color: '#CD7F32' };
+    } else if (isNumbersMode) {
+      // Numbers game: 10 numbers, max 100 points
+      if (score >= 90 && accuracy === 100) return { name: 'Platinum', color: '#E5E4E2' };
+      if (score >= 80 || (score >= 70 && accuracy === 100)) return { name: 'Gold', color: '#FFD700' };
+      if (score >= 60 || accuracy >= 90) return { name: 'Silver', color: '#C0C0C0' };
+      return { name: 'Bronze', color: '#CD7F32' };
+    } else if (isSymbolsMode) {
+      // Symbols game: 10 symbols, max 100 points
+      if (score >= 90 && accuracy === 100) return { name: 'Platinum', color: '#E5E4E2' };
+      if (score >= 80 || (score >= 70 && accuracy === 100)) return { name: 'Gold', color: '#FFD700' };
+      if (score >= 60 || accuracy >= 90) return { name: 'Silver', color: '#C0C0C0' };
+      return { name: 'Bronze', color: '#CD7F32' };
+    } else {
+      // Arrow/WASD game: 15 arrows, max 150 points
+      if (score >= 140 && accuracy === 100) return { name: 'Platinum', color: '#E5E4E2' };
+      if (score >= 120 || (score >= 100 && accuracy === 100)) return { name: 'Gold', color: '#FFD700' };
+      if (score >= 80 || accuracy >= 85) return { name: 'Silver', color: '#C0C0C0' };
+      return { name: 'Bronze', color: '#CD7F32' };
+    }
   };
 
   const grade = getGrade();

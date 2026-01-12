@@ -19,16 +19,22 @@ const useDataStore = create((set, get) => ({
     const state = get();
     if (state.initialized || state.loading) return;
 
+    console.log('[DataStore] Starting initialization...');
     set({ loading: true });
 
     try {
       // Load data from Electron
       let loadedData;
       if (window.electronAPI) {
+        console.log('[DataStore] Electron API available, loading data...');
         loadedData = await window.electronAPI.loadData();
+        console.log('[DataStore] Data loaded successfully:', { 
+          lessons: loadedData?.lessons?.length || 0,
+          quizzes: loadedData?.quizzes?.length || 0 
+        });
       } else {
         // Fallback for web mode (development)
-        console.warn('Electron API not available, using default data');
+        console.warn('[DataStore] Electron API not available, using default data');
         loadedData = getDefaultData();
       }
 
@@ -552,6 +558,94 @@ const useDataStore = create((set, get) => ({
       byYear,
       bySubject,
     };
+  },
+
+  // Get medal counts
+  getMedalCounts: (studentId = null) => {
+    const state = get();
+    if (!state.data) {
+      return {
+        platinum: 0,
+        gold: 0,
+        silver: 0,
+        bronze: 0,
+      };
+    }
+    
+    const userId = studentId || state.getUserId();
+    const allProgress = state.data.progress.filter(p => 
+      p.studentId === userId && 
+      p.isCompleted && 
+      p.activityType === 'Lesson' &&
+      p.score !== null
+    );
+    
+    let platinum = 0;
+    let gold = 0;
+    let silver = 0;
+    let bronze = 0;
+    
+    allProgress.forEach(progress => {
+      const lesson = state.data.lessons.find(l => l.id === progress.activityId);
+      if (!lesson) return;
+      
+      const score = progress.score || 0;
+      let medal = 'Bronze';
+      
+      // Determine medal based on lesson type
+      if (lesson.title === 'Clicking Game') {
+        const isHardMode = lesson.yearId === 'reception' && lesson.lessonNumber === 2 && lesson.subjectId === 'technology';
+        if (isHardMode) {
+          if (score >= 350) medal = 'Platinum';
+          else if (score >= 250) medal = 'Gold';
+          else if (score >= 150) medal = 'Silver';
+        } else {
+          if (score >= 300) medal = 'Platinum';
+          else if (score >= 200) medal = 'Gold';
+          else if (score >= 100) medal = 'Silver';
+        }
+      } else if (lesson.title === 'Keyboard Game' || lesson.title === 'WASD Game' || 
+                 lesson.title === 'A-Z Game' || lesson.title === 'Numbers Game' || 
+                 lesson.title === 'Symbols Game') {
+        const isWASDMode = lesson.yearId === 'nursery' && lesson.lessonNumber === 3 && lesson.subjectId === 'technology';
+        const isAZMode = lesson.yearId === 'nursery' && lesson.lessonNumber === 4 && lesson.subjectId === 'technology';
+        const isNumbersMode = lesson.yearId === 'nursery' && lesson.lessonNumber === 5 && lesson.subjectId === 'technology';
+        const isSymbolsMode = lesson.yearId === 'nursery' && lesson.lessonNumber === 6 && lesson.subjectId === 'technology';
+        
+        // We need accuracy to determine medal for keyboard games, but we don't store it
+        // So we'll use score-based thresholds that approximate the medal logic
+        if (isAZMode) {
+          if (score >= 250) medal = 'Platinum';
+          else if (score >= 200) medal = 'Gold';
+          else if (score >= 150) medal = 'Gold';
+          else if (score >= 100) medal = 'Silver';
+        } else if (isNumbersMode) {
+          if (score >= 90) medal = 'Platinum';
+          else if (score >= 80) medal = 'Gold';
+          else if (score >= 70) medal = 'Gold';
+          else if (score >= 60) medal = 'Silver';
+        } else if (isSymbolsMode) {
+          if (score >= 90) medal = 'Platinum';
+          else if (score >= 80) medal = 'Gold';
+          else if (score >= 70) medal = 'Gold';
+          else if (score >= 60) medal = 'Silver';
+        } else {
+          // Arrow/WASD game
+          if (score >= 140) medal = 'Platinum';
+          else if (score >= 120) medal = 'Gold';
+          else if (score >= 100) medal = 'Gold';
+          else if (score >= 80) medal = 'Silver';
+        }
+      }
+      
+      // Count medals
+      if (medal === 'Platinum') platinum++;
+      else if (medal === 'Gold') gold++;
+      else if (medal === 'Silver') silver++;
+      else bronze++;
+    });
+    
+    return { platinum, gold, silver, bronze };
   },
 
   // Admin mode

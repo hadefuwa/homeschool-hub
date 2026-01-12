@@ -160,13 +160,23 @@ function LessonViewScreen() {
         </div>
       ) : (
         <div style={{
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
           backgroundColor: 'white',
-          padding: '30px',
           borderRadius: '8px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          lineHeight: '1.6',
+          overflow: 'hidden',
         }}>
-          <MarkdownWithYouTube content={lesson.content} />
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '30px',
+            lineHeight: '1.6',
+          }}>
+            <MarkdownWithYouTube content={lesson.content} />
+          </div>
         </div>
       )}
 

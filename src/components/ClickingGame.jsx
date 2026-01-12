@@ -42,6 +42,39 @@ function ClickingGame({ lesson }) {
   const initialTargetLifetime = isHardMode ? 3000 : 4000;
   const minTargetLifetime = isHardMode ? 1000 : 1500;
 
+  // Reset game state when lesson changes
+  useEffect(() => {
+    // Clear any existing timers
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+      gameTimerRef.current = null;
+    }
+    if (targetTimerRef.current) {
+      clearTimeout(targetTimerRef.current);
+      targetTimerRef.current = null;
+    }
+    
+    // Reset all game state
+    setIsPlaying(false);
+    setIsGameOver(false);
+    setScore(0);
+    setHits(0);
+    setMisses(0);
+    setTimeRemaining(30);
+    setTargets([]);
+    setLessonCompleted(false);
+    setTargetSize(initialTargetSize);
+    setSpawnInterval(initialSpawnInterval);
+    setTargetLifetime(initialTargetLifetime);
+    
+    // Reset refs
+    isPlayingRef.current = false;
+    isGameOverRef.current = false;
+    targetSizeRef.current = initialTargetSize;
+    spawnIntervalRef.current = initialSpawnInterval;
+    targetLifetimeRef.current = initialTargetLifetime;
+  }, [lesson?.id]); // Reset when lesson ID changes
+
   useEffect(() => {
     return () => {
       if (gameTimerRef.current) clearInterval(gameTimerRef.current);

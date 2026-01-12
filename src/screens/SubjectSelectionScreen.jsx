@@ -12,6 +12,8 @@ function SubjectSelectionScreen() {
   
   const userId = getUserId();
   const stats = getStatistics();
+  const getMedalCounts = useDataStore(state => state.getMedalCounts);
+  const medalCounts = getMedalCounts();
   
   // Calculate total progress across all subjects
   const allSubjects = Subject.allSubjects;
@@ -179,6 +181,83 @@ function SubjectSelectionScreen() {
             </div>
           </div>
         ))}
+      </div>
+      
+      {/* Medal Statistics */}
+      <div style={{
+        marginTop: '40px',
+        padding: '20px',
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        width: '100%',
+      }}>
+        <h2 style={{
+          margin: '0 0 20px 0',
+          fontSize: '20px',
+          color: '#333',
+          textAlign: 'center',
+        }}>
+          🏆 Medals Earned
+        </h2>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+          gap: '15px',
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '36px', 
+              fontWeight: 'bold', 
+              color: '#E5E4E2',
+              marginBottom: '5px'
+            }}>
+              {medalCounts.platinum}
+            </div>
+            <div style={{ fontSize: '14px', color: '#666' }}>
+              Platinum
+            </div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '36px', 
+              fontWeight: 'bold', 
+              color: '#FFD700',
+              marginBottom: '5px'
+            }}>
+              {medalCounts.gold}
+            </div>
+            <div style={{ fontSize: '14px', color: '#666' }}>
+              Gold
+            </div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '36px', 
+              fontWeight: 'bold', 
+              color: '#C0C0C0',
+              marginBottom: '5px'
+            }}>
+              {medalCounts.silver}
+            </div>
+            <div style={{ fontSize: '14px', color: '#666' }}>
+              Silver
+            </div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '36px', 
+              fontWeight: 'bold', 
+              color: '#CD7F32',
+              marginBottom: '5px'
+            }}>
+              {medalCounts.bronze}
+            </div>
+            <div style={{ fontSize: '14px', color: '#666' }}>
+              Bronze
+            </div>
+          </div>
+        </div>
       </div>
       </div>
     </div>

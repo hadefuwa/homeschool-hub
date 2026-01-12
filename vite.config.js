@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
+  base: './', // Use relative paths for Electron file:// protocol
   root: '.',
   build: {
     outDir: 'dist',

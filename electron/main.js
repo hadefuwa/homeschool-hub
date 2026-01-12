@@ -1,10 +1,23 @@
-import { app, BrowserWindow, ipcMain, Menu, globalShortcut } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, globalShortcut, protocol, session } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadData, saveData } from './persistence.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Register custom protocol scheme before app is ready
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'blockly',
+    privileges: {
+      secure: true,
+      standard: true,
+      corsEnabled: true,
+      supportFetchAPI: true,
+    },
+  },
+]);
 
 // Default data function - returns empty structure
 // Lessons will be added by mergeDefaultLessons in the React app
@@ -86,7 +99,62 @@ ipcMain.handle('save-data', async (event, data) => {
   }
 });
 
+// Register custom protocol for serving blockly-games files
+function registerBlocklyProtocol() {
+  const isDev = !app.isPackaged;
+  
+  protocol.registerFileProtocol('blockly', (request, callback) => {
+    const url = request.url.replace('blockly://', '');
+    let filePath;
+    
+    if (isDev) {
+      // Development: serve from public folder
+      filePath = path.join(__dirname, '../public', url);
+    } else {
+      // Production: serve from dist folder (packaged in resources)
+      // In packaged app, dist folder is at resources/app/dist
+      const appPath = app.getAppPath();
+      filePath = path.join(appPath, 'dist', url);
+    }
+    
+    // Normalize path separators for Windows
+    filePath = path.normalize(filePath);
+    
+    console.log('[Blockly Protocol] Serving:', url, '->', filePath);
+    callback({ path: filePath });
+  });
+}
+
+// Modify CSP headers to allow blockly:// protocol and be more permissive for frames
+function setupCSPModification() {
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    const responseHeaders = { ...details.responseHeaders };
+    
+    // Modify CSP to allow custom protocols in frames
+    if (responseHeaders['content-security-policy']) {
+      // Replace existing CSP with one that allows blockly:// and is more permissive for frames
+      responseHeaders['content-security-policy'] = [
+        "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: file: blockly: https://www.gstatic.com https://fonts.gstatic.com; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "connect-src 'self' https://www.gstatic.com https://fonts.gstatic.com; " +
+        "img-src 'self' data: blob: file: https:; " +
+        "font-src 'self' data: file: https://fonts.gstatic.com; " +
+        "frame-src *; "  // Allow all sources in frames (needed for custom protocols)
+      ];
+    }
+    
+    callback({ responseHeaders });
+  });
+}
+
 app.whenReady().then(() => {
+  // Setup CSP modification to allow blockly:// protocol
+  setupCSPModification();
+  
+  // Register custom protocol before creating window
+  registerBlocklyProtocol();
+  
   createWindow();
 
   // Register keyboard shortcuts for dev tools
