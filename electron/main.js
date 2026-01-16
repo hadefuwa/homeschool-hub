@@ -83,17 +83,22 @@ autoUpdater.on('update-available', (info) => {
   const showDialog = () => {
     const targetWindow = mainWindow || BrowserWindow.getAllWindows()[0];
     if (targetWindow) {
+      const { shell } = require('electron');
       dialog.showMessageBox(targetWindow, {
         type: 'info',
         title: 'Update Available',
         message: `A new version (${info.version}) is available!`,
-        detail: 'Would you like to download it now?',
-        buttons: ['Download', 'Later'],
+        detail: 'Note: Due to Windows security requirements, the update is not digitally signed. You may need to manually download if auto-update fails.\n\nWould you like to try downloading it now?',
+        buttons: ['Try Download', 'Download Manually', 'Later'],
         defaultId: 0,
-        cancelId: 1
+        cancelId: 2
       }).then((result) => {
         if (result.response === 0) {
+          // Try auto-download (may fail due to Windows blocking unsigned exe)
           autoUpdater.downloadUpdate();
+        } else if (result.response === 1) {
+          // Open GitHub releases for manual download
+          shell.openExternal(`https://github.com/hadefuwa/homeschool-hub/releases/tag/v${info.version}`);
         }
       });
     } else {
@@ -122,29 +127,30 @@ autoUpdater.on('error', (err) => {
   const isNetworkError = errorMessage.includes('ENOTFOUND') || errorMessage.includes('network');
   const isLatestYmlError = errorMessage.includes('latest.yml') || errorMessage.includes('Cannot find latest.yml');
   const isAuthError = errorMessage.includes('401') || errorMessage.includes('403') || errorMessage.includes('Unauthorized');
-  const isSignatureError = errorMessage.includes('not signed') || errorMessage.includes('digitally signed') || errorMessage.includes('SignerCertificate');
+  const isSignatureError = errorMessage.includes('not signed') || 
+                          errorMessage.includes('digitally signed') || 
+                          errorMessage.includes('SignerCertificate') ||
+                          errorMessage.includes('publisherNames') ||
+                          errorMessage.includes('execution policy') ||
+                          errorMessage.includes('cannot run this script');
   
   if (isSignatureError) {
-    // For signature errors, show a user-friendly message with manual download option
-    console.warn('Update signature verification failed. This is expected for unsigned builds.');
+    // Windows is blocking the unsigned executable - this cannot be bypassed
+    console.error('Windows is blocking unsigned update. Code signing certificate required.');
     const targetWindow = mainWindow || BrowserWindow.getAllWindows()[0];
     if (targetWindow) {
       const { shell } = require('electron');
       dialog.showMessageBox(targetWindow, {
-        type: 'warning',
-        title: 'Update Available (Unsigned)',
-        message: 'A new update is available, but it is not digitally signed.',
-        detail: 'Windows requires signed executables for security. The auto-update may be blocked.\n\nYou can:\n1. Try the auto-update (may show Windows security warnings)\n2. Manually download from GitHub releases\n\nNote: We are working on getting a code signing certificate to resolve this.',
-        buttons: ['Try Auto-Update', 'Download Manually', 'Cancel'],
+        type: 'error',
+        title: 'Update Blocked by Windows',
+        message: 'Windows is blocking the update because it is not digitally signed.',
+        detail: 'Windows security requires all executables to be digitally signed. The auto-update cannot proceed.\n\nSOLUTION:\nPlease manually download and install the update from GitHub:\n\n1. Click "Open GitHub Releases" below\n2. Download the latest installer\n3. Run the installer (you may need to click "More info" and "Run anyway" if Windows shows a warning)\n\nWe are working on getting a code signing certificate to enable automatic updates.',
+        buttons: ['Open GitHub Releases', 'OK'],
         defaultId: 0,
-        cancelId: 2
+        cancelId: 1
       }).then((result) => {
         if (result.response === 0) {
-          // User chose to try auto-update - it should work now with our bypass
-          console.log('User chose to try auto-update');
-          // The update should proceed with our signature verification bypass
-        } else if (result.response === 1) {
-          // User chose to download manually - open GitHub releases page
+          // Open GitHub releases page
           shell.openExternal('https://github.com/hadefuwa/homeschool-hub/releases');
         }
       });
