@@ -207,6 +207,32 @@ function TopNavigation() {
     navigate('/');
   };
 
+  const handleShop = () => {
+    navigate('/shop');
+  };
+
+  const [showAdminPasswordModal, setShowAdminPasswordModal] = useState(false);
+  const [adminPasswordInput, setAdminPasswordInput] = useState('');
+  const [adminPasswordError, setAdminPasswordError] = useState('');
+
+  const handleAdminClick = () => {
+    setShowAdminPasswordModal(true);
+    setAdminPasswordInput('');
+    setAdminPasswordError('');
+  };
+
+  const handleAdminPasswordSubmit = () => {
+    if (adminPasswordInput !== 'password123') {
+      setAdminPasswordError('Incorrect password. Please try again.');
+      return;
+    }
+
+    setShowAdminPasswordModal(false);
+    setAdminPasswordInput('');
+    setAdminPasswordError('');
+    navigate('/admin');
+  };
+
   return (
     <div style={{
       position: 'sticky',
@@ -255,6 +281,36 @@ function TopNavigation() {
       
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
         <UpdateChecker />
+        <button
+          onClick={handleShop}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+          }}
+        >
+          🛒 Shop
+        </button>
+        <button
+          onClick={handleAdminClick}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#6c757d',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+          }}
+        >
+          🔒 Admin
+        </button>
         {isLessonPage && (
           <>
             <button
@@ -378,6 +434,99 @@ function TopNavigation() {
                 }}
               >
                 Mark Completed
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Password Modal */}
+      {showAdminPasswordModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '30px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+            maxWidth: '400px',
+            width: '90%',
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Admin Access</h3>
+            <p style={{ marginBottom: '15px', color: '#666' }}>
+              Enter password to access the admin panel:
+            </p>
+            <input
+              type="password"
+              value={adminPasswordInput}
+              onChange={(e) => {
+                setAdminPasswordInput(e.target.value);
+                setAdminPasswordError('');
+              }}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleAdminPasswordSubmit();
+                }
+              }}
+              placeholder="Enter password"
+              style={{
+                width: '100%',
+                padding: '10px',
+                fontSize: '16px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                marginBottom: '10px',
+              }}
+              autoFocus
+            />
+            {adminPasswordError && (
+              <p style={{ color: '#dc3545', marginBottom: '10px', fontSize: '14px' }}>
+                {adminPasswordError}
+              </p>
+            )}
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => {
+                  setShowAdminPasswordModal(false);
+                  setAdminPasswordInput('');
+                  setAdminPasswordError('');
+                }}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAdminPasswordSubmit}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                }}
+              >
+                Enter
               </button>
             </div>
           </div>
