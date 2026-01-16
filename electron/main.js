@@ -83,16 +83,13 @@ autoUpdater.on('update-available', (info) => {
         type: 'info',
         title: 'Update Available',
         message: `A new version (${info.version}) is available!`,
-        detail: 'Note: Due to Windows security requirements, the update is not digitally signed. You may need to manually download if auto-update fails.\n\nWould you like to try downloading it now?',
-        buttons: ['Try Download', 'Download Manually', 'Later'],
+        detail: 'Click "Update" to download the latest version from GitHub.',
+        buttons: ['Update', 'Later'],
         defaultId: 0,
-        cancelId: 2
+        cancelId: 1
       }).then((result) => {
         if (result.response === 0) {
-          // Try auto-download (may fail due to Windows blocking unsigned exe)
-          autoUpdater.downloadUpdate();
-        } else if (result.response === 1) {
-          // Open GitHub releases for manual download
+          // Open GitHub releases for download
           shell.openExternal(`https://github.com/hadefuwa/homeschool-hub/releases/tag/v${info.version}`);
         }
       });
