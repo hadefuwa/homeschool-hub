@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, globalShortcut, protocol, session, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, globalShortcut, protocol, session, dialog, shell } from 'electron';
 import pkg from 'electron-updater';
 const { autoUpdater } = pkg;
 import path from 'path';
@@ -56,20 +56,16 @@ let mainWindow;
 
 // Configure auto-updater
 autoUpdater.autoDownload = false; // Don't auto-download, let user choose
-autoUpdater.autoInstallOnAppQuit = true; // Install on app quit if update is ready
+autoUpdater.autoInstallOnAppQuit = false; // Don't auto-install - user must click button (Windows workaround)
 
-// TEMPORARY WORKAROUND: Disable signature verification for unsigned updates
-// WARNING: This is a security risk and should only be used until a code signing certificate is obtained.
-// For production, you MUST get a code signing certificate from a trusted CA.
-// See docs/CODE_SIGNING.md for instructions.
+// Disable signature verification for unsigned updates (Windows workaround)
+// This allows the download to complete, but Windows will still block auto-installation
+// Solution: User-initiated installation via shell.openPath() (Option B workaround)
 if (process.platform === 'win32') {
-  // Override signature verification to allow unsigned updates
-  // This bypasses Windows signature checks but users may still see warnings
+  // Override signature verification to allow download to proceed
   autoUpdater.verifyUpdateCodeSignature = async (publisherNames, filePath) => {
-    console.warn('WARNING: Signature verification disabled. Updates are not signed.');
-    console.warn('This is a temporary workaround. Get a code signing certificate for production.');
-    // Return null to indicate "verification passed" (bypassed)
-    return null;
+    console.warn('Signature verification disabled for unsigned updates (Windows workaround)');
+    return null; // Return null to indicate "verification passed" (bypassed)
   };
 }
 
@@ -83,7 +79,6 @@ autoUpdater.on('update-available', (info) => {
   const showDialog = () => {
     const targetWindow = mainWindow || BrowserWindow.getAllWindows()[0];
     if (targetWindow) {
-      const { shell } = require('electron');
       dialog.showMessageBox(targetWindow, {
         type: 'info',
         title: 'Update Available',
@@ -139,7 +134,6 @@ autoUpdater.on('error', (err) => {
     console.error('Windows is blocking unsigned update. Code signing certificate required.');
     const targetWindow = mainWindow || BrowserWindow.getAllWindows()[0];
     if (targetWindow) {
-      const { shell } = require('electron');
       dialog.showMessageBox(targetWindow, {
         type: 'error',
         title: 'Update Blocked by Windows',
@@ -179,22 +173,99 @@ autoUpdater.on('download-progress', (progressObj) => {
   }
 });
 
+// Store downloaded update info for user-initiated installation
+let downloadedUpdateInfo = null;
+
 autoUpdater.on('update-downloaded', (info) => {
   console.log('Update downloaded:', info.version);
+  console.log('Update file path:', info.downloadedFile || info.path);
+  
+  // Store update info for user-initiated installation
+  downloadedUpdateInfo = {
+    version: info.version,
+    filePath: info.downloadedFile || info.path || null
+  };
+  
   const showDialog = () => {
     const targetWindow = mainWindow || BrowserWindow.getAllWindows()[0];
     if (targetWindow) {
+      // Option B: User-initiated installation (Windows workaround for unsigned executables)
+      // Instead of auto-installing (which Windows blocks), prompt user to click a button
+      // This moves from "background script" to "user-initiated action"
       dialog.showMessageBox(targetWindow, {
         type: 'info',
         title: 'Update Ready',
-        message: 'Update downloaded. The application will restart to apply the update.',
-        detail: `Version ${info.version} has been downloaded and will be installed on restart.`,
-        buttons: ['Restart Now', 'Later'],
+        message: `Update downloaded! Version ${info.version} is ready to install.`,
+        detail: 'Click "Install Now" to launch the installer.\n\nNote: Windows may show a security warning because the update is not digitally signed. Click "More info" then "Run anyway" to proceed.',
+        buttons: ['Install Now', 'Later'],
         defaultId: 0,
         cancelId: 1
       }).then((result) => {
         if (result.response === 0) {
-          autoUpdater.quitAndInstall(false, true);
+          // User-initiated installation: Use shell.openPath() to launch the installer
+          // This works because it's a user action, not a background script
+          // Note: electron-updater doesn't expose the file path directly, so we need to find it
+          
+          let installerPath = null;
+          
+          // Check common electron-updater cache locations on Windows
+          const searchPaths = [
+            // Primary location: AppData\Local\<app-name>\pending
+            path.join(app.getPath('userData'), 'pending'),
+            // Alternative: AppData\Local\<app-name>\updates\pending
+            path.join(app.getPath('userData'), 'updates', 'pending'),
+            // Temp directory
+            path.join(app.getPath('temp'), 'electron-updater'),
+            // Direct LOCALAPPDATA path
+            path.join(process.env.LOCALAPPDATA || process.env.APPDATA || '', 'homeschool-hub', 'pending'),
+          ];
+          
+          // Search for the installer .exe file
+          for (const searchPath of searchPaths) {
+            try {
+              if (fs.existsSync(searchPath)) {
+                const files = fs.readdirSync(searchPath);
+                // Look for the installer .exe (usually contains "Setup" and version number)
+                const exeFile = files.find(f => 
+                  f.endsWith('.exe') && 
+                  (f.includes('Setup') || f.includes('Homeschool') || f.includes(info.version))
+                );
+                if (exeFile) {
+                  installerPath = path.join(searchPath, exeFile);
+                  console.log('Found installer in cache:', installerPath);
+                  break;
+                }
+              }
+            } catch (err) {
+              // Continue searching other paths
+              console.log(`Searched ${searchPath}, not found or error:`, err.message);
+            }
+          }
+          
+          if (installerPath && fs.existsSync(installerPath)) {
+            console.log('Launching installer via shell.openPath:', installerPath);
+            shell.openPath(installerPath).then((error) => {
+              if (error) {
+                console.error('Failed to open installer:', error);
+                dialog.showErrorBox('Installation Error', 
+                  `Failed to launch installer: ${error}\n\nPlease manually download from GitHub releases.`);
+              } else {
+                // Installer launched successfully - app will close when user installs
+                console.log('Installer launched successfully');
+              }
+            });
+          } else {
+            // Last resort: Open GitHub releases for manual download
+            console.warn('Could not find downloaded installer, opening GitHub releases');
+            shell.openExternal(`https://github.com/hadefuwa/homeschool-hub/releases/tag/v${info.version}`);
+            dialog.showMessageBox(targetWindow, {
+              type: 'warning',
+              title: 'Installer Not Found',
+              message: 'Could not locate the downloaded installer automatically.',
+              detail: 'Opening GitHub releases page. Please download and run the installer manually.\n\nWindows may show a security warning - click "More info" then "Run anyway" to proceed.',
+              buttons: ['OK']
+            });
+          }
         }
       });
     } else {
