@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { speak, stop } from '../utils/textToSpeech';
+import { speak, stop, isSpeaking } from '../utils/textToSpeech';
 import useDataStore from '../store/dataStore';
 import { Progress } from '../models/Progress';
 import { useNavigate } from 'react-router-dom';
@@ -1467,11 +1467,16 @@ function MathGame({ lesson }) {
         const score = SCORE_TIERS.FAIL;
         await completeLesson(score);
       } else {
-        // Speak "try again" and regenerate
-        speak('Try again!', { volume: 1.0, rate: 0.6, pitch: 1.2 });
-        setTimeout(() => {
-          generateValidation();
-        }, 1000);
+        // Stop any ongoing speech (like the question being read) before speaking "try again"
+        stop();
+        // Wait a brief moment to ensure the stop completes before speaking
+        setTimeout(async () => {
+          await speak('Try again!', { volume: 1.0, rate: 0.6, pitch: 1.2 });
+          // Wait for "try again" to finish before generating new question
+          setTimeout(() => {
+            generateValidation();
+          }, 800);
+        }, 100);
       }
     }
   };

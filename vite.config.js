@@ -13,6 +13,19 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate Monaco Editor into its own chunk (it's very large)
+          'monaco-editor': ['@monaco-editor/react'],
+          // Separate Phaser game engine into its own chunk
+          'phaser': ['phaser'],
+          // Separate React vendor libraries
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000, // Increase warning limit since we're splitting chunks
   },
   resolve: {
     alias: {

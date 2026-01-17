@@ -51,8 +51,16 @@
     "files": [
       "electron/**/*",
       "dist/**/*",
-      "package.json"
+      "package.json",
+      "!node_modules/**",
+      "node_modules/edge-tts-universal/**/*"
     ],
+    "asarUnpack": [
+      "**/node_modules/edge-tts-universal/**/*"
+    ],
+    "asar": true,
+    "nodeGypRebuild": false,
+    "npmRebuild": false,
     "win": {
       "target": [
         "nsis"

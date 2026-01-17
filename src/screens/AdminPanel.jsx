@@ -12,10 +12,9 @@ function AdminPanel() {
   const saveData = useDataStore(state => state.saveData);
   const resetAllProgress = useDataStore(state => state.resetAllProgress);
 
-  const [showPasswordModal, setShowPasswordModal] = useState(true);
-  const [passwordInput, setPasswordInput] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Authentication is handled by TopNavigation component
+  // No need for duplicate password check here
+  const [isAuthenticated] = useState(true);
 
   const [rewards, setRewards] = useState([]);
   const [editingReward, setEditingReward] = useState(null);
@@ -39,18 +38,6 @@ function AdminPanel() {
   const loadRewards = () => {
     const allRewards = getRewards(false);
     setRewards(allRewards);
-  };
-
-  const handlePasswordSubmit = () => {
-    if (passwordInput !== 'password123') {
-      setPasswordError('Incorrect password. Please try again.');
-      return;
-    }
-
-    setIsAuthenticated(true);
-    setShowPasswordModal(false);
-    setPasswordInput('');
-    setPasswordError('');
   };
 
   const handleCancel = () => {
@@ -173,95 +160,6 @@ function AdminPanel() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '30px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          maxWidth: '400px',
-          width: '90%',
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Admin Access</h3>
-          <p style={{ marginBottom: '15px', color: '#666' }}>
-            Enter password to access the admin panel:
-          </p>
-          <input
-            type="password"
-            value={passwordInput}
-            onChange={(e) => {
-              setPasswordInput(e.target.value);
-              setPasswordError('');
-            }}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handlePasswordSubmit();
-              }
-            }}
-            placeholder="Enter password"
-            style={{
-              width: '100%',
-              padding: '10px',
-              fontSize: '16px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              marginBottom: '10px',
-            }}
-            autoFocus
-          />
-          {passwordError && (
-            <p style={{ color: '#dc3545', marginBottom: '10px', fontSize: '14px' }}>
-              {passwordError}
-            </p>
-          )}
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-            <button
-              onClick={handleCancel}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handlePasswordSubmit}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold',
-              }}
-            >
-              Enter
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div style={{

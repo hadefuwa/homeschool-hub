@@ -714,39 +714,14 @@ function LessonViewScreen() {
           display: 'flex',
           flexDirection: 'column',
           minHeight: 0,
-          gap: '20px',
+          backgroundColor: 'white',
+          padding: '20px',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         }}>
-          {/* Lesson Content with Clickable Emojis */}
-          <div style={{
-            flexShrink: 0,
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            maxHeight: '40%',
-            overflowY: 'auto',
-          }}>
-            <MarkdownWithYouTube 
-              content={lesson.content} 
-              onQuestionAnswer={undefined}
-            />
-          </div>
-          
-          {/* Game */}
-          <div style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: 0,
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          }}>
-            <ErrorBoundary>
-              <HTMLGameEmbed url="/html-games/dinosaur-sorting.html" height="100%" lesson={lesson} />
-            </ErrorBoundary>
-          </div>
+          <ErrorBoundary>
+            <HTMLGameEmbed url="/html-games/dinosaur-sorting.html" height="100%" lesson={lesson} />
+          </ErrorBoundary>
         </div>
       ) : lesson.title === "Noah's Ark - A Big Boat" ? (
         <div style={{

@@ -79,18 +79,27 @@ const useDataStore = create((set, get) => ({
       const POINTS_SYSTEM_VERSION = 2;
 
       // Recalculate points if:
-      // 1. pointsBalance hasn't been set yet (fresh install or upgrade)
+      // 1. pointsBalance hasn't been set yet (fresh install)
       // 2. Points system version has changed (multipliers updated)
       const hasUserProgress = appData.progress && appData.progress.length > 0;
       const needsPointsRecalc = hasUserProgress &&
-                                (appData.pointsBalance === undefined ||
-                                 appData.pointsBalance === 0 ||
-                                 appData.pointsSystemVersion !== POINTS_SYSTEM_VERSION);
+                                (appData.pointsSystemVersion !== POINTS_SYSTEM_VERSION);
 
       if (needsPointsRecalc) {
-        console.log('[DataStore] Recalculating points with new multiplier system...');
+        console.log('[DataStore] Recalculating points with new multiplier system (version ' + POINTS_SYSTEM_VERSION + ')...');
         await state._calculateAndAwardRetroactivePoints(appData);
         appData.pointsSystemVersion = POINTS_SYSTEM_VERSION;
+
+        // Save the updated data with new points
+        if (window.electronAPI) {
+          try {
+            const jsonData = appData.toJSON();
+            await window.electronAPI.saveData(jsonData);
+            console.log('[DataStore] Points recalculation saved successfully');
+          } catch (error) {
+            console.error('Error saving recalculated points:', error);
+          }
+        }
       }
 
       set({ 
@@ -1116,30 +1125,44 @@ const useDataStore = create((set, get) => ({
       return;
     }
 
-    // Check if pointsBalance exists and is not 0 (meaning it's been initialized)
-    // If it's 0 or undefined, we need to calculate retroactive points
-    if (appData.pointsBalance !== undefined && appData.pointsBalance > 0) {
-      return; // Already calculated
-    }
-
     console.log('[DataStore] Calculating retroactive points...');
     let totalPoints = 0;
 
     // Get all completed lesson progress
     const userId = appData.students[0].id;
+
+    // Debug: log all progress
+    const allCompletedLessons = appData.progress.filter(p =>
+      p.studentId === userId &&
+      p.isCompleted &&
+      p.activityType === 'Lesson'
+    );
+    console.log(`[DataStore] Total completed lessons: ${allCompletedLessons.length}`);
+    console.log(`[DataStore] Sample progress:`, allCompletedLessons.slice(0, 3).map(p => ({
+      id: p.activityId,
+      score: p.score,
+      isCompleted: p.isCompleted,
+      activityType: p.activityType
+    })));
+
+    // Award points for ALL completed lessons, even those without scores
+    // For lessons without scores, we'll award a default Bronze medal
     const completedProgress = appData.progress.filter(p =>
       p.studentId === userId &&
       p.isCompleted &&
-      p.activityType === 'Lesson' &&
-      p.score !== null
+      p.activityType === 'Lesson'
     );
+
+    console.log(`[DataStore] Found ${completedProgress.length} completed lessons (including those without scores)`);
 
     // Calculate points for each completed lesson
     completedProgress.forEach(progress => {
       const lesson = appData.lessons.find(l => l.id === progress.activityId);
       if (!lesson) return;
 
-      const score = progress.score || 0;
+      // If no score, treat as 100 (perfect score) to award appropriate medal
+      // This ensures older completions without scores still get points
+      const score = progress.score !== null && progress.score !== undefined ? progress.score : 100;
       let medal = 'Bronze';
 
       // Determine medal (same logic as _getMedalForProgress)

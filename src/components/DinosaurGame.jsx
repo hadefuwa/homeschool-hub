@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 import { Progress } from '../models/Progress';
-import { speak, isSpeaking } from '../utils/textToSpeech';
+import { speak, isSpeaking, stop } from '../utils/textToSpeech';
 
 // Scoring tiers
 const SCORE_TIERS = {
@@ -730,10 +730,15 @@ function DinosaurGame({ lesson }) {
         }, 2000); // Show feedback for 2 seconds then continue
       }
     } else {
-      // Speak correction
-      const dinoName = currentDinosaur.type === 'TREX' ? 'T-Rex' : 'Brachiosaurus';
-      const correctFoodName = currentDinosaur.type === 'TREX' ? 'meat' : 'leaves';
-      speak(`${dinoName} eats ${correctFoodName}. Try again!`, { volume: 1.0, rate: 0.8, pitch: 1.1 }).catch(() => {});
+      // Stop any ongoing speech before speaking correction
+      stop();
+      // Wait a brief moment to ensure the stop completes before speaking
+      setTimeout(() => {
+        // Speak correction
+        const dinoName = currentDinosaur.type === 'TREX' ? 'T-Rex' : 'Brachiosaurus';
+        const correctFoodName = currentDinosaur.type === 'TREX' ? 'meat' : 'leaves';
+        speak(`${dinoName} eats ${correctFoodName}. Try again!`, { volume: 1.0, rate: 0.8, pitch: 1.1 }).catch(() => {});
+      }, 100);
     }
     
     setShowFeedback(true);
