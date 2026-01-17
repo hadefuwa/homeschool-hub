@@ -9,6 +9,7 @@ function ShopScreen() {
   const getPointsBalance = useDataStore(state => state.getPointsBalance);
   const getTotalPointsSpent = useDataStore(state => state.getTotalPointsSpent);
   const getTotalPointsEarned = useDataStore(state => state.getTotalPointsEarned);
+  const getPointsActivities = useDataStore(state => state.getPointsActivities);
   const purchaseReward = useDataStore(state => state.purchaseReward);
   const saveData = useDataStore(state => state.saveData);
 
@@ -21,6 +22,7 @@ function ShopScreen() {
   const pointsBalance = getPointsBalance();
   const totalPointsSpent = getTotalPointsSpent();
   const totalPointsEarned = getTotalPointsEarned();
+  const pointsActivities = getPointsActivities();
   
   // Calculate purchase counts for each reward
   const purchaseCounts = purchases.reduce((acc, purchase) => {
@@ -452,6 +454,116 @@ function ShopScreen() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Points Earned Log */}
+      {pointsActivities.length > 0 && (
+        <div style={{ marginBottom: '40px' }}>
+          <h2 style={{ marginBottom: '20px', color: '#333' }}>Points Earned</h2>
+          <div style={{
+            backgroundColor: 'white',
+            border: '2px solid #e0e0e0',
+            borderRadius: '8px',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr',
+              gap: '15px',
+              padding: '15px 20px',
+              backgroundColor: '#f8f9fa',
+              borderBottom: '2px solid #e0e0e0',
+              fontWeight: 'bold',
+              fontSize: '14px',
+              color: '#666',
+            }}>
+              <div>Lesson</div>
+              <div>Medal</div>
+              <div>Points</div>
+              <div>Date</div>
+            </div>
+            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              {pointsActivities
+                .sort((a, b) => {
+                  const dateA = a.earnedAt instanceof Date ? a.earnedAt : new Date(a.earnedAt);
+                  const dateB = b.earnedAt instanceof Date ? b.earnedAt : new Date(b.earnedAt);
+                  return dateB - dateA; // Most recent first
+                })
+                .map((activity, index) => {
+                  // Medal badge colors
+                  const medalColors = {
+                    'Platinum': { bg: '#e0e0e0', color: '#424242' },
+                    'Gold': { bg: '#ffd700', color: '#000' },
+                    'Silver': { bg: '#c0c0c0', color: '#000' },
+                    'Bronze': { bg: '#cd7f32', color: '#fff' },
+                  };
+                  const medalStyle = medalColors[activity.medal] || medalColors['Bronze'];
+
+                  return (
+                    <div
+                      key={activity.id}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '2fr 1fr 1fr 1fr',
+                        gap: '15px',
+                        padding: '15px 20px',
+                        borderBottom: index < pointsActivities.length - 1 ? '1px solid #e0e0e0' : 'none',
+                        backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa',
+                        transition: 'background-color 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#fff3cd';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'white' : '#f8f9fa';
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 'bold', color: '#333', marginBottom: '4px' }}>
+                          {activity.lessonTitle}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#666' }}>
+                          {activity.yearId.charAt(0).toUpperCase() + activity.yearId.slice(1).replace(/(\d)/, ' $1')}
+                        </div>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}>
+                        <span style={{
+                          padding: '4px 12px',
+                          backgroundColor: medalStyle.bg,
+                          color: medalStyle.color,
+                          borderRadius: '12px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                        }}>
+                          {activity.medal}
+                        </span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        color: '#28a745',
+                      }}>
+                        +{activity.pointsEarned} pts
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        fontSize: '14px',
+                        color: '#666',
+                      }}>
+                        {formatTimestamp(activity.earnedAt)}
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>

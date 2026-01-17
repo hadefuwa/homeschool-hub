@@ -18,6 +18,9 @@ const DINOSAUR_TYPES = {
   BRACHIOSAURUS: { emoji: '🦕', name: 'Brachiosaurus', food: 'leaves', foodEmoji: '🍃' },
 };
 
+// Target number of foods to collect to complete the game
+const TARGET_FOODS = 10;
+
 // Dinosaur facts to read when collecting bones
 const DINOSAUR_FACTS = [
   "Dinosaurs lived millions of years ago!",
@@ -55,7 +58,6 @@ function DinosaurGame({ lesson }) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // { food: 'meat'|'leaves', isCorrect: boolean }
   const [correctMatches, setCorrectMatches] = useState(0);
-  const TARGET_FOODS = 10;
   const [timeStarted, setTimeStarted] = useState(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [keys, setKeys] = useState({ left: false, right: false, space: false });
@@ -129,18 +131,29 @@ function DinosaurGame({ lesson }) {
       height: 25,
     });
     
-    // Generate platforms going upward - wider and closer together for easier jumping
+    // Generate platforms going upward - spread horizontally to require movement
     let currentY = startY - 100;
-    for (let i = 0; i < 30; i++) {
-      const x = 50 + (Math.random() - 0.5) * 250;
-      const width = 200 + Math.random() * 100;
+    let lastX = 150; // Start from middle
+    
+    for (let i = 0; i < 40; i++) {
+      const width = 150 + Math.random() * 80;
+      // Alternate sides and spread platforms horizontally
+      const direction = i % 2 === 0 ? 1 : -1;
+      const horizontalSpread = 200 + Math.random() * 150;
+      let x = lastX + (direction * horizontalSpread);
+      
+      // Keep within bounds but allow full canvas width
+      x = Math.max(30, Math.min(x, canvas.width - width - 30));
+      
       platforms.push({
-        x: Math.max(20, Math.min(x, canvas.width - width - 20)),
+        x: x,
         y: currentY,
         width: width,
         height: 25,
       });
-      currentY -= 90 + Math.random() * 30; // Closer platforms
+      
+      lastX = x + width / 2; // Update for next platform
+      currentY -= 80 + Math.random() * 40; // Varied vertical spacing
     }
     
     platformsRef.current = platforms;
@@ -763,13 +776,13 @@ function DinosaurGame({ lesson }) {
       setScore(scoreRef.current);
       // Speak success
       const dinoName = currentDinosaur.type === 'TREX' ? 'T-Rex' : 'Brachiosaurus';
-      speak(`Great! ${dinoName} eats ${correctFood}!`, { volume: 1.0, rate: 0.8, pitch: 1.1 }).catch(() => {});
+      speak(`Great! ${dinoName} eats ${correctFood}! You've fed ${newMatches} dinosaur${newMatches > 1 ? 's' : ''}!`, { volume: 1.0, rate: 0.8, pitch: 1.1 }).catch(() => {});
       
-      // Check if we've collected 10 foods
+      // Check if game is complete (collected TARGET_FOODS)
       if (newMatches >= TARGET_FOODS) {
         setTimeout(() => {
           completeGame();
-        }, 2000); // Wait a bit to show the feedback
+        }, 2000); // Show feedback for 2 seconds then complete
       } else {
         // Continue playing after a short delay
         setTimeout(() => {

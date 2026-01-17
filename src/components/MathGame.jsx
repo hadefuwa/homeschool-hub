@@ -322,14 +322,15 @@ function MathGame({ lesson }) {
   useEffect(() => {
     // Only initialize if we haven't already initialized for this lesson
     if (initializedLessonIdRef.current !== lesson?.id && 
-        !isInitialized && 
         gameState === 'validation' && 
         config && 
         config.type) {
       console.log('Component mounted, generating initial validation for lesson:', lesson?.id);
       try {
+        // Set initialized flag BEFORE calling generateValidation to prevent multiple calls
         setIsInitialized(true);
         initializedLessonIdRef.current = lesson?.id; // Mark this lesson as initialized
+        // Call generateValidation directly
         generateValidation();
       } catch (error) {
         console.error('Error generating validation on mount:', error);
@@ -338,7 +339,7 @@ function MathGame({ lesson }) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lesson?.id, gameState, stableMathLessonNumber]);
+  }, [lesson?.id, gameState, stableMathLessonNumber, config?.type]);
 
   const handleNumberClick = async (number) => {
     try {
@@ -1491,6 +1492,15 @@ function MathGame({ lesson }) {
     // Reset the generation flag after state is set
     isGeneratingValidationRef.current = false;
     
+    // Clear any existing timeout first to prevent multiple TTS calls
+    if (speakTimeoutRef.current) {
+      clearTimeout(speakTimeoutRef.current);
+      speakTimeoutRef.current = null;
+    }
+    
+    // Stop any current speech immediately
+    stop();
+    
     // Speak the question after a delay to ensure state is updated and any previous speech has stopped
     speakTimeoutRef.current = setTimeout(async () => {
       // Only speak if this is still the current generation (prevents stale TTS)
@@ -1506,11 +1516,18 @@ function MathGame({ lesson }) {
       // Double-check that speech is stopped before starting new speech
       stop();
       // Small delay to ensure stop completes
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
       
       // Check again after the delay to ensure we're still on the same generation
       if (questionGenerationIdRef.current !== thisGenerationId) {
         console.log('Skipping TTS - question generation changed during delay');
+        speakTimeoutRef.current = null;
+        return;
+      }
+      
+      // Final check - ensure no other speech is playing
+      if (isSpeaking()) {
+        console.log('Skipping TTS - speech already in progress');
         speakTimeoutRef.current = null;
         return;
       }
@@ -1877,16 +1894,23 @@ function MathGame({ lesson }) {
     const showObjects = validationObjects.length > 0 && 
       (config.type === 'count-1-3' || config.type === 'match-1' || config.type === 'match-2' || config.type === 'match-3' || config.type === 'count-1-5');
     
-    // If validation hasn't been generated yet, show loading or generate it
+    // If validation hasn't been generated yet, show loading
+    // Trigger initialization if needed (fallback - but only once)
     if (!correctAnswer || !validationOptions || validationOptions.length === 0) {
-      console.log('Validation not ready, generating...');
-      if (!isInitialized) {
-        try {
+      console.log('Validation not ready, waiting for initialization...');
+      
+      // Fallback: If the main useEffect didn't trigger, do it here
+      // But only if we haven't already tried to initialize this lesson
+      if (!isInitialized && initializedLessonIdRef.current !== lesson?.id && config && config.type) {
+        console.log('Fallback: Triggering initialization from renderValidation');
+        setIsInitialized(true);
+        initializedLessonIdRef.current = lesson?.id;
+        // Use requestAnimationFrame to ensure this happens after render
+        requestAnimationFrame(() => {
           generateValidation();
-        } catch (error) {
-          console.error('Error generating validation in renderValidation:', error);
-        }
+        });
       }
+      
       return (
         <div style={{ textAlign: 'center', padding: '40px' }}>
           <h2 style={{ fontSize: '36px', color: '#333' }}>Loading game...</h2>

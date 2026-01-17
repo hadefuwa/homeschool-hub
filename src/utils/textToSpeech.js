@@ -26,6 +26,11 @@ let voicesLoaded = false;
 let voices = [];
 let currentUtterance = null;
 
+// Speech queue management to prevent overlapping
+let isSpeechInProgress = false;
+let speechQueue = [];
+let stopRequested = false;
+
 // Load Web Speech API voices (fallback only)
 const loadVoices = () => {
   if (typeof window === 'undefined' || !isWebSpeechSupported()) {
@@ -94,8 +99,17 @@ const speak = async (text, options = {}) => {
     return Promise.reject(new Error('Invalid text provided'));
   }
 
-  // Stop any current speech
+  // Stop any current speech immediately and wait for it to fully stop
   stop();
+
+  // If another speech is in progress, wait a bit for it to stop
+  if (isSpeechInProgress) {
+    await new Promise(resolve => setTimeout(resolve, 150));
+  }
+
+  // Mark that speech is starting
+  isSpeechInProgress = true;
+  stopRequested = false;
 
   // Get preferences
   const prefs = getPreferences();
@@ -138,27 +152,49 @@ const speak = async (text, options = {}) => {
         // Play and return promise
         return new Promise((resolve, reject) => {
           audio.oncanplaythrough = () => {
+            if (stopRequested) {
+              currentAudioPlayer = null;
+              isSpeechInProgress = false;
+              URL.revokeObjectURL(blobUrl);
+              reject(new Error('Speech was stopped'));
+              return;
+            }
             audio.play().then(() => {
               resolve();
-            }).catch(reject);
+            }).catch((err) => {
+              isSpeechInProgress = false;
+              reject(err);
+            });
           };
-          
+
           audio.onerror = (e) => {
             currentAudioPlayer = null;
+            isSpeechInProgress = false;
             URL.revokeObjectURL(blobUrl); // Clean up blob URL
             reject(new Error('Failed to play audio'));
           };
-          
+
           audio.onended = () => {
             currentAudioPlayer = null;
+            isSpeechInProgress = false;
             URL.revokeObjectURL(blobUrl); // Clean up blob URL
           };
-          
+
           // If already loaded, play immediately
           if (audio.readyState >= 2) {
+            if (stopRequested) {
+              currentAudioPlayer = null;
+              isSpeechInProgress = false;
+              URL.revokeObjectURL(blobUrl);
+              reject(new Error('Speech was stopped'));
+              return;
+            }
             audio.play().then(() => {
               resolve();
-            }).catch(reject);
+            }).catch((err) => {
+              isSpeechInProgress = false;
+              reject(err);
+            });
           }
         });
       } else {
@@ -205,16 +241,18 @@ const speak = async (text, options = {}) => {
             resolve();
           }
         };
-        
+
         utterance.onend = () => {
           if (currentUtterance === utterance) {
             currentUtterance = null;
+            isSpeechInProgress = false;
           }
         };
-        
+
         utterance.onerror = (event) => {
           if (currentUtterance === utterance) {
             currentUtterance = null;
+            isSpeechInProgress = false;
           }
           if (event.error === 'interrupted') {
             if (!hasResolved) {
@@ -245,6 +283,10 @@ const speak = async (text, options = {}) => {
  * Stop current speech
  */
 const stop = () => {
+  // Set stop flag immediately
+  stopRequested = true;
+  isSpeechInProgress = false;
+
   // Stop edge-tts audio (Electron)
   if (currentAudioPlayer) {
     currentAudioPlayer.pause();
@@ -255,14 +297,14 @@ const stop = () => {
     }
     currentAudioPlayer = null;
   }
-  
+
   // Stop Electron TTS if available
   if (isElectron() && window.electronAPI.ttsStop) {
     window.electronAPI.ttsStop().catch(() => {
       // Ignore errors
     });
   }
-  
+
   // Stop Web Speech API (fallback)
   if (isWebSpeechSupported()) {
     window.speechSynthesis.cancel();

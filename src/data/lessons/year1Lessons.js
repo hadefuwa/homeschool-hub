@@ -553,7 +553,7 @@ By letters only|By instant communication with phones and internet|By shouting|By
 Now we have instant communication with smartphones, computers, and the internet! Long ago, people sent letters which took a long time!
 <!-- QUESTION_END -->`,
       quizId: 44,
-      assessmentType: 'history-game',
+      assessmentType: null, // Uses HTML game instead
       categoryId: null,
     }),
 
@@ -1122,6 +1122,37 @@ You need at least **Bronze** (5 points) to progress!
 ## Challenge
 
 Can you beat your previous score? Try to get a higher medal this time!`,
+      quizId: null,
+      assessmentType: null,
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'technology',
+      lessonNumber: 10,
+      title: "Flappy Bird Game",
+      emoji: '🐦',
+      content: `# Flappy Bird Game 🐦
+
+Practice your timing and control!
+
+## How to Play
+
+- Press **SPACE** to make the bird jump
+- Navigate through the pipes
+- The gap is a bit smaller now!
+- Try to find a good rhythm
+
+## Scoring System
+
+- **Bronze**: 1-4 points
+- **Silver**: 5-9 points
+- **Gold**: 10-14 points
+- **Platinum**: 15+ points
+
+You need at least **Bronze** (1 point) to progress!`,
       quizId: null,
       assessmentType: null,
       categoryId: null,

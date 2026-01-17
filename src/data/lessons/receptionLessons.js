@@ -771,10 +771,10 @@ Learn to use the keyboard with this fun game!
 
 ## Scoring System
 
-- **Bronze**: 1-4 points
-- **Silver**: 5-9 points
-- **Gold**: 10-14 points
-- **Platinum**: 15+ points
+- **Bronze**: 1-2 points
+- **Silver**: 3-5 points
+- **Gold**: 6-9 points
+- **Platinum**: 10+ points
 
 You need at least **Bronze** (1 point) to progress to the next lesson!`,
       quizId: null,

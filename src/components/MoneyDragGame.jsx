@@ -231,13 +231,13 @@ function MoneyDragGame({ lesson }) {
               top: `${coin.y}px`,
               width: '60px',
               height: '60px',
-              fontSize: '40px',
               cursor: 'grab',
               userSelect: 'none',
               backgroundColor: '#fff',
               borderRadius: '50%',
               border: '3px solid #2196F3',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
               transition: isDragging && dragCoin?.id === coin.id ? 'none' : 'all 0.2s',
@@ -245,8 +245,10 @@ function MoneyDragGame({ lesson }) {
               zIndex: isDragging && dragCoin?.id === coin.id ? 1000 : 1,
             }}
           >
-            {coin.emoji}
-            <div style={{ fontSize: '12px', position: 'absolute', bottom: '2px', fontWeight: 'bold' }}>
+            <div style={{ fontSize: '40px', lineHeight: '1' }}>
+              {coin.emoji}
+            </div>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', lineHeight: '1', marginTop: '2px' }}>
               {coin.value}p
             </div>
           </div>
@@ -279,18 +281,20 @@ function MoneyDragGame({ lesson }) {
               style={{
                 width: '50px',
                 height: '50px',
-                fontSize: '35px',
                 backgroundColor: '#fff',
                 borderRadius: '50%',
                 border: '2px solid #2196F3',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
               }}
             >
-              {coin.emoji}
-              <div style={{ fontSize: '10px', position: 'absolute', bottom: '0', fontWeight: 'bold' }}>
+              <div style={{ fontSize: '35px', lineHeight: '1' }}>
+                {coin.emoji}
+              </div>
+              <div style={{ fontSize: '10px', fontWeight: 'bold', lineHeight: '1', marginTop: '2px' }}>
                 {coin.value}p
               </div>
             </div>

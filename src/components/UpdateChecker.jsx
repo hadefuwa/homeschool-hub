@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 /**
- * Optional component to manually check for updates
- * This is not required - updates check automatically in the background
- * But you can add this to your UI if you want a "Check for Updates" button
+ * Component to open GitHub releases page for manual updates
+ * Clicking the button opens the GitHub releases page where users can download the latest version
  */
 function UpdateChecker() {
   const [updateStatus, setUpdateStatus] = useState(null);
@@ -31,25 +30,24 @@ function UpdateChecker() {
     setUpdateStatus(null);
 
     try {
-      const result = await window.electronAPI.checkForUpdates();
-      console.log('Update check result:', result);
+      // Open GitHub releases page directly
+      const result = await window.electronAPI.openExternal('https://github.com/hadefuwa/homeschool-hub/releases');
       
       if (result.success) {
-        if (result.updateInfo) {
-          setUpdateStatus(`Update available: ${result.updateInfo.version}`);
-          // The auto-updater should show a dialog automatically, but we can also show a message here
-        } else {
-          setUpdateStatus('You are running the latest version');
-        }
+        setUpdateStatus('Opening GitHub releases...');
+        // Clear status after a moment
+        setTimeout(() => {
+          setUpdateStatus(null);
+        }, 2000);
       } else {
-        const errorMsg = result.error || 'Failed to check for updates';
+        const errorMsg = result.error || 'Failed to open GitHub releases';
         setUpdateStatus(`Error: ${errorMsg}`);
-        console.error('Update check failed:', errorMsg);
+        console.error('Failed to open GitHub releases:', errorMsg);
       }
     } catch (error) {
       const errorMsg = error.message || 'Unknown error';
       setUpdateStatus(`Error: ${errorMsg}`);
-      console.error('Update check exception:', error);
+      console.error('Error opening GitHub releases:', error);
     } finally {
       setChecking(false);
     }
@@ -101,7 +99,7 @@ function UpdateChecker() {
           cursor: checking ? 'not-allowed' : 'pointer',
         }}
       >
-        {checking ? 'Checking...' : 'Check for Updates'}
+        {checking ? 'Opening...' : 'Check for Updates'}
       </button>
       {updateStatus && (
         <div style={{ marginTop: '5px', fontSize: '11px' }}>

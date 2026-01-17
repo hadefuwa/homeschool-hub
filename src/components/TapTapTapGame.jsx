@@ -15,19 +15,20 @@ function TapTapTapGame({ lesson }) {
   const getLevel = () => {
     if (!lesson) return 1;
     const title = lesson.title || '';
-    if (title.includes('Level 1') || title.includes('Beginner')) return 1;
-    if (title.includes('Level 2') || title.includes('Intermediate')) return 2;
-    if (title.includes('Level 3') || title.includes('Advanced')) return 3;
-    if (title.includes('Level 4') || title.includes('Expert')) return 4;
-    if (title.includes('Level 5') || title.includes('Master')) return 5;
+    // Check for explicit level numbers first (more specific)
     if (title.includes('Level 6') || title.includes('Champion')) return 6;
+    if (title.includes('Level 5') || title.includes('Master')) return 5;
+    if (title.includes('Level 4') || title.includes('Expert')) return 4;
+    if (title.includes('Level 3') || title.includes('Advanced')) return 3;
+    if (title.includes('Level 2') || title.includes('Intermediate')) return 2;
+    if (title.includes('Level 1') || title.includes('Beginner')) return 1;
     // Default based on year
-    if (lesson.yearId === 'year1') return 1;
-    if (lesson.yearId === 'year2') return 2;
-    if (lesson.yearId === 'year3') return 3;
-    if (lesson.yearId === 'year4') return 4;
-    if (lesson.yearId === 'year5') return 5;
     if (lesson.yearId === 'year6') return 6;
+    if (lesson.yearId === 'year5') return 5;
+    if (lesson.yearId === 'year4') return 4;
+    if (lesson.yearId === 'year3') return 3;
+    if (lesson.yearId === 'year2') return 2;
+    if (lesson.yearId === 'year1') return 1;
     return 1;
   };
 
@@ -91,6 +92,14 @@ function TapTapTapGame({ lesson }) {
   const spawnTimerRef = useRef(null);
   const animationFrameRef = useRef(null);
   const lastSpawnTimeRef = useRef(0);
+  const isPlayingRef = useRef(false);
+  const isGameOverRef = useRef(false);
+
+  // Update refs when state changes
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+    isGameOverRef.current = isGameOver;
+  }, [isPlaying, isGameOver]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -110,16 +119,22 @@ function TapTapTapGame({ lesson }) {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      if (!isPlaying || isGameOver) {
+      // Use refs to get current state values
+      const playing = isPlayingRef.current;
+      const gameOver = isGameOverRef.current;
+
+      if (!playing || gameOver) {
         // Draw start/game over screen
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
         ctx.font = 'bold 32px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(isGameOver ? 'Game Over!' : 'Tap to Start', canvas.width / 2, canvas.height / 2 - 20);
+        ctx.fillText(gameOver ? 'Game Over!' : 'Tap to Start', canvas.width / 2, canvas.height / 2 - 20);
         ctx.font = '18px Arial';
         ctx.fillText('Tap the targets as they appear!', canvas.width / 2, canvas.height / 2 + 20);
+        // Continue animation loop even when not playing
+        animationFrameRef.current = requestAnimationFrame(draw);
         return;
       }
 
@@ -169,6 +184,7 @@ function TapTapTapGame({ lesson }) {
         ctx.restore();
       }
 
+      // Always continue the animation loop
       animationFrameRef.current = requestAnimationFrame(draw);
     };
 
@@ -179,14 +195,15 @@ function TapTapTapGame({ lesson }) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isPlaying, isGameOver]);
+  }, []);
 
   const handleCanvasClick = (e) => {
-    if (!isPlaying) {
+    // Use refs to check current state
+    if (!isPlayingRef.current) {
       startGame();
       return;
     }
-    if (isGameOver) return;
+    if (isGameOverRef.current) return;
 
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -212,9 +229,11 @@ function TapTapTapGame({ lesson }) {
   };
 
   const spawnTarget = () => {
-    if (!isPlaying || isGameOver) return;
+    // Use refs to check current state (state updates are async)
+    if (!isPlayingRef.current || isGameOverRef.current) return;
 
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const colors = [
       '#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', 
       '#f0932b', '#eb4d4b', '#6c5ce7', '#a29bfe'
@@ -237,6 +256,9 @@ function TapTapTapGame({ lesson }) {
     setTimeRemaining(config.gameDuration);
     setIsPlaying(true);
     setIsGameOver(false);
+    // Update refs immediately (before state updates)
+    isPlayingRef.current = true;
+    isGameOverRef.current = false;
     lastSpawnTimeRef.current = Date.now();
 
     // Game timer
@@ -250,27 +272,34 @@ function TapTapTapGame({ lesson }) {
       });
     }, 1000);
 
-    // Spawn targets
-    const spawnLoop = () => {
-      if (!isPlaying || isGameOver) return;
+    // Spawn targets - use a small delay to ensure refs are set
+    setTimeout(() => {
+      // Spawn targets
+      const spawnLoop = () => {
+        // Use refs to check current state
+        if (!isPlayingRef.current || isGameOverRef.current) return;
+        
+        const now = Date.now();
+        if (now - lastSpawnTimeRef.current >= config.spawnInterval) {
+          spawnTarget();
+          lastSpawnTimeRef.current = now;
+        }
+        
+        spawnTimerRef.current = setTimeout(spawnLoop, 100);
+      };
       
-      const now = Date.now();
-      if (now - lastSpawnTimeRef.current >= config.spawnInterval) {
-        spawnTarget();
-        lastSpawnTimeRef.current = now;
-      }
-      
-      spawnTimerRef.current = setTimeout(spawnLoop, 100);
-    };
-    
-    spawnTarget(); // Spawn first target immediately
-    spawnLoop();
+      spawnTarget(); // Spawn first target immediately
+      spawnLoop();
+    }, 50);
   };
 
   const endGame = () => {
     const finalScore = score;
     setIsPlaying(false);
     setIsGameOver(true);
+    // Update refs immediately
+    isPlayingRef.current = false;
+    isGameOverRef.current = true;
     
     if (gameTimerRef.current) clearInterval(gameTimerRef.current);
     if (spawnTimerRef.current) clearTimeout(spawnTimerRef.current);

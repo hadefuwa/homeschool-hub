@@ -52,15 +52,24 @@ function GraphBuilderGame({ lesson }) {
     setShowSuccess(false);
   }, [level]);
 
-  const handleBarClick = (label) => {
+  const handleBarClick = (label, isDecrease = false) => {
     setGraphData(prev => {
       const existing = prev.find(d => d.label === label);
       if (existing) {
-        const newValue = existing.value + (isPieChartLesson ? 5 : 1); // Increment by 5 for pie charts (percentages)
+        const increment = isPieChartLesson ? 5 : 1;
+        const newValue = isDecrease 
+          ? existing.value - increment 
+          : existing.value + increment;
+        const minValue = 0;
         const maxValue = isPieChartLesson ? 100 : Infinity;
-        return prev.map(d => d.label === label ? { ...d, value: Math.min(newValue, maxValue) } : d);
+        const clampedValue = Math.max(minValue, Math.min(newValue, maxValue));
+        return prev.map(d => d.label === label ? { ...d, value: clampedValue } : d);
       } else {
-        return [...prev, { label, value: isPieChartLesson ? 5 : 1 }];
+        // Only add new bar if not decreasing
+        if (!isDecrease) {
+          return [...prev, { label, value: isPieChartLesson ? 5 : 1 }];
+        }
+        return prev;
       }
     });
   };
@@ -173,7 +182,7 @@ function GraphBuilderGame({ lesson }) {
             strokeWidth="3"
             opacity={isCorrect ? 1 : 0.7}
             style={{ cursor: 'pointer' }}
-            onClick={() => handleBarClick(label)}
+            onClick={() => handleBarClick(label, false)}
           />
           {/* Label text */}
           {actualValue > 0 && sliceAngle > 0.1 && (
@@ -209,36 +218,91 @@ function GraphBuilderGame({ lesson }) {
             return (
               <div
                 key={idx}
-                onClick={() => handleBarClick(label)}
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
                   padding: '10px 15px',
                   backgroundColor: isCorrect ? '#28a745' : '#2196F3',
                   color: 'white',
                   borderRadius: '8px',
-                  cursor: 'pointer',
                   fontWeight: 'bold',
                   fontSize: '14px',
                   border: isCorrect ? '3px solid #155724' : '3px solid #1976D2',
                   transition: 'all 0.3s',
                 }}
-                onMouseEnter={(e) => {
-                  if (!isCorrect) {
-                    e.currentTarget.style.backgroundColor = '#1976D2';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isCorrect) {
-                    e.currentTarget.style.backgroundColor = '#2196F3';
-                  }
-                }}
               >
-                {label}: {actualValue}% (Target: {targetValue}%)
+                <button
+                  onClick={() => handleBarClick(label, false)}
+                  style={{
+                    width: '30px',
+                    height: '30px',
+                    backgroundColor: 'rgba(255,255,255,0.3)',
+                    color: 'white',
+                    border: '2px solid white',
+                    borderRadius: '50%',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.5)';
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  +
+                </button>
+                <span>
+                  {label}: {actualValue}% (Target: {targetValue}%)
+                </span>
+                <button
+                  onClick={() => handleBarClick(label, true)}
+                  disabled={actualValue === 0}
+                  style={{
+                    width: '30px',
+                    height: '30px',
+                    backgroundColor: actualValue === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+                    color: 'white',
+                    border: '2px solid white',
+                    borderRadius: '50%',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    cursor: actualValue === 0 ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    opacity: actualValue === 0 ? 0.5 : 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (actualValue > 0) {
+                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.5)';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (actualValue > 0) {
+                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }
+                  }}
+                >
+                  −
+                </button>
               </div>
             );
           })}
         </div>
         <div style={{ fontSize: '16px', color: '#666', textAlign: 'center' }}>
-          Click the pie slices or labels to increase values. Total should be 100%.
+          Click the + and - buttons to adjust values. Total should be 100%.
         </div>
       </div>
     );
@@ -259,15 +323,45 @@ function GraphBuilderGame({ lesson }) {
           const targetHeight = (targetValue / maxValue) * barMaxHeight;
           
           return (
-            <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+              {/* Plus button */}
+              <button
+                onClick={() => handleBarClick(label, false)}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#218838';
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#28a745';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                +
+              </button>
+              
+              {/* Bar */}
               <div
-                onClick={() => handleBarClick(label)}
                 style={{
                   width: `${barWidth}px`,
                   height: `${barHeight}px`,
                   backgroundColor: actualValue === targetValue ? '#28a745' : '#2196F3',
                   borderRadius: '5px 5px 0 0',
-                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'flex-end',
                   justifyContent: 'center',
@@ -277,21 +371,50 @@ function GraphBuilderGame({ lesson }) {
                   fontSize: '20px',
                   transition: 'all 0.3s',
                   border: actualValue === targetValue ? '3px solid #155724' : '3px solid #1976D2',
-                }}
-                onMouseEnter={(e) => {
-                  if (actualValue !== targetValue) {
-                    e.currentTarget.style.backgroundColor = '#1976D2';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (actualValue !== targetValue) {
-                    e.currentTarget.style.backgroundColor = '#2196F3';
-                  }
+                  minHeight: actualValue === 0 ? '0px' : '20px',
                 }}
               >
                 {actualValue > 0 && actualValue}
               </div>
-              <div style={{ marginTop: '10px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center' }}>
+              
+              {/* Minus button */}
+              <button
+                onClick={() => handleBarClick(label, true)}
+                disabled={actualValue === 0}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  backgroundColor: actualValue === 0 ? '#ccc' : '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  cursor: actualValue === 0 ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  transition: 'all 0.2s',
+                  opacity: actualValue === 0 ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (actualValue > 0) {
+                    e.currentTarget.style.backgroundColor = '#c82333';
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (actualValue > 0) {
+                    e.currentTarget.style.backgroundColor = '#dc3545';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
+                }}
+              >
+                −
+              </button>
+              
+              <div style={{ marginTop: '5px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center' }}>
                 {label}
               </div>
               <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
@@ -314,7 +437,7 @@ function GraphBuilderGame({ lesson }) {
           Level: {level} / {problems.length} | Score: {score}
         </div>
         <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2196F3', marginBottom: '10px' }}>
-          {isPieChartLesson ? 'Build the pie chart! Click slices or labels to increase percentages.' : 'Build the bar chart! Click bars to increase values.'}
+          {isPieChartLesson ? 'Build the pie chart! Click the + and - buttons to adjust values.' : 'Build the bar chart! Click the + and - buttons to adjust values.'}
         </div>
       </div>
 

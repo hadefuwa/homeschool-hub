@@ -15,7 +15,7 @@ function ArtGradingScreen() {
   const allProgress = useDataStore(state => state.data?.progress || []);
   const lessons = useDataStore(state => state.data?.lessons || []);
   const students = useDataStore(state => state.data?.students || []);
-  const updateProgress = useDataStore(state => state.updateProgress);
+  const addProgress = useDataStore(state => state.addProgress);
   const saveData = useDataStore(state => state.saveData);
   
   const [artProgress, setArtProgress] = useState([]);
@@ -26,8 +26,13 @@ function ArtGradingScreen() {
 
   // Load art progress items
   useEffect(() => {
+    console.log('[ArtGradingScreen] Loading art progress...');
+    console.log('[ArtGradingScreen] Total lessons:', lessons.length);
+    console.log('[ArtGradingScreen] Total progress:', allProgress.length);
+    
     // Find all art lessons
     const artLessons = lessons.filter(l => l.subjectId === 'art');
+    console.log('[ArtGradingScreen] Art lessons found:', artLessons.length);
     const artLessonIds = artLessons.map(l => l.id);
     
     // Find progress items for art lessons with images
@@ -36,6 +41,18 @@ function ArtGradingScreen() {
            p.activityType === 'Lesson' && 
            p.imagePath
     );
+    console.log('[ArtGradingScreen] Art progress items with images:', artProgressItems.length);
+    
+    // Also check progress without imagePath filter
+    const artProgressAll = allProgress.filter(
+      p => artLessonIds.includes(p.activityId) && 
+           p.activityType === 'Lesson'
+    );
+    console.log('[ArtGradingScreen] All art progress (with or without images):', artProgressAll.length);
+    
+    if (artProgressAll.length > 0) {
+      console.log('[ArtGradingScreen] Sample progress item:', artProgressAll[0]);
+    }
     
     // Enrich with lesson and student info
     const enrichedProgress = artProgressItems.map(p => {
@@ -89,14 +106,15 @@ function ArtGradingScreen() {
 
   const handleGrade = async (gradeTier) => {
     if (!selectedProgress) return;
-    
-    // Update progress with grade
+
+    // Update progress with grade and mark as completed
     const updatedProgress = new Progress({
       ...selectedProgress,
       score: gradeTier.score,
+      isCompleted: true,
     });
-    
-    updateProgress(updatedProgress);
+
+    await addProgress(updatedProgress);
     await saveData();
     
     // Update local state

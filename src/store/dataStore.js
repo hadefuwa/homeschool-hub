@@ -7,6 +7,7 @@ import { Student } from '../models/Student.js';
 import { Year } from '../models/Year.js';
 import { Reward } from '../models/Reward.js';
 import { Purchase } from '../models/Purchase.js';
+import { PointsActivity } from '../models/PointsActivity.js';
 import { getDefaultData } from '../data/defaultData.js';
 
 const useDataStore = create((set, get) => ({
@@ -102,11 +103,14 @@ const useDataStore = create((set, get) => ({
         }
       }
 
-      set({ 
-        data: appData, 
-        initialized: true, 
-        loading: false 
+      set({
+        data: appData,
+        initialized: true,
+        loading: false
       });
+
+      // Clean up any duplicate points from before the fix
+      await state.cleanupDuplicatePoints();
     } catch (error) {
       console.error('Error initializing data store:', error);
       const defaultData = AppData.fromJSON(getDefaultData());
@@ -458,11 +462,27 @@ const useDataStore = create((set, get) => ({
     
     // Check if this is a new completion (wasn't completed before, but is now)
     let isNewCompletion = false;
+    let isNewGrading = false; // Check if this is newly graded (score went from 0 to > 0)
     let updatedProgress = [...state.data.progress];
     
     if (existingIndex !== -1) {
       const existingProgress = updatedProgress[existingIndex];
       isNewCompletion = !existingProgress.isCompleted && progress.isCompleted;
+      // Check if this is a grading event (score went from 0/null to actual grade)
+      // Handle both null/undefined and 0 as "ungraded"
+      const existingScore = existingProgress.score ?? 0;
+      const newScore = progress.score ?? 0;
+      isNewGrading = existingScore === 0 && newScore > 0 && progress.isCompleted;
+
+      console.log('[DataStore] Grading check:', {
+        activityId: progress.activityId,
+        existingScore,
+        newScore,
+        isNewGrading,
+        isCompleted: progress.isCompleted,
+        activityType: progress.activityType
+      });
+
       // Update existing progress
       updatedProgress[existingIndex] = progress;
     } else {
@@ -472,8 +492,18 @@ const useDataStore = create((set, get) => ({
     }
     
     // Calculate points to award if this is a newly completed lesson with a score
+    // OR if this is newly graded work (like art assignments)
     let pointsToAward = 0;
-    if (isNewCompletion && progress.activityType === 'Lesson' && progress.isCompleted && progress.score !== null) {
+    let updatedPointsActivities = [...(state.data.pointsActivities || [])];
+
+    // Check if points have already been awarded for this lesson
+    const hasAlreadyAwardedPoints = updatedPointsActivities.some(pa =>
+      pa.studentId === progress.studentId &&
+      pa.activityId === progress.activityId &&
+      pa.activityType === 'lesson'
+    );
+
+    if ((isNewCompletion || isNewGrading) && progress.activityType === 'Lesson' && progress.isCompleted && progress.score !== null && progress.score > 0 && !hasAlreadyAwardedPoints) {
       const medalType = state._getMedalForProgress(progress);
       const pointsMap = {
         'Bronze': 10,
@@ -485,8 +515,37 @@ const useDataStore = create((set, get) => ({
       // Apply year-based multiplier (higher years = more points)
       const yearMultiplier = state._getYearMultiplier(progress.yearId);
       pointsToAward = Math.round(basePoints * yearMultiplier);
+
+      // Get lesson title for the activity log
+      const lesson = state.data.lessons.find(l => l.id === progress.activityId);
+      const lessonTitle = lesson ? lesson.title : 'Unknown Lesson';
+
+      // Create points activity record
+      const pointsActivityId = state.getNextPointsActivityId();
+      const pointsActivity = new PointsActivity({
+        id: pointsActivityId,
+        studentId: progress.studentId,
+        activityType: 'lesson',
+        activityId: progress.activityId,
+        pointsEarned: pointsToAward,
+        earnedAt: new Date(),
+        lessonTitle: lessonTitle,
+        yearId: progress.yearId,
+        medal: medalType,
+      });
+      updatedPointsActivities.push(pointsActivity);
+
+      if (isNewGrading) {
+        console.log('[DataStore] Awarding points for grading:', {
+          medalType,
+          basePoints,
+          yearMultiplier,
+          pointsToAward,
+          progressId: progress.id
+        });
+      }
     }
-    
+
     // Create a new AppData instance with updated progress and points
     const currentBalance = state.data.pointsBalance || 0;
     const updatedData = new AppData({
@@ -497,6 +556,7 @@ const useDataStore = create((set, get) => ({
       videoResources: state.data.videoResources,
       rewards: state.data.rewards || [],
       purchases: state.data.purchases || [],
+      pointsActivities: updatedPointsActivities,
       pointsBalance: currentBalance + pointsToAward,
       pointsSystemVersion: state.data.pointsSystemVersion || 0,
     });
@@ -812,8 +872,15 @@ const useDataStore = create((set, get) => ({
         if (score >= threshold.platinum) medal = 'Platinum';
         else if (score >= threshold.gold) medal = 'Gold';
         else if (score >= threshold.silver) medal = 'Silver';
+      } else if (lesson.subjectId === 'art') {
+        // Art lessons use percentage scores (0-100)
+        // Match the grading tiers from ArtGradingScreen
+        if (score >= 100) medal = 'Platinum';      // 100% = Platinum
+        else if (score >= 90) medal = 'Gold';     // 90% = Gold
+        else if (score >= 75) medal = 'Silver';   // 75% = Silver
+        else if (score >= 60) medal = 'Bronze';   // 60% = Bronze
       }
-      
+
       // Count medals
       if (medal === 'Platinum') platinum++;
       else if (medal === 'Gold') gold++;
@@ -1051,6 +1118,14 @@ const useDataStore = create((set, get) => ({
       if (score >= threshold.platinum) medal = 'Platinum';
       else if (score >= threshold.gold) medal = 'Gold';
       else if (score >= threshold.silver) medal = 'Silver';
+    } else if (lesson.subjectId === 'art') {
+      // Art lessons use percentage scores (0-100)
+      // Match the grading tiers from ArtGradingScreen
+      if (score >= 100) medal = 'Platinum';      // 100% = Platinum
+      else if (score >= 90) medal = 'Gold';     // 90% = Gold
+      else if (score >= 75) medal = 'Silver';   // 75% = Silver
+      else if (score >= 60) medal = 'Bronze';   // 60% = Bronze
+      // Below 60 defaults to Bronze (already set)
     }
     
     return medal;
@@ -1088,6 +1163,7 @@ const useDataStore = create((set, get) => ({
       videoResources: state.data.videoResources,
       rewards: state.data.rewards || [],
       purchases: state.data.purchases || [],
+      pointsActivities: state.data.pointsActivities || [],
       pointsBalance: newBalance,
       pointsSystemVersion: state.data.pointsSystemVersion || 0,
     });
@@ -1347,6 +1423,21 @@ const useDataStore = create((set, get) => ({
     return Math.max(...state.data.purchases.map(p => p.id)) + 1;
   },
 
+  getNextPointsActivityId: () => {
+    const state = get();
+    if (!state.data || !state.data.pointsActivities || state.data.pointsActivities.length === 0) return 1;
+    return Math.max(...state.data.pointsActivities.map(pa => pa.id)) + 1;
+  },
+
+  // Get points activities for a student
+  getPointsActivities: (studentId = null) => {
+    const state = get();
+    if (!state.data || !state.data.pointsActivities) return [];
+
+    const userId = studentId || state.getUserId();
+    return state.data.pointsActivities.filter(pa => pa.studentId === userId);
+  },
+
   addReward: async (reward) => {
     const state = get();
     if (!state.data) return;
@@ -1372,6 +1463,7 @@ const useDataStore = create((set, get) => ({
       videoResources: state.data.videoResources,
       rewards: updatedRewards,
       purchases: state.data.purchases || [],
+      pointsActivities: state.data.pointsActivities || [],
       pointsBalance: state.data.pointsBalance || 0,
       pointsSystemVersion: state.data.pointsSystemVersion || 0,
     });
@@ -1398,6 +1490,7 @@ const useDataStore = create((set, get) => ({
       videoResources: state.data.videoResources,
       rewards: updatedRewards,
       purchases: state.data.purchases || [],
+      pointsActivities: state.data.pointsActivities || [],
       pointsBalance: state.data.pointsBalance || 0,
       pointsSystemVersion: state.data.pointsSystemVersion || 0,
     });
@@ -1428,12 +1521,72 @@ const useDataStore = create((set, get) => ({
       videoResources: state.data.videoResources,
       rewards: updatedRewards,
       purchases: state.data.purchases || [],
+      pointsActivities: state.data.pointsActivities || [],
       pointsBalance: state.data.pointsBalance || 0,
       pointsSystemVersion: state.data.pointsSystemVersion || 0,
     });
 
     set({ data: updatedData });
     await state.saveData();
+  },
+
+  // Clean up duplicate points activities (for students who earned points multiple times for the same lesson)
+  cleanupDuplicatePoints: async () => {
+    const state = get();
+    if (!state.data) return;
+
+    const pointsActivities = state.data.pointsActivities || [];
+
+    // Group by student + activity
+    const activityMap = new Map();
+    const duplicatesToRemove = [];
+    let pointsToDeduct = 0;
+
+    pointsActivities.forEach(activity => {
+      const key = `${activity.studentId}_${activity.activityId}`;
+
+      if (activityMap.has(key)) {
+        // This is a duplicate - mark for removal
+        duplicatesToRemove.push(activity.id);
+        pointsToDeduct += activity.pointsEarned;
+        console.log(`[DataStore] Found duplicate points for lesson ${activity.lessonTitle}: ${activity.pointsEarned} points`);
+      } else {
+        // First occurrence - keep it
+        activityMap.set(key, activity);
+      }
+    });
+
+    if (duplicatesToRemove.length === 0) {
+      console.log('[DataStore] No duplicate points found');
+      return;
+    }
+
+    console.log(`[DataStore] Removing ${duplicatesToRemove.length} duplicate point activities, deducting ${pointsToDeduct} points`);
+
+    // Remove duplicates
+    const cleanedActivities = pointsActivities.filter(pa => !duplicatesToRemove.includes(pa.id));
+
+    // Update points balance
+    const currentBalance = state.data.pointsBalance || 0;
+    const newBalance = Math.max(0, currentBalance - pointsToDeduct);
+
+    const updatedData = new AppData({
+      students: state.data.students,
+      lessons: state.data.lessons,
+      quizzes: state.data.quizzes,
+      progress: state.data.progress,
+      videoResources: state.data.videoResources,
+      rewards: state.data.rewards || [],
+      purchases: state.data.purchases || [],
+      pointsActivities: cleanedActivities,
+      pointsBalance: newBalance,
+      pointsSystemVersion: state.data.pointsSystemVersion || 0,
+    });
+
+    set({ data: updatedData });
+    await state.saveData();
+
+    console.log(`[DataStore] Cleanup complete. Removed ${duplicatesToRemove.length} duplicates, deducted ${pointsToDeduct} points. New balance: ${newBalance}`);
   },
 
   // Admin mode
@@ -1461,6 +1614,7 @@ const useDataStore = create((set, get) => ({
       videoResources: state.data.videoResources || [],
       rewards: state.data.rewards || [],
       purchases: [],
+      pointsActivities: [],
       pointsBalance: 0,
       pointsSystemVersion: state.data.pointsSystemVersion || 0,
     });

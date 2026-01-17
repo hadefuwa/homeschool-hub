@@ -422,6 +422,16 @@ ipcMain.handle('get-app-version', () => {
   return { version: app.getVersion() };
 });
 
+ipcMain.handle('open-external', async (event, url) => {
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    console.error('Error opening external URL:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // TTS state management
 let currentAudioPlayer = null;
 let voicesManager = null;
@@ -523,9 +533,11 @@ ipcMain.handle('tts-get-voices', async () => {
 // IPC handler for saving drawings
 ipcMain.handle('save-drawing', async (event, { imageData, lessonId, lessonTitle, studentId }) => {
   try {
-    // Create drawings directory if it doesn't exist
-    const userDataPath = app.getPath('userData');
-    const drawingsDir = path.join(userDataPath, 'drawings');
+    // Create drawings directory in the same location as data.json (Desktop/HomeschoolHub/drawings)
+    const userHome = app.getPath('home');
+    const desktopPath = path.join(userHome, 'Desktop');
+    const appDir = path.join(desktopPath, 'HomeschoolHub');
+    const drawingsDir = path.join(appDir, 'drawings');
     
     if (!fs.existsSync(drawingsDir)) {
       fs.mkdirSync(drawingsDir, { recursive: true });

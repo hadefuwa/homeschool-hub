@@ -11,6 +11,7 @@ export class Progress {
     yearId = null,
     subjectId = null,
     lessonNumber = null,
+    imagePath = null,
   }) {
     this.id = id;
     this.studentId = studentId;
@@ -23,6 +24,7 @@ export class Progress {
     this.yearId = yearId;
     this.subjectId = subjectId;
     this.lessonNumber = lessonNumber;
+    this.imagePath = imagePath;
   }
 
   toJSON() {
@@ -40,6 +42,7 @@ export class Progress {
       yearId: this.yearId,
       subjectId: this.subjectId,
       lessonNumber: this.lessonNumber,
+      imagePath: this.imagePath,
     };
   }
 
@@ -56,6 +59,7 @@ export class Progress {
       yearId: json.yearId ?? null,
       subjectId: json.subjectId ?? null,
       lessonNumber: json.lessonNumber ?? null,
+      imagePath: json.imagePath ?? null,
     });
   }
 }

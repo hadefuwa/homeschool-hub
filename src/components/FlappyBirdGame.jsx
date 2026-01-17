@@ -10,7 +10,7 @@ function FlappyBirdGame({ lesson }) {
   const getNextProgressId = useDataStore(state => state.getNextProgressId);
   const getUserId = useDataStore(state => state.getUserId);
   const saveData = useDataStore(state => state.saveData);
-  
+
   const canvasRef = useRef(null);
   const [score, setScore] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -24,10 +24,55 @@ function FlappyBirdGame({ lesson }) {
   const jumpPowerRef = useRef(-8);
   const scoreRef = useRef(0);
 
+  // Game constants based on difficulty
+  const getDifficultySettings = (yearId) => {
+    switch (yearId) {
+      case 'nursery':
+        return {
+          gravity: 0.2, // Super floaty
+          jumpPower: -5, // Gentle jump
+          pipeSpeed: 1.5, // Very slow
+          pipeGap: 240, // Huge gap
+          pipeFrequency: 3500, // Pipes far apart
+          platinumScore: 5 // Easy to win
+        };
+      case 'reception':
+        return {
+          gravity: 0.3,
+          jumpPower: -6,
+          pipeSpeed: 2,
+          pipeGap: 200, // Wide gap
+          pipeFrequency: 2800,
+          platinumScore: 10
+        };
+      case 'year1':
+        return {
+          gravity: 0.45,
+          jumpPower: -7,
+          pipeSpeed: 2.5,
+          pipeGap: 170, // Medium gap
+          pipeFrequency: 2200,
+          platinumScore: 15
+        };
+      case 'year2':
+      default:
+        return {
+          gravity: 0.6, // Normal/Hard
+          jumpPower: -8,
+          pipeSpeed: 3.5, // Fast
+          pipeGap: 140, // Narrow gap
+          pipeFrequency: 1800,
+          platinumScore: 20
+        };
+    }
+  };
+
+  const settings = getDifficultySettings(lesson?.yearId);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     canvas.width = 400;
     canvas.height = 600;
@@ -56,21 +101,31 @@ function FlappyBirdGame({ lesson }) {
         ctx.fillText(isPaused ? 'Paused' : 'Press SPACE to Start', canvas.width / 2, canvas.height / 2);
         ctx.font = '16px Arial';
         ctx.fillText('Press SPACE to jump', canvas.width / 2, canvas.height / 2 + 40);
+
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText(`Target for Platinum: ${settings.platinumScore}`, canvas.width / 2, canvas.height / 2 + 80);
         return;
       }
 
       // Update bird
-      bird.velocity += gravityRef.current;
+      bird.velocity += settings.gravity;
       bird.y += bird.velocity;
 
       // Keep bird in bounds
       if (bird.y < bird.radius) {
         bird.y = bird.radius;
-        bird.velocity = 0;
+        bird.velocity = 0; // Bonk head
       }
       if (bird.y > canvas.height - 50 - bird.radius) {
         bird.y = canvas.height - 50 - bird.radius;
         endGame();
+        return;
+      }
+
+      // Check win condition
+      if (scoreRef.current >= settings.platinumScore) {
+        endGame(true); // Player wins!
         return;
       }
 
@@ -86,9 +141,14 @@ function FlappyBirdGame({ lesson }) {
 
       // Update and draw pipes
       const currentTime = Date.now();
-      if (currentTime - lastPipeTimeRef.current > 2000) {
-        const gap = 150;
-        const pipeHeight = Math.random() * (canvas.height - gap - 100) + 50;
+      if (currentTime - lastPipeTimeRef.current > settings.pipeFrequency) {
+        const gap = settings.pipeGap;
+        // Ensure pipe gap is always reachable
+        // Min height for top pipe is 50, max is canvas height - ground - gap - 50
+        const minPipeHeight = 50;
+        const maxPipeHeight = canvas.height - 50 - gap - 50;
+        const pipeHeight = Math.random() * (maxPipeHeight - minPipeHeight) + minPipeHeight;
+
         pipes.push({
           x: canvas.width,
           topHeight: pipeHeight,
@@ -101,7 +161,7 @@ function FlappyBirdGame({ lesson }) {
 
       for (let i = pipes.length - 1; i >= 0; i--) {
         const pipe = pipes[i];
-        pipe.x -= 3;
+        pipe.x -= settings.pipeSpeed;
 
         // Check collision
         if (bird.x + bird.radius > pipe.x && bird.x - bird.radius < pipe.x + 50) {
@@ -133,13 +193,14 @@ function FlappyBirdGame({ lesson }) {
       ctx.fillStyle = 'white';
       ctx.font = 'bold 24px Arial';
       ctx.textAlign = 'left';
-      ctx.fillText(`Score: ${scoreRef.current}`, 10, 30);
+      ctx.fillText(`Score: ${scoreRef.current} / ${settings.platinumScore}`, 10, 30);
     };
 
     if (isPlaying && !isGameOver) {
       gameLoopRef.current = setInterval(draw, 16);
     } else {
       draw();
+      // Ensure we draw at least once to show the start screen even if not playing
     }
 
     return () => {
@@ -147,7 +208,7 @@ function FlappyBirdGame({ lesson }) {
         clearInterval(gameLoopRef.current);
       }
     };
-  }, [isPlaying, isGameOver, isPaused, score]);
+  }, [isPlaying, isGameOver, isPaused, score, settings]); // Re-run if settings change
 
   const handleKeyPress = (e) => {
     if (e.code === 'Space') {
@@ -158,7 +219,7 @@ function FlappyBirdGame({ lesson }) {
         if (isPaused) {
           setIsPaused(false);
         } else {
-          birdRef.current.velocity = jumpPowerRef.current;
+          birdRef.current.velocity = settings.jumpPower;
         }
       }
     }
@@ -167,7 +228,7 @@ function FlappyBirdGame({ lesson }) {
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isPlaying, isGameOver, isPaused]);
+  }, [isPlaying, isGameOver, isPaused, settings]);
 
   const startGame = () => {
     birdRef.current = { x: 50, y: 200, velocity: 0, radius: 15 };
@@ -180,7 +241,7 @@ function FlappyBirdGame({ lesson }) {
     setIsPaused(false);
   };
 
-  const endGame = () => {
+  const endGame = (won = false) => {
     const finalScore = scoreRef.current;
     setIsPlaying(false);
     setIsGameOver(true);
@@ -200,7 +261,7 @@ function FlappyBirdGame({ lesson }) {
           yearId: lesson.yearId,
           subjectId: lesson.subjectId,
           lessonNumber: lesson.lessonNumber,
-          isCompleted: true,
+          isCompleted: true, // Always mark complete if they played, score determines medal
           completedAt: new Date(),
           score: finalScore,
         });
@@ -215,9 +276,11 @@ function FlappyBirdGame({ lesson }) {
 
   const getGrade = () => {
     const currentScore = isGameOver ? scoreRef.current : score;
-    if (currentScore >= 15) return { name: 'Platinum', color: '#E5E4E2' };
-    if (currentScore >= 10) return { name: 'Gold', color: '#FFD700' };
-    if (currentScore >= 5) return { name: 'Silver', color: '#C0C0C0' };
+    const { platinumScore } = settings;
+
+    if (currentScore >= platinumScore) return { name: 'Platinum', color: '#E5E4E2' };
+    if (currentScore >= Math.ceil(platinumScore * 0.6)) return { name: 'Gold', color: '#FFD700' }; // 60%
+    if (currentScore >= Math.ceil(platinumScore * 0.3)) return { name: 'Silver', color: '#C0C0C0' }; // 30%
     return { name: 'Bronze', color: '#CD7F32' };
   };
 

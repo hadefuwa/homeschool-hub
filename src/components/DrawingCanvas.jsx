@@ -18,7 +18,6 @@ function DrawingCanvas({ lesson, prompt }) {
   const getNextProgressId = useDataStore(state => state.getNextProgressId);
   const getUserId = useDataStore(state => state.getUserId);
   const saveData = useDataStore(state => state.saveData);
-  const updateProgress = useDataStore(state => state.updateProgress);
   const allProgress = useDataStore(state => state.data?.progress || []);
   
   const canvasRef = useRef(null);
@@ -193,9 +192,14 @@ function DrawingCanvas({ lesson, prompt }) {
     
     setIsSaving(true);
     stopTTS();
-    speak("Saving your beautiful artwork!", { volume: 1.0, rate: 0.9 }).catch(() => {});
+    
+    // Wait a bit for TTS to fully stop before starting new speech
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     try {
+      // Speak saving message and wait for it to start
+      await speak("Saving your beautiful artwork!", { volume: 1.0, rate: 0.9 }).catch(() => {});
+      
       const canvas = canvasRef.current;
       const dataURL = canvas.toDataURL('image/png');
       
@@ -211,7 +215,7 @@ function DrawingCanvas({ lesson, prompt }) {
         if (result.success) {
           setSavedImagePath(result.filePath);
           
-          // Save or update progress
+          // Save or update progress using addProgress (it handles both)
           const userId = getUserId();
           if (existingProgress) {
             // Update existing progress
@@ -220,7 +224,7 @@ function DrawingCanvas({ lesson, prompt }) {
               imagePath: result.filePath,
               completedAt: new Date(),
             });
-            updateProgress(updatedProgress);
+            await addProgress(updatedProgress);
           } else {
             // Create new progress
             const progressId = getNextProgressId();
@@ -237,11 +241,16 @@ function DrawingCanvas({ lesson, prompt }) {
               score: 0, // Will be graded by parent
               imagePath: result.filePath,
             });
-            addProgress(progress);
+            await addProgress(progress);
           }
           
           await saveData();
-          speak("Your drawing has been saved! A parent can review and grade it later.", { volume: 1.0, rate: 0.85 }).catch(() => {});
+          
+          // Wait for the first speech to finish before starting the second
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          stopTTS();
+          await new Promise(resolve => setTimeout(resolve, 200));
+          await speak("Your drawing has been saved! A parent can review and grade it later.", { volume: 1.0, rate: 0.85 }).catch(() => {});
         } else {
           throw new Error(result.error || 'Failed to save drawing');
         }
@@ -249,11 +258,18 @@ function DrawingCanvas({ lesson, prompt }) {
         // Fallback: save to localStorage if not in Electron
         localStorage.setItem(`drawing_${lesson.id}_${getUserId()}`, dataURL);
         setSavedImagePath('localStorage');
-        speak("Your drawing has been saved!", { volume: 1.0, rate: 0.9 }).catch(() => {});
+        
+        // Wait for the first speech to finish before starting the second
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        stopTTS();
+        await new Promise(resolve => setTimeout(resolve, 200));
+        await speak("Your drawing has been saved!", { volume: 1.0, rate: 0.9 }).catch(() => {});
       }
     } catch (error) {
       console.error('Error saving drawing:', error);
-      speak("Sorry, there was an error saving your drawing. Please try again.", { volume: 1.0, rate: 0.9 }).catch(() => {});
+      stopTTS();
+      await new Promise(resolve => setTimeout(resolve, 200));
+      await speak("Sorry, there was an error saving your drawing. Please try again.", { volume: 1.0, rate: 0.9 }).catch(() => {});
     } finally {
       setIsSaving(false);
     }

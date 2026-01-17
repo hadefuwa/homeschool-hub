@@ -26,5 +26,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Drawing functions
   saveDrawing: (data) => ipcRenderer.invoke('save-drawing', data),
   loadDrawing: (filePath) => ipcRenderer.invoke('load-drawing', filePath),
+  // Utility functions
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
 });
 

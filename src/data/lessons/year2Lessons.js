@@ -4413,5 +4413,36 @@ Can you improve your score from Level 1? Try to get a higher medal!`,
       categoryId: null,
     }),
 
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year2',
+      subjectId: 'technology',
+      lessonNumber: 20,
+      title: "Flappy Bird Game",
+      emoji: '🐦',
+      content: `# Flappy Bird Game 🐦
+
+Master your skills!
+
+## How to Play
+
+- Press **SPACE** to make the bird jump
+- Navigate through the pipes
+- The pipes are faster and the gaps are smaller!
+- Stay focused!
+
+## Scoring System
+
+- **Bronze**: 1-5 points
+- **Silver**: 6-11 points
+- **Gold**: 12-19 points
+- **Platinum**: 20+ points
+
+You need at least **Bronze** (1 point) to progress!`,
+      quizId: null,
+      assessmentType: null,
+      categoryId: null,
+    }),
+
   ];
 }

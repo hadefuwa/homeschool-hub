@@ -854,6 +854,37 @@ Type the symbols using Shift + number keys:
       categoryId: null,
     }),
 
+    new Lesson({
+      id: lessonId++,
+      yearId: 'nursery',
+      subjectId: 'technology',
+      lessonNumber: 7,
+      title: "Flappy Bird Game",
+      emoji: '🐦',
+      content: `# Flappy Bird Game (Nursery) 🐦
+
+Super easy mode! Just key tapping fun!
+
+## How to Play
+
+- Press **SPACE** to make the bird jump
+- The bird floats very gently
+- The pipes are very far apart
+- Just try to tap!
+
+## Scoring System
+
+- **Bronze**: 1 point
+- **Silver**: 2 points
+- **Gold**: 3 points
+- **Platinum**: 5+ points
+
+You need at least **Bronze** (1 point) to progress!`,
+      quizId: null,
+      assessmentType: null,
+      categoryId: null,
+    }),
+
     // Phonics Lessons for 2-3 year olds - Lessons 1-8
     new Lesson({
       id: lessonId++,

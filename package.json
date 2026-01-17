@@ -1,6 +1,6 @@
 {
   "name": "homeschool-hub",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "A cross-platform homeschool learning management application",
   "main": "electron/main.js",
   "type": "module",

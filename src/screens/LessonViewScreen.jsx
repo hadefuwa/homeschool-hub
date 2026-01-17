@@ -67,6 +67,31 @@ class ErrorBoundary extends React.Component {
         <div style={{ padding: '40px', textAlign: 'center' }}>
           <h2 style={{ color: '#dc3545' }}>Something went wrong</h2>
           <p>Please try refreshing the page.</p>
+          {this.state.error && (
+            <div style={{ 
+              marginTop: '20px', 
+              padding: '15px', 
+              backgroundColor: '#f8f9fa', 
+              borderRadius: '4px',
+              textAlign: 'left',
+              maxWidth: '600px',
+              margin: '20px auto 0',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              overflow: 'auto',
+              maxHeight: '200px'
+            }}>
+              <strong>Error:</strong> {this.state.error.message || String(this.state.error)}
+              {this.state.error.stack && (
+                <details style={{ marginTop: '10px' }}>
+                  <summary style={{ cursor: 'pointer', color: '#666' }}>Stack trace</summary>
+                  <pre style={{ marginTop: '10px', fontSize: '10px', overflow: 'auto' }}>
+                    {this.state.error.stack}
+                  </pre>
+                </details>
+              )}
+            </div>
+          )}
         </div>
       );
     }
@@ -751,6 +776,21 @@ function LessonViewScreen() {
         }}>
           <ErrorBoundary>
             <HTMLGameEmbed url="/html-games/life-long-ago.html" height="100%" lesson={lesson} />
+          </ErrorBoundary>
+        </div>
+      ) : lesson.title === 'Life Long Ago vs. Life Now' ? (
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0,
+          backgroundColor: 'white',
+          padding: '20px',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        }}>
+          <ErrorBoundary>
+            <HTMLGameEmbed url="/html-games/life-long-ago-vs-life-now.html" height="100%" lesson={lesson} />
           </ErrorBoundary>
         </div>
       ) : lesson.title === 'Ancient Stories - The First Cities' ? (

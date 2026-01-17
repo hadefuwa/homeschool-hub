@@ -21,6 +21,14 @@ function TargetPracticeGame({ lesson }) {
   const targetTimerRef = useRef(null);
   const animationFrameRef = useRef(null);
   const targetLifetimeRef = useRef(3000);
+  const isPlayingRef = useRef(false);
+  const isGameOverRef = useRef(false);
+
+  // Update refs when state changes
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+    isGameOverRef.current = isGameOver;
+  }, [isPlaying, isGameOver]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -37,8 +45,12 @@ function TargetPracticeGame({ lesson }) {
       ctx.fillStyle = '#2c3e50';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Use refs to get current state values
+      const playing = isPlayingRef.current;
+      const gameOver = isGameOverRef.current;
+
       // Draw crosshair
-      if (isPlaying && !isGameOver) {
+      if (playing && !gameOver) {
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -49,15 +61,17 @@ function TargetPracticeGame({ lesson }) {
         ctx.stroke();
       }
 
-      if (!isPlaying || isGameOver) {
+      if (!playing || gameOver) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
         ctx.font = 'bold 24px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(isGameOver ? 'Game Over!' : 'Click to Start', canvas.width / 2, canvas.height / 2);
+        ctx.fillText(gameOver ? 'Game Over!' : 'Click to Start', canvas.width / 2, canvas.height / 2);
         ctx.font = '16px Arial';
         ctx.fillText('Click on targets to score points', canvas.width / 2, canvas.height / 2 + 40);
+        // Continue animation loop even when not playing
+        animationFrameRef.current = requestAnimationFrame(draw);
         return;
       }
 
@@ -104,6 +118,7 @@ function TargetPracticeGame({ lesson }) {
         ctx.fillText(target.points.toString(), target.x, target.y + 5);
       }
 
+      // Always continue the animation loop
       animationFrameRef.current = requestAnimationFrame(draw);
     };
 
@@ -114,14 +129,15 @@ function TargetPracticeGame({ lesson }) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isPlaying, isGameOver]);
+  }, []);
 
   const handleCanvasClick = (e) => {
-    if (!isPlaying) {
+    // Use refs to check current state
+    if (!isPlayingRef.current) {
       startGame();
       return;
     }
-    if (isGameOver) return;
+    if (isGameOverRef.current) return;
 
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -153,9 +169,12 @@ function TargetPracticeGame({ lesson }) {
   };
 
   const spawnTarget = () => {
-    if (!isPlaying || isGameOver) return;
+    // Use refs to check current state (state updates are async)
+    if (!isPlayingRef.current || isGameOverRef.current) return;
 
     const canvas = canvasRef.current;
+    if (!canvas) return;
+    
     const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6'];
     const sizes = [30, 40, 50];
     const points = [20, 15, 10]; // Smaller targets = more points
@@ -180,6 +199,9 @@ function TargetPracticeGame({ lesson }) {
     setTimeRemaining(30);
     setIsPlaying(true);
     setIsGameOver(false);
+    // Update refs immediately (before state updates)
+    isPlayingRef.current = true;
+    isGameOverRef.current = false;
     targetLifetimeRef.current = 3000;
 
     // Game timer
@@ -197,15 +219,20 @@ function TargetPracticeGame({ lesson }) {
       });
     }, 1000);
 
-    // Spawn targets
-    targetTimerRef.current = setInterval(spawnTarget, 2000);
-    spawnTarget(); // Spawn first target immediately
+    // Spawn targets - use a small delay to ensure refs are set
+    setTimeout(() => {
+      spawnTarget(); // Spawn first target immediately
+      targetTimerRef.current = setInterval(spawnTarget, 2000);
+    }, 50);
   };
 
   const endGame = () => {
     const finalScore = score;
     setIsPlaying(false);
     setIsGameOver(true);
+    // Update refs immediately
+    isPlayingRef.current = false;
+    isGameOverRef.current = true;
     
     if (gameTimerRef.current) clearInterval(gameTimerRef.current);
     if (targetTimerRef.current) clearInterval(targetTimerRef.current);
