@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Life Long Ago Game</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: #fcfcfc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Lock screen */
+            touch-action: none;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 10px 0;
+            font-size: 1.8rem;
+        }
+
+        /* --- THE TWO WORLDS (Zones) --- */
+        #zones-container {
+            display: flex;
+            width: 95%;
+            height: 45%; /* Top half of screen */
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .time-zone {
+            flex: 1;
+            border-radius: 20px;
+            border: 5px solid rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 15px;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        /* PAST ZONE (Sepia/Old Paper Look) */
+        #zone-past {
+            background-color: #D7CCC8; /* Light brown */
+            border-color: #8D6E63;
+            color: #5D4037;
+        }
+        /* Present ZONE (Modern/Bright Look) */
+        #zone-present {
+            background-color: #B3E5FC; /* Light Blue */
+            border-color: #03A9F4;
+            color: #01579B;
+        }
+
+        .zone-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            pointer-events: none;
+            margin-bottom: 5px;
+        }
+        
+        .zone-icon {
+            font-size: 3rem;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Visual feedback when hovering/dropping */
+        .highlight { transform: scale(1.05); }
+
+        /* --- PLAY AREA (Draggables) --- */
+        #item-container {
+            flex: 1;
+            width: 100%;
+            background: rgba(0,0,0,0.03);
+            border-radius: 30px 30px 0 0;
+            position: relative;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .item-card {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 15px;
+            position: absolute; /* We will random place them */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5rem;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            cursor: grab;
+            transition: transform 0.1s;
+            user-select: none;
+            touch-action: none;
+            z-index: 10;
+        }
+
+        .item-card:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+            z-index: 100 !important;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Feedback Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-15px) rotate(-5deg); }
+            40% { transform: translateX(15px) rotate(5deg); }
+            60% { transform: translateX(-15px) rotate(-5deg); }
+            80% { transform: translateX(15px) rotate(5deg); }
+        }
+        .shake { animation: shake 0.5s ease-in-out; background-color: #ffeba7; }
+
+        @keyframes popAway {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.1); opacity: 0; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .correct-anim { animation: popAway 0.5s forwards; }
+
+        /* --- CERTIFICATE --- */
+        #certificate {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 80%;
+            max-width: 400px;
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            border: 8px solid #FF9800;
+            text-align: center;
+            z-index: 200;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #certificate.show { transform: translate(-50%, -50%) scale(1); }
+
+        button.reset-btn {
+            background: #FF9800; color: white;
+            border: none; padding: 10px 20px;
+            font-size: 1.2rem; border-radius: 20px;
+            margin-top: 20px; cursor: pointer;
+        }
+
+        /* Confetti */
+        canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1000; }
+
+    </style>
+</head>
+<body>
+
+    <h1>🕰️ Then & Now 📱</h1>
+
+    <div id="zones-container">
+        <div id="zone-past" class="time-zone" data-era="past">
+            <div class="zone-title">Long Ago</div>
+            <div class="zone-icon">📜</div>
+        </div>
+
+        <div id="zone-present" class="time-zone" data-era="present">
+            <div class="zone-title">Today</div>
+            <div class="zone-icon">🚀</div>
+        </div>
+    </div>
+
+    <p style="text-align:center; color:#666; font-size:1.1rem; margin:0 0 10px 0;">
+        Did people use this <b>Long Ago</b> or <b>Today</b>?
+    </p>
+
+    <div id="item-container"></div>
+
+    <div id="certificate">
+        <h2 style="color:#E65100; font-size:2rem; margin:0;">Time Traveler!</h2>
+        <div style="font-size:5rem; margin:10px;">⏳🎉</div>
+        <p>You know all about the Past and the Present!</p>
+        <button class="reset-btn" onclick="initGame()">Play Again</button>
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+    <script>
+        // Data: Items to sort
+        const gameItems = [
+            // PAST Items
+            { id: 1, icon: "🐎", name: "Horse", era: "past", text: "Horses were for riding long ago!" },
+            { id: 2, icon: "🕯️", name: "Candle", era: "past", text: "Candles gave light long ago." },
+            { id: 3, icon: "📜", name: "Scroll", era: "past", text: "We wrote on scrolls long ago." },
+            { id: 4, icon: "🔥", name: "Fire", era: "past", text: "We cooked on fire long ago." },
+            
+            // PRESENT Items
+            { id: 5, icon: "🚗", name: "Car", era: "present", text: "Cars drive us today!" },
+            { id: 6, icon: "💡", name: "Lightbulb", era: "present", text: "Lightbulbs give us light today." },
+            { id: 7, icon: "📱", name: "Tablet", era: "present", text: "We use tablets today!" },
+            { id: 8, icon: "🥪", name: "Microwave", era: "present", text: "Microwaves cook food fast today." }
+        ];
+
+        let itemsLeft = 0;
+        let zIndexTop = 50;
+        const synth = window.speechSynthesis;
+
+        function initGame() {
+            const container = document.getElementById('item-container');
+            container.innerHTML = '';
+            document.getElementById('certificate').classList.remove('show');
+            stopConfetti();
+
+            itemsLeft = gameItems.length;
+
+            // Shuffle items
+            const shuffled = [...gameItems].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach(item => {
+                const el = document.createElement('div');
+                el.classList.add('item-card');
+                el.innerText = item.icon;
+                el.dataset.era = item.era;
+                el.dataset.text = item.text;
+                
+                // Random position within container
+                // Constrain percentages to keep inside the visual box
+                const top = Math.random() * 60 + 5; // 5% to 65%
+                const left = Math.random() * 70 + 5; // 5% to 75%
+                
+                el.style.top = top + "%";
+                el.style.left = left + "%";
+
+                setupDrag(el);
+                container.appendChild(el);
+            });
+        }
+
+        function setupDrag(el) {
+            let startX, startY;
+
+            const start = (e) => {
+                e.preventDefault();
+                const touch = e.touches ? e.touches[0] : e;
+                startX = touch.clientX;
+                startY = touch.clientY;
+                
+                // Bring to front
+                zIndexTop++;
+                el.style.zIndex = zIndexTop;
+
+                // Listeners
+                document.addEventListener('mousemove', move);
+                document.addEventListener('mouseup', end);
+                document.addEventListener('touchmove', move, {passive: false});
+                document.addEventListener('touchend', end);
+            };
+
+            const move = (e) => {
+                e.preventDefault();
+                const touch = e.touches ? e.touches[0] : e;
+                const dx = touch.clientX - startX;
+                const dy = touch.clientY - startY;
+                el.style.transform = `translate(${dx}px, ${dy}px) scale(1.1)`;
+            };
+
+            const end = (e) => {
+                // Clean up listeners
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', end);
+                document.removeEventListener('touchmove', move);
+                document.removeEventListener('touchend', end);
+
+                checkDrop(el);
+            };
+
+            el.addEventListener('mousedown', start);
+            el.addEventListener('touchstart', start, {passive: false});
+        }
+
+        function checkDrop(el) {
+            const rect = el.getBoundingClientRect();
+            const pastZone = document.getElementById('zone-past').getBoundingClientRect();
+            const presZone = document.getElementById('zone-present').getBoundingClientRect();
+
+            // Center of the item
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+
+            let droppedEra = null;
+
+            // Check collision
+            if (isInside(cx, cy, pastZone)) droppedEra = "past";
+            else if (isInside(cx, cy, presZone)) droppedEra = "present";
+
+            if (droppedEra) {
+                if (droppedEra === el.dataset.era) {
+                    // Success!
+                    handleSuccess(el);
+                } else {
+                    // Wrong!
+                    handleFail(el);
+                }
+            } else {
+                // Dropped nowhere -> Snap back
+                el.style.transform = `translate(0,0)`;
+            }
+        }
+
+        function isInside(x, y, rect) {
+            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+        }
+
+        function handleSuccess(el) {
+            // Speak the educational text
+            speak(el.dataset.text);
+
+            // Animate away
+            el.classList.add('correct-anim');
+            
+            // Logic
+            itemsLeft--;
+            if (itemsLeft === 0) {
+                setTimeout(winGame, 1000);
+            }
+        }
+
+        function handleFail(el) {
+            // Feedback
+            if(el.dataset.era === 'past') {
+                speak("That belongs in Long Ago!");
+            } else {
+                speak("That belongs in Today!");
+            }
+
+            // Reset visual
+            el.style.transform = `translate(0,0)`;
+            el.classList.add('shake');
+            setTimeout(() => el.classList.remove('shake'), 500);
+        }
+
+        function speak(text) {
+            if(synth.speaking) synth.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.rate = 1.0;
+            u.pitch = 1.1;
+            synth.speak(u);
+        }
+
+        function winGame() {
+            speak("You are a time traveler! Great job!");
+            document.getElementById('certificate').classList.add('show');
+            startConfetti();
+        }
+
+        // --- CONFETTI ---
+        let confettiInterval;
+        function startConfetti() {
+            const c = document.getElementById('confetti');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            let particles = [];
+            for(let i=0; i<80; i++) particles.push({
+                x: Math.random()*c.width, y: -20, 
+                color: ['#D7CCC8','#8D6E63','#03A9F4','#FF9800'][Math.floor(Math.random()*4)],
+                size: Math.random()*10+5, speed: Math.random()*5+2
+            });
+
+            confettiInterval = setInterval(() => {
+                ctx.clearRect(0,0,c.width,c.height);
+                particles.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                    p.y += p.speed;
+                    if(p.y > c.height) p.y = -20;
+                });
+            }, 20);
+        }
+        function stopConfetti() { clearInterval(confettiInterval); }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>

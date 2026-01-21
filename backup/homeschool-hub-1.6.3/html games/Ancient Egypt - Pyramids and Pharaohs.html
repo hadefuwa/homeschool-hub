@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pharaoh's Treasure Hunt</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+            /* A sandy, tomb-like gradient background */
+            background: linear-gradient(to bottom, #C2B280, #E6D8AD);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            overflow: hidden;
+            touch-action: manipulation;
+            color: #5D4037;
+        }
+
+        h1 {
+            text-shadow: 2px 2px 0px #FFD700;
+            font-size: 2rem;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        /* Decorative Hieroglyph Banner */
+        .hieroglyphs {
+            font-size: 2rem;
+            letter-spacing: 10px;
+            opacity: 0.6;
+            margin-bottom: 20px;
+            user-select: none;
+        }
+
+        /* --- SCOREBOARD --- */
+        #scoreboard {
+            background: rgba(255, 215, 0, 0.3); /* Sheer gold */
+            border: 3px solid #FFD700;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        #score-count { color: #d32f2f; }
+
+        /* --- THE TOMB CONTAINER --- */
+        #tomb-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 600px;
+            width: 95%;
+            perspective: 1000px; /* For 3D flip effect */
+        }
+
+        /* --- HIDING SPOTS --- */
+        .hiding-spot {
+            aspect-ratio: 1 / 1;
+            background-color: #8D6E63; /* Clay/Stone color */
+            border-radius: 20px;
+            border: 4px solid #5D4037;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #3E2723;
+            transition: transform 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hiding-spot:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #3E2723;
+        }
+
+        /* The content inside */
+        .spot-content {
+            transition: all 0.5s ease-out;
+        }
+
+        /* Animation classes applied by JS */
+        .hiding-spot.revealed .container-icon {
+            display: none;
+        }
+
+        .reveal-anim {
+            animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0) translateY(50px); opacity: 0; }
+            70% { transform: scale(1.2) translateY(-10px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .shake { animation: shake 0.5s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-5deg); }
+            75% { transform: translateX(5px) rotate(5deg); }
+        }
+
+        /* --- WIN SCREEN --- */
+        #win-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 100;
+            visibility: hidden; opacity: 0;
+            transition: opacity 0.5s;
+            text-align: center;
+        }
+        #win-screen.show { visibility: visible; opacity: 1; }
+
+        button.reset-btn {
+            background-color: #FFD700; color: #5D4037;
+            border: 4px solid #DAA520; padding: 15px 40px;
+            font-size: 1.5rem; border-radius: 50px;
+            margin-top: 20px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 6px 0 #B8860B;
+        }
+        button.reset-btn:active { transform: translateY(6px); box-shadow: none; }
+
+        canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:99; }
+
+    </style>
+</head>
+<body>
+
+    <h1>🐪 Pharaoh's Tomb 🐪</h1>
+    <div class="hieroglyphs">👁️‍🗨️𓀀𓁃𓃠𓆣𓉴</div>
+    
+    <div id="scoreboard">Treasures Found: <span id="score-count">0</span> / 3</div>
+    <p style="font-size: 1.2rem; margin-top:0;">Tap to open!</p>
+
+    <div id="tomb-container">
+        </div>
+
+    <div id="win-screen">
+        <h2 style="font-size: 3rem; color: #DAA520; margin:0;">YOU WIN!</h2>
+        <div style="font-size: 6rem; margin: 20px;">👑💎⚱️</div>
+        <p style="font-size: 1.5rem;">You found the Pharaoh's gold!</p>
+        <button class="reset-btn" onclick="initGame()">Play Again</button>
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+    <script>
+        // The things inside the tomb
+        const possibleItems = [
+            { type: 'treasure', icon: '💎', name: 'A shiny jewel!' },
+            { type: 'treasure', icon: '👑', name: 'The Pharaoh\'s crown!' },
+            { type: 'treasure', icon: '🏺', name: 'A golden jar!' },
+            { type: 'treasure', icon: '𓆣', name: 'A golden beetle!' },
+            { type: 'treasure', icon: '🐈‍⬛', name: 'A royal cat!' },
+            // The "silly" item that doesn't give points
+            { type: 'dust', icon: '🤕', name: 'Oh! A silly mummy!' },
+            { type: 'dust', icon: '💨', name: 'Just dusty sand!' }
+        ];
+
+        // The containers they click on
+        const containers = ['⚰️', '📦', '🏜️', '🧱'];
+
+        let treasuresFound = 0;
+        let itemsInGame = [];
+        const synth = window.speechSynthesis;
+
+        function initGame() {
+            const grid = document.getElementById('tomb-container');
+            grid.innerHTML = '';
+            document.getElementById('win-screen').classList.remove('show');
+            document.getElementById('score-count').innerText = '0';
+            stopConfetti();
+            treasuresFound = 0;
+
+            // setup the 4 items for this round (3 treasures, 1 dust)
+            itemsInGame = [];
+            // Get only treasure types first
+            const treasuresOnly = possibleItems.filter(i => i.type === 'treasure');
+            // Shuffle and pick 3
+            treasuresOnly.sort(() => Math.random() - 0.5);
+            itemsInGame.push(treasuresOnly[0], treasuresOnly[1], treasuresOnly[2]);
+            
+            // Add one dust item
+            const dustOnly = possibleItems.filter(i => i.type === 'dust');
+            itemsInGame.push(dustOnly[Math.floor(Math.random() * dustOnly.length)]);
+
+            // Shuffle the final 4 positions
+            itemsInGame.sort(() => Math.random() - 0.5);
+
+            // Create the 4 spots
+            for(let i=0; i<4; i++) {
+                createSpot(i, containers[i]);
+            }
+        }
+
+        function createSpot(index, containerIcon) {
+            const grid = document.getElementById('tomb-container');
+            const spot = document.createElement('div');
+            spot.className = 'hiding-spot';
+            spot.dataset.index = index;
+
+            // The container icon (visible initially)
+            const containerEl = document.createElement('div');
+            containerEl.className = 'container-icon spot-content';
+            containerEl.innerText = containerIcon;
+            
+            spot.appendChild(containerEl);
+
+            spot.onclick = () => revealSpot(spot);
+            grid.appendChild(spot);
+        }
+
+        function revealSpot(spotEl) {
+            if(spotEl.classList.contains('revealed')) return; // Already clicked
+
+            spotEl.classList.add('revealed');
+            const index = spotEl.dataset.index;
+            const item = itemsInGame[index];
+
+            // 1. Animate container shaking before opening
+            spotEl.classList.add('shake');
+
+            setTimeout(() => {
+                spotEl.classList.remove('shake');
+                
+                // 2. Show content
+                const contentEl = document.createElement('div');
+                contentEl.className = 'spot-content reveal-anim';
+                contentEl.innerText = item.icon;
+                spotEl.appendChild(contentEl);
+
+                // 3. Speak feedback
+                speak(item.name);
+
+                // 4. Score logic
+                if(item.type === 'treasure') {
+                    treasuresFound++;
+                    document.getElementById('score-count').innerText = treasuresFound;
+                    spotEl.style.backgroundColor = '#FFF9C4'; // Light yellow highlight
+                    
+                    if(treasuresFound === 3) {
+                        setTimeout(winGame, 1000);
+                    }
+                } else {
+                     spotEl.style.backgroundColor = '#D7CCC8'; // Dusty gray highlight
+                }
+            }, 300); // wait for shake to finish
+        }
+
+        function speak(text) {
+            if(synth.speaking) synth.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.pitch = 1.1;
+            u.rate = 1.0;
+            synth.speak(u);
+        }
+
+        function winGame() {
+            speak("Hooray! You found all the Pharaoh's treasures!");
+            document.getElementById('win-screen').classList.add('show');
+            startConfetti();
+        }
+
+        // --- CONFETTI ---
+        let confettiInterval;
+        function startConfetti() {
+            const c = document.getElementById('confetti');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            let p = [];
+            for(let i=0; i<80; i++) p.push({
+                x: Math.random()*c.width, y: -20, 
+                color: ['#FFD700', '#DAA520', '#FFFFFF', '#00BFFF'][Math.floor(Math.random()*4)],
+                size: Math.random()*10+5, speed: Math.random()*5+2
+            });
+
+            confettiInterval = setInterval(() => {
+                ctx.clearRect(0,0,c.width,c.height);
+                p.forEach(o => {
+                    ctx.fillStyle = o.color;
+                    ctx.fillRect(o.x, o.y, o.size, o.size);
+                    o.y += o.speed;
+                    if(o.y > c.height) o.y = -20;
+                });
+            }, 20);
+        }
+        function stopConfetti() { clearInterval(confettiInterval); }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>

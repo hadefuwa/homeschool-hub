@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cave Life Adventure</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background: linear-gradient(to bottom, #8B7355, #D2B48C, #8B7355);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            overflow: hidden;
+            touch-action: manipulation;
+            color: #3E2723;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #intro-screen.hidden {
+            display: none;
+        }
+
+        .intro-box {
+            background: linear-gradient(135deg, #6B4423, #8B6F47);
+            border: 8px solid #4A2C1A;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        .intro-box h1 {
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin: 0 0 20px 0;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        .cave-art {
+            font-size: 4rem;
+            margin: 20px 0;
+            line-height: 1.2;
+        }
+
+        .intro-box p {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        .intro-box .highlight {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        #start-game-btn {
+            background: #FF6B35;
+            color: white;
+            border: 4px solid #C44000;
+            padding: 20px 50px;
+            font-size: 1.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 30px;
+            font-weight: bold;
+            box-shadow: 0 6px 0 #8B3A00;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        #start-game-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #8B3A00;
+        }
+
+        /* --- HEADER --- */
+        h1 {
+            color: #4E342E;
+            text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.3);
+            margin: 10px 0;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            text-align: center;
+        }
+
+        .time-period {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- SCOREBOARD --- */
+        #scoreboard {
+            background: rgba(139, 115, 85, 0.9);
+            border: 4px solid #5D4037;
+            padding: 12px 25px;
+            border-radius: 20px;
+            color: white;
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        #score {
+            color: #FFD700;
+        }
+
+        #lives {
+            color: #FF6B6B;
+        }
+
+        /* --- INSTRUCTION BANNER --- */
+        #instruction {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-size: clamp(1rem, 2.8vw, 1.3rem);
+            font-weight: bold;
+            text-align: center;
+            max-width: 90%;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- GAME CONTAINER --- */
+        #game-container {
+            width: 100%;
+            max-width: 900px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- CAVE (Drop Zone) --- */
+        #cave-zone {
+            background: linear-gradient(to bottom, #2C1810, #1A0F08);
+            border: 6px solid #4E342E;
+            border-radius: 30px 30px 0 0;
+            min-height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            position: relative;
+            box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.5);
+            flex-wrap: wrap;
+        }
+
+        #cave-zone::before {
+            content: "🏔️ CAVE 🏔️";
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #5D4037;
+            color: white;
+            padding: 8px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+        }
+
+        .cave-slot {
+            width: 80px;
+            height: 80px;
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .cave-slot.highlight {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.1);
+        }
+
+        .cave-slot.filled {
+            border-style: solid;
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        /* --- ITEM POOL (Draggables) --- */
+        #item-pool {
+            background: rgba(210, 180, 140, 0.5);
+            border: 4px solid #8B7355;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .item-card {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border: 4px solid #6D4C41;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5rem;
+            cursor: grab;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.1s;
+            position: relative;
+        }
+
+        .item-card:active {
+            cursor: grabbing;
+        }
+
+        .item-card.dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .item-card.wrong-answer {
+            animation: shake 0.5s;
+            border-color: #f44336;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateX(-10px) rotate(-5deg);
+            }
+
+            75% {
+                transform: translateX(10px) rotate(5deg);
+            }
+        }
+
+        .item-card.correct-answer {
+            animation: celebrate 0.5s;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2) rotate(10deg);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* --- FACT MODAL --- */
+        #fact-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #fact-modal.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .fact-box {
+            background: linear-gradient(135deg, #FFF8DC, #F5DEB3);
+            border: 8px solid #8B7355;
+            border-radius: 25px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .fact-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .fact-title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #5D4037;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .fact-content {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            line-height: 1.6;
+            color: #3E2723;
+            margin-bottom: 20px;
+        }
+
+        #next-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 4px 0 #2E7D32;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        #next-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #2E7D32;
+        }
+
+        /* --- GAME OVER SCREEN --- */
+        #game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #game-over-screen.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .game-over-box {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            border: 8px solid #C44000;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        .game-over-box h2 {
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin: 0 0 20px 0;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        .final-score {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin: 20px 0;
+        }
+
+        #restart-btn {
+            background: white;
+            color: #FF6B35;
+            border: none;
+            padding: 15px 40px;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 4px 0 #ddd;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        #restart-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #ddd;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- INTRO SCREEN -->
+    <div id="intro-screen">
+        <div class="intro-box">
+            <h1>🦴 Cave Life Adventure 🔥</h1>
+            <div class="cave-art">🏔️ 🦣 🗿 ⚒️ 🔥</div>
+            <p>Welcome to <span class="highlight">Prehistoric Times</span>!</p>
+            <p>This was <span class="highlight">BEFORE writing existed</span>. People lived in caves, hunted mammoths,
+                made stone tools, and painted on cave walls!</p>
+            <p>🎯 <strong>Your Mission:</strong> Help the cave people gather what they need to survive! Drag the correct
+                items into the cave.</p>
+            <p>⚠️ Be careful - only take what cave people actually had!</p>
+            <button id="start-game-btn">Start Adventure!</button>
+        </div>
+    </div>
+
+    <!-- MAIN GAME -->
+    <h1>🦴 Cave Life Adventure 🔥</h1>
+    <div class="time-period">⏰ Prehistoric Times (Before Writing!)</div>
+
+    <div id="scoreboard">
+        <span>Score: <span id="score">0</span></span>
+        <span>❤️ Lives: <span id="lives">3</span></span>
+        <span>Round: <span id="round">1</span>/10</span>
+    </div>
+
+    <div id="instruction">Drag prehistoric items into the cave!</div>
+
+    <div id="game-container">
+        <div id="cave-zone">
+            <div class="cave-slot" data-slot="1"></div>
+            <div class="cave-slot" data-slot="2"></div>
+            <div class="cave-slot" data-slot="3"></div>
+        </div>
+
+        <div id="item-pool"></div>
+    </div>
+
+    <!-- FACT MODAL -->
+    <div id="fact-modal">
+        <div class="fact-box">
+            <div class="fact-icon" id="fact-icon"></div>
+            <h2 class="fact-title" id="fact-title"></h2>
+            <div class="fact-content" id="fact-content"></div>
+            <button id="next-btn">Next Challenge!</button>
+        </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="game-over-screen">
+        <div class="game-over-box">
+            <h2 id="game-over-title">Game Over!</h2>
+            <div class="final-score">
+                🏆 Final Score: <span id="final-score">0</span>
+            </div>
+            <p id="game-over-message">You learned so much about prehistoric times!</p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== GAME DATA =====
+        const prehistoricItems = [
+            {
+                emoji: '🔥',
+                name: 'Fire',
+                isPrehistoric: true,
+                fact: 'Cave people learned to make fire over 1 million years ago! Fire kept them warm, scared away animals, and helped them cook food.'
+            },
+            {
+                emoji: '⚒️',
+                name: 'Stone Tools',
+                isPrehistoric: true,
+                fact: 'The first tools were made from stone! People chipped rocks to make sharp edges for cutting meat and scraping animal skins.'
+            },
+            {
+                emoji: '🦣',
+                name: 'Mammoth',
+                isPrehistoric: true,
+                fact: 'Woolly mammoths were huge animals with long fur! Cave people hunted them for food, and used their bones to build shelters.'
+            },
+            {
+                emoji: '🗿',
+                name: 'Cave Painting',
+                isPrehistoric: true,
+                fact: 'Before writing, cave people painted pictures on cave walls! They painted animals they hunted and told stories through pictures.'
+            },
+            {
+                emoji: '🏔️',
+                name: 'Cave Home',
+                isPrehistoric: true,
+                fact: 'Cave people lived in caves in mountains and cliffs! Caves protected them from bad weather, wild animals, and kept them warm.'
+            },
+            {
+                emoji: '🦴',
+                name: 'Bone Tools',
+                isPrehistoric: true,
+                fact: 'Prehistoric people made tools and needles from animal bones! They used bone needles to sew animal skins into clothes.'
+            },
+            {
+                emoji: '🏹',
+                name: 'Spear',
+                isPrehistoric: true,
+                fact: 'Spears were made from wooden sticks with sharp stone tips! They helped people hunt from a safe distance.'
+            },
+            {
+                emoji: '🪨',
+                name: 'Stone Axe',
+                isPrehistoric: true,
+                fact: 'Stone axes were tied to wooden handles with plant fibers or leather strips! They were used for chopping wood and hunting.'
+            },
+            {
+                emoji: '🦌',
+                name: 'Deer',
+                isPrehistoric: true,
+                fact: 'Cave people hunted deer and other animals for food! They used every part - meat for eating, skin for clothes, bones for tools.'
+            },
+            {
+                emoji: '🐟',
+                name: 'Fish',
+                isPrehistoric: true,
+                fact: 'Prehistoric people caught fish from rivers and lakes using spears and simple hooks made from bone!'
+            },
+            {
+                emoji: '🌰',
+                name: 'Nuts & Berries',
+                isPrehistoric: true,
+                fact: 'Cave people gathered nuts, berries, and roots from plants! Gathering food was just as important as hunting.'
+            },
+            // MODERN ITEMS (Wrong answers)
+            {
+                emoji: '📱',
+                name: 'Smartphone',
+                isPrehistoric: false,
+                fact: 'No! Smartphones are VERY modern - they didn\'t exist until the 2000s!'
+            },
+            {
+                emoji: '🚗',
+                name: 'Car',
+                isPrehistoric: false,
+                fact: 'No! Cars were invented around 1886 - millions of years after prehistoric times!'
+            },
+            {
+                emoji: '📺',
+                name: 'TV',
+                isPrehistoric: false,
+                fact: 'No! TVs were invented in the 1900s - very modern compared to cave people!'
+            },
+            {
+                emoji: '✏️',
+                name: 'Pencil',
+                isPrehistoric: false,
+                fact: 'No! Pencils need writing - but cave people lived BEFORE writing was invented!'
+            },
+            {
+                emoji: '📚',
+                name: 'Books',
+                isPrehistoric: false,
+                fact: 'No! Books came AFTER writing was invented. Cave people told stories through pictures!'
+            },
+            {
+                emoji: '🍕',
+                name: 'Pizza',
+                isPrehistoric: false,
+                fact: 'No! Pizza is a modern food. Cave people ate meat, fish, nuts, and berries!'
+            },
+            {
+                emoji: '⌚',
+                name: 'Watch',
+                isPrehistoric: false,
+                fact: 'No! Watches are modern inventions. Cave people told time by the sun and seasons!'
+            },
+            {
+                emoji: '🏠',
+                name: 'Modern House',
+                isPrehistoric: false,
+                fact: 'No! Cave people lived in caves or simple shelters made from wood, bones, and animal skins!'
+            },
+            {
+                emoji: '🍔',
+                name: 'Hamburger',
+                isPrehistoric: false,
+                fact: 'No! Hamburgers are modern fast food. Cave people roasted meat over open fires!'
+            },
+            {
+                emoji: '🎮',
+                name: 'Video Games',
+                isPrehistoric: false,
+                fact: 'No! Video games are very modern. Cave people played simple games and told stories around the fire!'
+            }
+        ];
+
+        // ===== GAME STATE =====
+        let score = 0;
+        let lives = 3;
+        let round = 1;
+        const maxRounds = 10;
+        let currentRoundItems = [];
+        let correctCount = 0;
+        let draggedElement = null;
+
+        // ===== DOM ELEMENTS =====
+        const introScreen = document.getElementById('intro-screen');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const scoreDisplay = document.getElementById('score');
+        const livesDisplay = document.getElementById('lives');
+        const roundDisplay = document.getElementById('round');
+        const instructionDisplay = document.getElementById('instruction');
+        const itemPool = document.getElementById('item-pool');
+        const caveZone = document.getElementById('cave-zone');
+        const caveSlots = document.querySelectorAll('.cave-slot');
+        const factModal = document.getElementById('fact-modal');
+        const factIcon = document.getElementById('fact-icon');
+        const factTitle = document.getElementById('fact-title');
+        const factContent = document.getElementById('fact-content');
+        const nextBtn = document.getElementById('next-btn');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const gameOverTitle = document.getElementById('game-over-title');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const gameOverMessage = document.getElementById('game-over-message');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // ===== EVENT LISTENERS =====
+        startGameBtn.addEventListener('click', startGame);
+        nextBtn.addEventListener('click', nextRound);
+        restartBtn.addEventListener('click', restartGame);
+
+        // ===== GAME FUNCTIONS =====
+        function startGame() {
+            introScreen.classList.add('hidden');
+            setupRound();
+        }
+
+        function setupRound() {
+            itemPool.innerHTML = '';
+            correctCount = 0;
+
+            // Clear cave slots
+            caveSlots.forEach(slot => {
+                slot.innerHTML = '';
+                slot.classList.remove('filled');
+            });
+
+            // Select items for this round (2-3 correct, 3-4 wrong)
+            const correctItems = prehistoricItems.filter(item => item.isPrehistoric);
+            const wrongItems = prehistoricItems.filter(item => !item.isPrehistoric);
+
+            const numCorrect = Math.random() > 0.5 ? 3 : 2;
+            const numWrong = 6 - numCorrect;
+
+            const selectedCorrect = shuffleArray(correctItems).slice(0, numCorrect);
+            const selectedWrong = shuffleArray(wrongItems).slice(0, numWrong);
+
+            currentRoundItems = shuffleArray([...selectedCorrect, ...selectedWrong]);
+
+            // Create item cards
+            currentRoundItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = item.emoji;
+                card.draggable = true;
+                card.dataset.name = item.name;
+                card.dataset.isPrehistoric = item.isPrehistoric;
+                card.dataset.fact = item.fact;
+                card.dataset.emoji = item.emoji;
+
+                // Touch events
+                card.addEventListener('touchstart', handleTouchStart, { passive: false });
+                card.addEventListener('touchmove', handleTouchMove, { passive: false });
+                card.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+                // Mouse events
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+
+                itemPool.appendChild(card);
+            });
+
+            updateDisplay();
+        }
+
+        // Drag and drop handlers
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        // Touch handlers
+        let touchStartX, touchStartY;
+        let touchClone;
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+
+            draggedElement = e.target;
+            draggedElement.style.opacity = '0.5';
+
+            // Create clone for dragging
+            touchClone = draggedElement.cloneNode(true);
+            touchClone.style.position = 'fixed';
+            touchClone.style.zIndex = '1000';
+            touchClone.style.pointerEvents = 'none';
+            touchClone.style.width = draggedElement.offsetWidth + 'px';
+            touchClone.style.height = draggedElement.offsetHeight + 'px';
+            touchClone.style.left = (touch.clientX - draggedElement.offsetWidth / 2) + 'px';
+            touchClone.style.top = (touch.clientY - draggedElement.offsetHeight / 2) + 'px';
+            document.body.appendChild(touchClone);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!draggedElement) return;
+
+            const touch = e.touches[0];
+            if (touchClone) {
+                touchClone.style.left = (touch.clientX - draggedElement.offsetWidth / 2) + 'px';
+                touchClone.style.top = (touch.clientY - draggedElement.offsetHeight / 2) + 'px';
+            }
+
+            // Highlight drop zones
+            caveSlots.forEach(slot => {
+                if (!slot.classList.contains('filled')) {
+                    const rect = slot.getBoundingClientRect();
+                    if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                        touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                        slot.classList.add('highlight');
+                    } else {
+                        slot.classList.remove('highlight');
+                    }
+                }
+            });
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            if (!draggedElement) return;
+
+            const touch = e.changedTouches[0];
+            let dropped = false;
+
+            // Check if dropped on a cave slot
+            caveSlots.forEach(slot => {
+                if (!slot.classList.contains('filled')) {
+                    const rect = slot.getBoundingClientRect();
+                    if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                        touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                        handleDrop(slot, draggedElement);
+                        dropped = true;
+                    }
+                    slot.classList.remove('highlight');
+                }
+            });
+
+            // Clean up
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+            if (draggedElement) {
+                draggedElement.style.opacity = '1';
+                draggedElement = null;
+            }
+        }
+
+        // Setup drop zones
+        caveSlots.forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!slot.classList.contains('filled')) {
+                    slot.classList.add('highlight');
+                }
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('highlight');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('highlight');
+                if (draggedElement && !slot.classList.contains('filled')) {
+                    handleDrop(slot, draggedElement);
+                }
+            });
+        });
+
+        function handleDrop(slot, card) {
+            const isCorrect = card.dataset.isPrehistoric === 'true';
+
+            if (isCorrect) {
+                // Correct answer!
+                playSound('correct');
+                slot.innerHTML = card.dataset.emoji;
+                slot.classList.add('filled');
+                card.classList.add('correct-answer');
+
+                setTimeout(() => {
+                    card.remove();
+                }, 500);
+
+                correctCount++;
+                score += 10;
+
+                // Check if round complete
+                const correctNeeded = currentRoundItems.filter(item => item.isPrehistoric).length;
+                if (correctCount >= correctNeeded) {
+                    setTimeout(() => {
+                        showFactModal(card.dataset.emoji, card.dataset.name, card.dataset.fact);
+                    }, 600);
+                }
+            } else {
+                // Wrong answer!
+                playSound('wrong');
+                card.classList.add('wrong-answer');
+                lives--;
+
+                if (lives <= 0) {
+                    setTimeout(gameOver, 1000);
+                } else {
+                    setTimeout(() => {
+                        card.classList.remove('wrong-answer');
+                    }, 500);
+                }
+            }
+
+            updateDisplay();
+        }
+
+        function showFactModal(emoji, name, fact) {
+            factIcon.textContent = emoji;
+            factTitle.textContent = name;
+            factContent.textContent = fact;
+            factModal.classList.add('visible');
+            playSound('complete');
+        }
+
+        function nextRound() {
+            factModal.classList.remove('visible');
+            round++;
+
+            if (round > maxRounds) {
+                gameOver(true);
+            } else {
+                setupRound();
+            }
+        }
+
+        function gameOver(completed = false) {
+            if (completed) {
+                gameOverTitle.textContent = '🎉 Amazing Job! 🎉';
+                gameOverMessage.textContent = 'You\'re a prehistoric expert!';
+
+                // Notify parent window that game is complete
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'prehistoric-times'
+                    }, '*');
+                }
+            } else {
+                gameOverTitle.textContent = '⛔ Game Over ⛔';
+                gameOverMessage.textContent = 'Keep learning about prehistoric times!';
+            }
+
+            finalScoreDisplay.textContent = score;
+            gameOverScreen.classList.add('visible');
+        }
+
+        function restartGame() {
+            score = 0;
+            lives = 3;
+            round = 1;
+            gameOverScreen.classList.remove('visible');
+            setupRound();
+        }
+
+        function updateDisplay() {
+            scoreDisplay.textContent = score;
+            livesDisplay.textContent = lives;
+            roundDisplay.textContent = round;
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Sound effects
+        function playSound(type) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'correct') {
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                oscillator.frequency.value = 200;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            } else if (type === 'complete') {
+                // Happy melody
+                const notes = [523, 659, 784, 1047];
+                notes.forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.2);
+                    osc.start(audioContext.currentTime + i * 0.1);
+                    osc.stop(audioContext.currentTime + i * 0.1 + 0.2);
+                });
+            }
+        }
+
+    </script>
+</body>
+
+</html>

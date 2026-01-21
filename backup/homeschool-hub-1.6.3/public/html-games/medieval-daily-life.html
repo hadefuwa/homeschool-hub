@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medieval Daily Life Challenge</title>
+    <style>
+        :root {
+            --primary: #6B4423;
+            --accent: #D4A574;
+            --bg: #F5E6D3;
+            --card-bg: #FFFFFF;
+            --stone: #8B7355;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #E8D5B7 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            color: var(--primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Stage Indicator */
+        #stage-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stage-badge {
+            background: linear-gradient(135deg, var(--primary), #8B6F47);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Game Area */
+        #game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, var(--card-bg), #F5E6D3);
+            border: 4px solid var(--primary);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .category-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #FFF8DC, #F5DEB3);
+            box-shadow: 0 0 20px rgba(212,165,116,0.5);
+        }
+
+        .category-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .category-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Feature Items */
+        .feature-item {
+            background: white;
+            border: 3px solid #6B4423;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .feature-item.selected {
+            background: #FFF8DC;
+            border-color: var(--accent);
+        }
+
+        .feature-item.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+
+        .feature-item.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Question Cards */
+        .question-card {
+            background: linear-gradient(135deg, var(--card-bg), #F5E6D3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: var(--primary);
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .option-btn.selected {
+            background: #FFF8DC;
+            border-color: var(--accent);
+        }
+
+        .option-btn.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            animation: celebrate 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Seasonal Timeline */
+        .seasonal-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .season-card {
+            background: linear-gradient(135deg, #FFF8DC, #F5DEB3);
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .season-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .season-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .season-activities {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #666;
+        }
+
+        /* Role Cards */
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .role-card {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .role-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .role-card.selected {
+            border-color: var(--accent);
+            background: #FFF8DC;
+        }
+
+        .role-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .role-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Village Map Visual */
+        .village-map {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            border: 4px solid var(--primary);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .village-structure {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .village-building {
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 2rem;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            border: 3px solid #4CAF50;
+            color: #2E7D32;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            border: 3px solid #f44336;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #8B6F47;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Matching Pairs */
+        .matching-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .match-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .match-item {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .match-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .match-item.selected {
+            border-color: var(--accent);
+            background: #FFF8DC;
+        }
+
+        .match-item.matched {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+            opacity: 0.7;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏘️ Medieval Daily Life Challenge 🏘️</h1>
+            <p class="subtitle">Explore how people lived in medieval villages!</p>
+        </header>
+
+        <div id="stage-indicator">
+            <div class="stage-badge" id="stage-badge">Stage 1 of 5</div>
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p id="completion-message"></p>
+            <button class="btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data - Enhanced for Year 4
+        const categories = {
+            villages: {
+                name: 'Medieval Villages',
+                emoji: '🏘️',
+                features: [
+                    { text: 'Most people lived in small villages', correct: true },
+                    { text: 'Villages were near streams or rivers for water', correct: true },
+                    { text: 'Had a church, mill, and blacksmith workshop', correct: true },
+                    { text: 'People worked together as a community', correct: true },
+                    { text: 'Villages were large cities', correct: false },
+                    { text: 'People lived far from water sources', correct: false }
+                ]
+            },
+            farming: {
+                name: 'Medieval Farming',
+                emoji: '🌾',
+                features: [
+                    { text: 'About 90% of people were farmers', correct: true },
+                    { text: 'Used three-field system for crop rotation', correct: true },
+                    { text: 'Worked from sunrise to sunset', correct: true },
+                    { text: 'Used simple tools like plows and sickles', correct: true },
+                    { text: 'Used modern machines', correct: false },
+                    { text: 'Only worked a few hours a day', correct: false }
+                ]
+            },
+            crafts: {
+                name: 'Medieval Crafts',
+                emoji: '🛠️',
+                features: [
+                    { text: 'Blacksmiths made metal tools and horseshoes', correct: true },
+                    { text: 'Weavers spun wool and made cloth', correct: true },
+                    { text: 'Carpenters built wooden buildings and furniture', correct: true },
+                    { text: 'Most things were made by hand locally', correct: true },
+                    { text: 'Everything came from far away', correct: false },
+                    { text: 'People used machines to make things', correct: false }
+                ]
+            },
+            homes: {
+                name: 'Medieval Homes',
+                emoji: '🏠',
+                features: [
+                    { text: 'Simple houses with one or two rooms', correct: true },
+                    { text: 'Made of wood and mud (wattle and daub)', correct: true },
+                    { text: 'Had thatched roofs and dirt floors', correct: true },
+                    { text: 'Often shared space with animals in winter', correct: true },
+                    { text: 'Had many rooms and glass windows', correct: false },
+                    { text: 'Made of stone and modern materials', correct: false }
+                ]
+            },
+            roles: {
+                name: 'Roles & Daily Life',
+                emoji: '👥',
+                features: [
+                    { text: 'Serfs worked the lord\'s land and couldn\'t leave freely', correct: true },
+                    { text: 'Freemen had more freedom but still worked hard', correct: true },
+                    { text: 'Men did heavy work like plowing and building', correct: true },
+                    { text: 'Women cooked, spun wool, and gardened', correct: true },
+                    { text: 'Everyone had the same role', correct: false },
+                    { text: 'Children did not help with work', correct: false }
+                ]
+            },
+            seasons: {
+                name: 'Seasonal Work',
+                emoji: '📅',
+                features: [
+                    { text: 'Spring: plowing and sowing crops', correct: true },
+                    { text: 'Summer: caring for growing crops and hay', correct: true },
+                    { text: 'Autumn: harvesting and preserving food', correct: true },
+                    { text: 'Winter: repairing tools and making clothes', correct: true },
+                    { text: 'Work was the same all year', correct: false },
+                    { text: 'People did not work in winter', correct: false }
+                ]
+            }
+        };
+
+        const questions = [
+            {
+                question: "What percentage of medieval people were farmers?",
+                options: ["50%", "70%", "90%", "30%"],
+                correct: 2,
+                explanation: "About 90% of medieval Europeans were farmers! Most people spent their lives working the land, growing crops, and raising animals."
+            },
+            {
+                question: "What was the three-field system used for?",
+                options: ["Building houses", "Crop rotation to keep soil healthy", "Making tools", "Trading goods"],
+                correct: 1,
+                explanation: "The three-field system was a way to rotate crops! One field grew crops in autumn, another in spring, and the third was left empty (fallow) so the soil could rest and stay healthy!"
+            },
+            {
+                question: "What is wattle and daub?",
+                options: ["A type of food", "Wood and mud used to build walls", "A farming tool", "A type of clothing"],
+                correct: 1,
+                explanation: "Wattle and daub was a building method! It used wooden sticks (wattle) covered with mud and straw (daub) to make walls for medieval houses!"
+            },
+            {
+                question: "What was the difference between serfs and freemen?",
+                options: ["No difference", "Serfs couldn't leave the lord's land freely, freemen had more freedom", "Serfs were rich", "Freemen were slaves"],
+                correct: 1,
+                explanation: "Serfs were peasants who had to work the lord's land and couldn't leave it freely. Freemen had more freedom and could move, but they still worked hard farming!"
+            },
+            {
+                question: "Why were villages built near streams or rivers?",
+                options: ["For fishing only", "For water for drinking, cooking, washing, and animals", "For swimming", "For decoration"],
+                correct: 1,
+                explanation: "Villages were built near water sources because people needed water for drinking, cooking, washing, and for their animals! Water was essential for daily life!"
+            },
+            {
+                question: "What did people do in winter when farming stopped?",
+                options: ["Nothing", "Repaired tools, made clothes, and ate stored food", "Only rested", "Built new houses"],
+                correct: 1,
+                explanation: "In winter, when farming stopped, people repaired tools, made clothes, preserved food, and ate food they had stored from the harvest!"
+            },
+            {
+                question: "What did blacksmiths make?",
+                options: ["Only weapons", "Metal tools, horseshoes, and nails", "Only jewelry", "Only furniture"],
+                correct: 1,
+                explanation: "Blacksmiths were very important! They made metal tools, horseshoes, nails, and other metal items that everyone in the village needed!"
+            },
+            {
+                question: "What were medieval markets used for?",
+                options: ["Only buying things", "Buying, selling, and socializing", "Only selling things", "Only entertainment"],
+                correct: 1,
+                explanation: "Medieval markets were important places where people bought and sold things, but they were also social places where people met friends and shared news!"
+            }
+        ];
+
+        const seasonalWork = [
+            { season: 'Spring', emoji: '🌸', activities: 'Plowing and sowing crops', order: 1 },
+            { season: 'Summer', emoji: '☀️', activities: 'Caring for growing crops and hay', order: 2 },
+            { season: 'Autumn', emoji: '🍂', activities: 'Harvesting and preserving food', order: 3 },
+            { season: 'Winter', emoji: '❄️', activities: 'Repairing tools and making clothes', order: 4 }
+        ];
+
+        const roleMatching = [
+            { role: 'Serf', description: 'Worked the lord\'s land, could not leave freely', emoji: '👨‍🌾' },
+            { role: 'Freeman', description: 'Had more freedom, paid rent, still worked hard', emoji: '👨‍💼' },
+            { role: 'Blacksmith', description: 'Made metal tools, horseshoes, and nails', emoji: '🔨' },
+            { role: 'Weaver', description: 'Spun wool and wove cloth for clothing', emoji: '🧵' },
+            { role: 'Carpenter', description: 'Built and repaired wooden buildings and furniture', emoji: '🪵' },
+            { role: 'Farmer', description: 'Grew crops and raised animals for food', emoji: '🌾' }
+        ];
+
+        // Game State
+        let currentStage = 1;
+        let score = 0;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let selectedCategory = null;
+        let selectedFeatures = new Set();
+        let matchedPairs = new Set();
+        let selectedMatchItems = [];
+
+        // Initialize Game
+        function initGame() {
+            currentStage = 1;
+            score = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+            updateScore();
+            loadStage(1);
+        }
+
+        function loadStage(stage) {
+            currentStage = stage;
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+
+            updateStageIndicator();
+
+            switch(stage) {
+                case 1:
+                    loadStage1();
+                    break;
+                case 2:
+                    loadStage2();
+                    break;
+                case 3:
+                    loadStage3();
+                    break;
+                case 4:
+                    loadStage4();
+                    break;
+                case 5:
+                    loadStage5();
+                    break;
+            }
+        }
+
+        function loadStage1() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 1: Match Features to Categories</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Select a category, then click on the features that belong to it!</p>';
+            
+            html += '<div class="category-grid">';
+            Object.keys(categories).forEach(key => {
+                const cat = categories[key];
+                html += `
+                    <div class="category-card" data-category="${key}" onclick="selectCategory('${key}')">
+                        <div class="category-emoji">${cat.emoji}</div>
+                        <div class="category-name">${cat.name}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="features-section" style="display: none;">';
+            html += '<h3 style="text-align: center; margin: 30px 0 20px 0; font-size: 1.4rem;">Click on the features that belong to this category:</h3>';
+            html += '<div id="features-container"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage1()">Check Answers</button>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            
+            gameArea.innerHTML = html;
+            selectedFeatures.clear();
+        }
+
+        function selectCategory(categoryKey) {
+            selectedCategory = categoryKey;
+            const cards = document.querySelectorAll('.category-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            document.querySelector(`[data-category="${categoryKey}"]`).classList.add('selected');
+            
+            const featuresSection = document.getElementById('features-section');
+            const featuresContainer = document.getElementById('features-container');
+            
+            // Get all features and shuffle
+            const allFeatures = [];
+            Object.keys(categories).forEach(key => {
+                categories[key].features.forEach(feature => {
+                    allFeatures.push({ text: feature.text, correct: key === categoryKey && feature.correct, category: key });
+                });
+            });
+            
+            const shuffled = allFeatures.sort(() => Math.random() - 0.5);
+            
+            featuresContainer.innerHTML = '';
+            shuffled.forEach((feature, index) => {
+                const featureCard = document.createElement('div');
+                featureCard.className = 'feature-item';
+                featureCard.textContent = feature.text;
+                featureCard.dataset.index = index;
+                featureCard.dataset.correct = feature.correct;
+                featureCard.onclick = () => toggleFeature(index);
+                featuresContainer.appendChild(featureCard);
+            });
+            
+            featuresSection.style.display = 'block';
+        }
+
+        function toggleFeature(index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedFeatures.delete(index);
+            } else {
+                card.classList.add('selected');
+                selectedFeatures.add(index);
+            }
+        }
+
+        function checkStage1() {
+            const cards = document.querySelectorAll('.feature-item');
+            let correct = 0;
+            let selected = 0;
+            let totalCorrect = categories[selectedCategory].features.filter(f => f.correct).length;
+            
+            cards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.classList.add('correct');
+                } else if (isCorrect && !isSelected) {
+                    card.classList.add('correct');
+                } else if (!isCorrect && isSelected) {
+                    card.classList.add('wrong');
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && selectedFeatures.size === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You found all ${totalCorrect} correct features for ${categories[selectedCategory].name}!`;
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} correct features. Keep trying!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += cards.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage2() {
+            const gameArea = document.getElementById('game-area');
+            const question = questions[Math.floor(Math.random() * questions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 2: Knowledge Challenge</h2>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage2" onclick="nextStage2()" style="display: none;">Continue</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function selectOption(selectedIndex, correctIndex, explanation) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selectedIndex === correctIndex) {
+                buttons[selectedIndex].classList.add('correct');
+                feedback.textContent = '✓ Correct! ' + explanation;
+                feedback.className = 'feedback show correct';
+                score += 20;
+                correctAnswers++;
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+                feedback.textContent = '✗ Not quite. ' + explanation;
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions++;
+            updateScore();
+            
+            document.getElementById('next-stage2').style.display = 'inline-block';
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function nextStage2() {
+            if (currentStage < 5) {
+                loadStage(currentStage + 1);
+            } else {
+                endGame();
+            }
+        }
+
+        function loadStage3() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 3: Seasonal Work Patterns</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Medieval life followed the seasons! Match each season to its main activities.</p>';
+            
+            html += '<div class="seasonal-timeline">';
+            const shuffledSeasons = [...seasonalWork].sort(() => Math.random() - 0.5);
+            shuffledSeasons.forEach((season, index) => {
+                html += `
+                    <div class="season-card" data-season="${season.season}" data-order="${season.order}" onclick="selectSeason('${season.season}', ${season.order})">
+                        <div class="season-emoji">${season.emoji}</div>
+                        <div class="season-name">${season.season}</div>
+                        <div class="season-activities">${season.activities}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div class="question-card">';
+            html += '<div class="question-text">Put the seasons in the correct order of the farming year (click them in order):</div>';
+            html += '<div id="selected-seasons" style="margin-top: 20px; min-height: 60px; padding: 15px; background: #F5E6D3; border-radius: 10px; border: 2px dashed var(--primary);"></div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage3()">Check Order</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedSeasons = [];
+        }
+
+        let selectedSeasons = [];
+
+        function selectSeason(seasonName, order) {
+            const card = document.querySelector(`[data-season="${seasonName}"]`);
+            if (selectedSeasons.find(s => s.name === seasonName)) {
+                // Remove if already selected
+                selectedSeasons = selectedSeasons.filter(s => s.name !== seasonName);
+                card.classList.remove('selected');
+            } else {
+                // Add to selection
+                selectedSeasons.push({ name: seasonName, order: order });
+                card.classList.add('selected');
+            }
+            
+            updateSeasonDisplay();
+        }
+
+        function updateSeasonDisplay() {
+            const display = document.getElementById('selected-seasons');
+            if (selectedSeasons.length === 0) {
+                display.innerHTML = '<p style="color: #666; font-style: italic;">Click seasons in order...</p>';
+            } else {
+                display.innerHTML = selectedSeasons.map((s, i) => 
+                    `${i + 1}. ${s.name}`
+                ).join(' → ');
+            }
+        }
+
+        function checkStage3() {
+            const correctOrder = [1, 2, 3, 4];
+            const selectedOrder = selectedSeasons.map(s => s.order);
+            const isCorrect = JSON.stringify(selectedOrder) === JSON.stringify(correctOrder);
+            
+            const feedback = document.getElementById('feedback');
+            if (isCorrect && selectedSeasons.length === 4) {
+                feedback.textContent = '✓ Perfect! The farming year followed this pattern: Spring (plowing and sowing) → Summer (caring for crops) → Autumn (harvesting) → Winter (repairing tools and making clothes)!';
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers += 4;
+            } else {
+                feedback.textContent = 'Not quite. The correct order is: Spring (plowing) → Summer (caring for crops) → Autumn (harvesting) → Winter (repairing tools). Try again!';
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions += 4;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage4() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 4: Match Roles to Descriptions</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Match each medieval role to its correct description!</p>';
+            
+            const shuffledRoles = [...roleMatching].sort(() => Math.random() - 0.5);
+            const shuffledDescriptions = [...roleMatching].sort(() => Math.random() - 0.5);
+            
+            html += '<div class="matching-grid">';
+            html += '<div class="match-column">';
+            html += '<h3 style="text-align: center; color: var(--primary); margin-bottom: 15px;">Roles</h3>';
+            shuffledRoles.forEach((role, index) => {
+                html += `
+                    <div class="match-item" data-type="role" data-role="${role.role}" onclick="selectMatchItem('role', '${role.role}', ${index})">
+                        ${role.emoji} ${role.role}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div class="match-column">';
+            html += '<h3 style="text-align: center; color: var(--primary); margin-bottom: 15px;">Descriptions</h3>';
+            shuffledDescriptions.forEach((desc, index) => {
+                html += `
+                    <div class="match-item" data-type="desc" data-role="${desc.role}" onclick="selectMatchItem('desc', '${desc.role}', ${index})">
+                        ${desc.description}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage4()">Check Matches</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedMatchItems = [];
+            matchedPairs.clear();
+        }
+
+        function selectMatchItem(type, role, index) {
+            const item = document.querySelectorAll(`[data-type="${type}"]`)[index];
+            
+            // Check if already matched
+            if (item.classList.contains('matched')) return;
+            
+            // Toggle selection
+            if (item.classList.contains('selected')) {
+                item.classList.remove('selected');
+                selectedMatchItems = selectedMatchItems.filter(i => i.type !== type || i.index !== index);
+            } else {
+                item.classList.add('selected');
+                selectedMatchItems.push({ type, role, index });
+            }
+            
+            // Check for match
+            if (selectedMatchItems.length === 2) {
+                const [item1, item2] = selectedMatchItems;
+                if (item1.type !== item2.type && item1.role === item2.role) {
+                    // Match found!
+                    const items = document.querySelectorAll(`[data-role="${item1.role}"]`);
+                    items.forEach(i => {
+                        i.classList.add('matched');
+                        i.classList.remove('selected');
+                    });
+                    matchedPairs.add(item1.role);
+                    score += 15;
+                    selectedMatchItems = [];
+                } else {
+                    // No match
+                    setTimeout(() => {
+                        document.querySelectorAll('.match-item.selected').forEach(i => {
+                            if (!i.classList.contains('matched')) {
+                                i.classList.remove('selected');
+                            }
+                        });
+                        selectedMatchItems = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        function checkStage4() {
+            const totalPairs = roleMatching.length;
+            const matched = matchedPairs.size;
+            
+            const feedback = document.getElementById('feedback');
+            if (matched === totalPairs) {
+                feedback.textContent = `✓ Perfect! You matched all ${totalPairs} roles correctly! Each person in medieval villages had important jobs to do!`;
+                feedback.className = 'feedback show correct';
+                correctAnswers += totalPairs;
+            } else {
+                feedback.textContent = `You matched ${matched} out of ${totalPairs} pairs. Keep trying to match all the roles!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += matched;
+            }
+            
+            totalQuestions += totalPairs;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage5() {
+            const gameArea = document.getElementById('game-area');
+            const question = questions[Math.floor(Math.random() * questions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 5: Final Challenge</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #666;">One more challenging question to test your knowledge!</p>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage5" onclick="endGame()" style="display: none;">Finish Game</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function updateStageIndicator() {
+            document.getElementById('stage-badge').textContent = `Stage ${currentStage} of 5`;
+            const progress = (currentStage / 5) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-fill').textContent = Math.round(progress) + '%';
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function endGame() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = `Outstanding! You scored ${score} points with ${percentage}% correct! You're a true expert on Medieval Daily Life! 🏆`;
+            } else if (percentage >= 70) {
+                message = `Great job! You scored ${score} points with ${percentage}% correct! You really understand how people lived in medieval times! 🌟`;
+            } else if (percentage >= 50) {
+                message = `Good effort! You scored ${score} points with ${percentage}% correct! Keep learning about medieval village life! 📚`;
+            } else {
+                message = `You scored ${score} points with ${percentage}% correct. Review the lesson and try again! 💪`;
+            }
+            
+            document.getElementById('completion-message').textContent = message;
+            document.getElementById('completion-modal').classList.add('show');
+            
+            // Send completion message
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: message,
+                    rate: 0.9,
+                    pitch: 1.1
+                }, '*');
+                
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'medieval-daily-life'
+                    }, '*');
+                }, 3000);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('completion-modal').classList.remove('show');
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>

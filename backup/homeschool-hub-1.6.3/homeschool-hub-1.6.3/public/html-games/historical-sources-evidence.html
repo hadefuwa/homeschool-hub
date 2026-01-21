@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Sources Detective</title>
+    <style>
+        :root {
+            --primary: #3E2723;
+            --accent: #FFC107;
+            --bg: #FFF8E1;
+            --card-bg: #FFFFFF;
+            --primary-source: #4CAF50;
+            --secondary-source: #2196F3;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #FFECB3 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: 4px solid var(--primary);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin: 10px 0;
+            color: var(--primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Stage Indicator */
+        #stage-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stage-badge {
+            background: linear-gradient(135deg, var(--primary), #5D4037);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            background: #27AE60;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Game Area */
+        #game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        /* Source Cards */
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .source-card {
+            background: linear-gradient(135deg, var(--card-bg), #F5F5F5);
+            border: 4px solid #9E9E9E;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .source-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #9E9E9E;
+            transition: all 0.3s;
+        }
+
+        .source-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .source-card.primary {
+            border-color: var(--primary-source);
+        }
+
+        .source-card.primary::before {
+            background: var(--primary-source);
+            height: 8px;
+        }
+
+        .source-card.secondary {
+            border-color: var(--secondary-source);
+        }
+
+        .source-card.secondary::before {
+            background: var(--secondary-source);
+            height: 8px;
+        }
+
+        .source-card.selected {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .source-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .source-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .source-description {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .source-type-badge {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .source-card.primary .source-type-badge.primary,
+        .source-card.secondary .source-type-badge.secondary {
+            display: block;
+        }
+
+        .source-type-badge.primary {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 2px solid var(--primary-source);
+        }
+
+        .source-type-badge.secondary {
+            background: #E3F2FD;
+            color: #1565C0;
+            border: 2px solid var(--secondary-source);
+        }
+
+        /* Classification Zones */
+        .classification-zones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .classification-zone {
+            background: #F5F5F5;
+            border: 4px dashed #9E9E9E;
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 300px;
+            transition: all 0.3s;
+        }
+
+        .classification-zone.primary-zone {
+            border-color: var(--primary-source);
+            background: #E8F5E9;
+        }
+
+        .classification-zone.secondary-zone {
+            border-color: var(--secondary-source);
+            background: #E3F2FD;
+        }
+
+        .zone-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .zone-title.primary {
+            color: var(--primary-source);
+        }
+
+        .zone-title.secondary {
+            color: var(--secondary-source);
+        }
+
+        /* Evaluation Questions */
+        .evaluation-card {
+            background: linear-gradient(135deg, #FFF8E1, #FFECB3);
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .evaluation-question {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .evaluation-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .eval-option {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .eval-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .eval-option.selected {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .eval-option.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .eval-option.wrong {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            border: 3px solid #4CAF50;
+            color: #2E7D32;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            border: 3px solid #f44336;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #5D4037;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27AE60, #2ECC71);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Historical Sources Detective 🔍</h1>
+            <p class="subtitle">Become a history detective! Learn to identify and evaluate historical sources</p>
+        </header>
+
+        <div id="stage-indicator">
+            <div class="stage-badge" id="stage-badge">Case 1 of 5</div>
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Case Closed! 🎉</h2>
+            <p id="completion-message"></p>
+            <button class="btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data - Detective Style
+        const sources = [
+            // Primary Sources
+            {
+                id: 'diary',
+                title: 'A Soldier\'s Diary from 1916',
+                description: 'A handwritten diary kept by a soldier during World War I, describing daily life in the trenches.',
+                type: 'primary',
+                emoji: '📔',
+                category: 'written',
+                questions: ['Who created it?', 'When was it created?', 'Why was it created?']
+            },
+            {
+                id: 'photo',
+                title: 'Photograph of the Moon Landing (1969)',
+                description: 'An original photograph taken by NASA during the Apollo 11 mission showing astronauts on the Moon.',
+                type: 'primary',
+                emoji: '📷',
+                category: 'visual',
+                questions: ['When was it created?', 'What does it tell us?', 'Is it reliable?']
+            },
+            {
+                id: 'letter',
+                title: 'Letter from a Victorian Child (1880)',
+                description: 'A letter written by a 12-year-old factory worker describing their working conditions in 1880.',
+                type: 'primary',
+                emoji: '✉️',
+                category: 'written',
+                questions: ['Who created it?', 'What perspective does it show?', 'What does it tell us?']
+            },
+            {
+                id: 'artifact',
+                title: 'Roman Coin from 100 AD',
+                description: 'An actual coin minted during the Roman Empire, found in an archaeological dig.',
+                type: 'primary',
+                emoji: '🪙',
+                category: 'artifact',
+                questions: ['When was it created?', 'What does it tell us?', 'Is it reliable?']
+            },
+            {
+                id: 'speech',
+                title: 'Recording of Martin Luther King\'s "I Have a Dream" Speech (1963)',
+                description: 'An audio recording of the actual speech given at the March on Washington in 1963.',
+                type: 'primary',
+                emoji: '🎤',
+                category: 'written',
+                questions: ['Who created it?', 'When was it created?', 'What perspective does it show?']
+            },
+            {
+                id: 'newspaper',
+                title: 'Newspaper Article from 1945',
+                description: 'A newspaper article published the day World War II ended, reporting the news as it happened.',
+                type: 'primary',
+                emoji: '📰',
+                category: 'written',
+                questions: ['When was it created?', 'Why was it created?', 'What does it tell us?']
+            },
+            // Secondary Sources
+            {
+                id: 'history-book',
+                title: 'History Textbook About Ancient Egypt (2020)',
+                description: 'A modern history book written in 2020 that explains life in Ancient Egypt using many different sources.',
+                type: 'secondary',
+                emoji: '📚',
+                category: 'written',
+                questions: ['When was it created?', 'What perspective does it show?', 'How does it compare to other sources?']
+            },
+            {
+                id: 'documentary',
+                title: 'Documentary About World War II (2010)',
+                description: 'A documentary film made in 2010 that tells the story of World War II using interviews, photos, and analysis.',
+                type: 'secondary',
+                emoji: '🎬',
+                category: 'visual',
+                questions: ['When was it created?', 'What biases might exist?', 'How does it compare to other sources?']
+            },
+            {
+                id: 'biography',
+                title: 'Biography of Queen Victoria (2005)',
+                description: 'A book written in 2005 about Queen Victoria\'s life, using letters, diaries, and other historical documents.',
+                type: 'secondary',
+                emoji: '👑',
+                category: 'written',
+                questions: ['Who created it?', 'When was it created?', 'What is missing?']
+            },
+            {
+                id: 'article',
+                title: 'Online Article About the Industrial Revolution (2023)',
+                description: 'An article on a history website written in 2023 that explains the Industrial Revolution and its effects.',
+                type: 'secondary',
+                emoji: '💻',
+                category: 'written',
+                questions: ['When was it created?', 'Is it reliable?', 'What biases might exist?']
+            },
+            {
+                id: 'museum-display',
+                title: 'Museum Display About Vikings (2018)',
+                description: 'A museum exhibit created in 2018 that displays Viking artifacts with explanations and interpretations.',
+                type: 'secondary',
+                emoji: '🏛️',
+                category: 'visual',
+                questions: ['When was it created?', 'What perspective does it show?', 'What is missing?']
+            },
+            {
+                id: 'encyclopedia',
+                title: 'Encyclopedia Entry About Ancient Rome (2015)',
+                description: 'An encyclopedia article written in 2015 that summarizes information about Ancient Rome from many sources.',
+                type: 'secondary',
+                emoji: '📖',
+                category: 'written',
+                questions: ['When was it created?', 'How does it compare to other sources?', 'What biases might exist?']
+            }
+        ];
+
+        const evaluationQuestions = [
+            {
+                sourceId: 'diary',
+                question: 'What makes this diary a primary source?',
+                options: [
+                    'It was written long after the events',
+                    'It was created at the time by someone who experienced the events first-hand',
+                    'It is a modern interpretation',
+                    'It was written by a historian'
+                ],
+                correct: 1,
+                explanation: 'This diary is a primary source because it was written during World War I by a soldier who experienced the events first-hand!'
+            },
+            {
+                sourceId: 'history-book',
+                question: 'What makes this history book a secondary source?',
+                options: [
+                    'It was written during Ancient Egyptian times',
+                    'It was created much later (2020) by someone who did not live in Ancient Egypt, using other sources',
+                    'It contains original artifacts',
+                    'It was written by an Egyptian'
+                ],
+                correct: 1,
+                explanation: 'This is a secondary source because it was written in 2020, long after Ancient Egypt, by someone who did not experience it, using information from other sources!'
+            },
+            {
+                sourceId: 'photo',
+                question: 'Why is a photograph from 1969 a primary source?',
+                options: [
+                    'It was taken recently',
+                    'It was taken at the time of the event (1969) by someone who was there, showing what actually happened',
+                    'It is a modern recreation',
+                    'It was taken by a historian'
+                ],
+                correct: 1,
+                explanation: 'This photograph is a primary source because it was taken in 1969 at the actual time of the Moon landing by someone who was there, showing what really happened!'
+            },
+            {
+                sourceId: 'documentary',
+                question: 'What questions should you ask to evaluate this documentary?',
+                options: [
+                    'Nothing - documentaries are always accurate',
+                    'When was it created? What biases might exist? How does it compare to other sources?',
+                    'Only when it was made',
+                    'Only who made it'
+                ],
+                correct: 1,
+                explanation: 'You should ask: When was it created? (2010 - long after WWII), What biases might exist? (the filmmaker\'s perspective), and How does it compare to other sources? (to check accuracy)!'
+            }
+        ];
+
+        const sourceTypes = {
+            primary: {
+                name: 'Primary Sources',
+                description: 'Created at the time of the events',
+                examples: ['Letters, diaries, photos from the time', 'Official documents', 'Artifacts', 'First-hand accounts', 'Speeches', 'Newspapers from the time'],
+                color: var(--primary-source)
+            },
+            secondary: {
+                name: 'Secondary Sources',
+                description: 'Created later by someone who did not experience the events',
+                examples: ['History books', 'Documentaries', 'Articles', 'Biographies', 'Encyclopedias', 'Museum displays'],
+                color: var(--secondary-source)
+            }
+        };
+
+        // Game State
+        let currentStage = 1;
+        let score = 0;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let selectedSources = { primary: [], secondary: [] };
+        let shuffledSources = [];
+
+        // Initialize Game
+        function initGame() {
+            currentStage = 1;
+            score = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+            updateScore();
+            loadStage(1);
+        }
+
+        function loadStage(stage) {
+            currentStage = stage;
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+
+            updateStageIndicator();
+
+            switch(stage) {
+                case 1:
+                    loadStage1();
+                    break;
+                case 2:
+                    loadStage2();
+                    break;
+                case 3:
+                    loadStage3();
+                    break;
+                case 4:
+                    loadStage4();
+                    break;
+                case 5:
+                    loadStage5();
+                    break;
+            }
+        }
+
+        function loadStage1() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Case 1: Identify Primary vs Secondary Sources</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Click on sources and drag them to the correct category!</p>';
+            
+            shuffledSources = [...sources].sort(() => Math.random() - 0.5);
+            
+            html += '<div class="source-grid">';
+            shuffledSources.forEach((source, index) => {
+                html += `
+                    <div class="source-card" data-id="${source.id}" data-type="${source.type}" data-index="${index}" onclick="selectSource('${source.id}', '${source.type}', ${index})">
+                        <div class="source-emoji">${source.emoji}</div>
+                        <div class="source-title">${source.title}</div>
+                        <div class="source-description">${source.description}</div>
+                        <div class="source-type-badge primary">✓ Primary Source</div>
+                        <div class="source-type-badge secondary">✓ Secondary Source</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div class="classification-zones">';
+            html += '<div class="classification-zone primary-zone" id="primary-zone">';
+            html += '<div class="zone-title primary">📜 Primary Sources<br><small style="font-size: 0.8rem; font-weight: normal;">Created at the time</small></div>';
+            html += '<div id="primary-sources"></div>';
+            html += '</div>';
+            
+            html += '<div class="classification-zone secondary-zone" id="secondary-zone">';
+            html += '<div class="zone-title secondary">📚 Secondary Sources<br><small style="font-size: 0.8rem; font-weight: normal;">Created later</small></div>';
+            html += '<div id="secondary-sources"></div>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage1()">Check Classification</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedSources = { primary: [], secondary: [] };
+        }
+
+        function selectSource(sourceId, sourceType, index) {
+            const card = document.querySelector(`[data-id="${sourceId}"]`);
+            const primaryZone = document.getElementById('primary-sources');
+            const secondaryZone = document.getElementById('secondary-sources');
+            
+            // Remove from current location
+            if (card.parentElement === primaryZone) {
+                primaryZone.removeChild(card);
+                selectedSources.primary = selectedSources.primary.filter(id => id !== sourceId);
+            } else if (card.parentElement === secondaryZone) {
+                secondaryZone.removeChild(card);
+                selectedSources.secondary = selectedSources.secondary.filter(id => id !== sourceId);
+            } else {
+                // Add to correct zone
+                if (sourceType === 'primary') {
+                    primaryZone.appendChild(card);
+                    if (!selectedSources.primary.includes(sourceId)) {
+                        selectedSources.primary.push(sourceId);
+                    }
+                } else {
+                    secondaryZone.appendChild(card);
+                    if (!selectedSources.secondary.includes(sourceId)) {
+                        selectedSources.secondary.push(sourceId);
+                    }
+                }
+            }
+            
+            // Update card styling
+            card.classList.remove('primary', 'secondary');
+            if (card.parentElement === primaryZone) {
+                card.classList.add('primary');
+            } else if (card.parentElement === secondaryZone) {
+                card.classList.add('secondary');
+            }
+        }
+
+        function checkStage1() {
+            const primarySources = sources.filter(s => s.type === 'primary');
+            const secondarySources = sources.filter(s => s.type === 'secondary');
+            
+            const primaryCorrect = primarySources.every(s => selectedSources.primary.includes(s.id));
+            const secondaryCorrect = secondarySources.every(s => selectedSources.secondary.includes(s.id));
+            const noWrong = selectedSources.primary.every(id => {
+                const source = sources.find(s => s.id === id);
+                return source && source.type === 'primary';
+            }) && selectedSources.secondary.every(id => {
+                const source = sources.find(s => s.id === id);
+                return source && source.type === 'secondary';
+            });
+            
+            const isCorrect = primaryCorrect && secondaryCorrect && noWrong &&
+                             selectedSources.primary.length === primarySources.length &&
+                             selectedSources.secondary.length === secondarySources.length;
+            
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.textContent = '✓ Perfect! You correctly identified all primary sources (created at the time) and secondary sources (created later)! Primary sources give us first-hand evidence, while secondary sources help us understand and interpret the past!';
+                feedback.className = 'feedback show correct';
+                score += 50;
+                correctAnswers += (primarySources.length + secondarySources.length);
+            } else {
+                feedback.textContent = 'Not quite. Remember: Primary sources are created at the time (diaries, photos, letters, artifacts from the time). Secondary sources are created later (history books, documentaries, articles written after the events). Try again!';
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions += sources.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function loadStage2() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Case 2: Source Categories</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Match sources to their categories: Written, Visual, or Artifact!</p>';
+            
+            const categorySources = [
+                { source: 'A letter from 1850', category: 'written', emoji: '✉️' },
+                { source: 'A photograph from 1945', category: 'visual', emoji: '📷' },
+                { source: 'A Roman coin', category: 'artifact', emoji: '🪙' },
+                { source: 'A diary entry', category: 'written', emoji: '📔' },
+                { source: 'A painting from 1800', category: 'visual', emoji: '🎨' },
+                { source: 'A medieval sword', category: 'artifact', emoji: '⚔️' },
+                { source: 'A newspaper article', category: 'written', emoji: '📰' },
+                { source: 'A map from 1500', category: 'visual', emoji: '🗺️' },
+                { source: 'A pottery bowl from Ancient Greece', category: 'artifact', emoji: '🏺' }
+            ].sort(() => Math.random() - 0.5);
+            
+            html += '<div class="source-grid">';
+            categorySources.forEach((item, index) => {
+                html += `
+                    <div class="source-card" data-index="${index}" data-category="${item.category}" onclick="selectCategory('${item.category}', ${index})">
+                        <div class="source-emoji">${item.emoji}</div>
+                        <div class="source-title">${item.source}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div class="classification-zones">';
+            html += '<div class="classification-zone" id="written-zone" style="border-color: #9C27B0;">';
+            html += '<div class="zone-title" style="color: #9C27B0;">📝 Written Sources</div>';
+            html += '<div id="written-sources"></div>';
+            html += '</div>';
+            
+            html += '<div class="classification-zone" id="visual-zone" style="border-color: #E91E63;">';
+            html += '<div class="zone-title" style="color: #E91E63;">🖼️ Visual Sources</div>';
+            html += '<div id="visual-sources"></div>';
+            html += '</div>';
+            
+            html += '<div class="classification-zone" id="artifact-zone" style="border-color: #FF9800;">';
+            html += '<div class="zone-title" style="color: #FF9800;">🏺 Artifacts</div>';
+            html += '<div id="artifact-sources"></div>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage2()">Check Categories</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            window.categorySelections = { written: [], visual: [], artifact: [] };
+            window.categorySources = categorySources;
+        }
+
+        function selectCategory(category, index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            const zone = document.getElementById(`${category}-sources`);
+            const item = window.categorySources[index];
+            
+            // Remove from current zone
+            ['written', 'visual', 'artifact'].forEach(cat => {
+                const otherZone = document.getElementById(`${cat}-sources`);
+                if (card.parentElement === otherZone) {
+                    otherZone.removeChild(card);
+                    window.categorySelections[cat] = window.categorySelections[cat].filter(i => i !== index);
+                }
+            });
+            
+            // Add to correct zone
+            zone.appendChild(card);
+            if (!window.categorySelections[category].includes(index)) {
+                window.categorySelections[category].push(index);
+            }
+        }
+
+        function checkStage2() {
+            const correct = window.categorySources.every(item => {
+                return window.categorySelections[item.category].includes(
+                    window.categorySources.indexOf(item)
+                );
+            });
+            
+            const allPlaced = window.categorySources.every((item, index) => {
+                return ['written', 'visual', 'artifact'].some(cat => 
+                    window.categorySelections[cat].includes(index)
+                );
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct && allPlaced) {
+                feedback.textContent = '✓ Perfect! You correctly categorized all sources! Written sources include letters, diaries, newspapers. Visual sources include photos, paintings, maps. Artifacts are physical objects from the past!';
+                feedback.className = 'feedback show correct';
+                score += 40;
+                correctAnswers += window.categorySources.length;
+            } else {
+                feedback.textContent = 'Not quite. Remember: Written sources are text-based (letters, diaries, newspapers). Visual sources are images (photos, paintings, maps). Artifacts are physical objects (coins, tools, weapons). Try again!';
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions += window.categorySources.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function loadStage3() {
+            const gameArea = document.getElementById('game-area');
+            const question = evaluationQuestions[Math.floor(Math.random() * evaluationQuestions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Case 3: Evaluate Sources</h2>';
+            html += '<div class="evaluation-card">';
+            html += `<div class="evaluation-question">${question.question}</div>`;
+            html += '<div class="evaluation-options">';
+            
+            question.options.forEach((option, index) => {
+                html += `<div class="eval-option" onclick="selectEvalOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</div>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage3" onclick="nextStage3()" style="display: none;">Continue</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function selectEvalOption(selectedIndex, correctIndex, explanation) {
+            const options = document.querySelectorAll('.eval-option');
+            const feedback = document.getElementById('feedback');
+            
+            options.forEach(opt => opt.onclick = null);
+            
+            if (selectedIndex === correctIndex) {
+                options[selectedIndex].classList.add('correct');
+                feedback.textContent = '✓ Correct! ' + explanation;
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers++;
+            } else {
+                options[selectedIndex].classList.add('wrong');
+                options[correctIndex].classList.add('correct');
+                feedback.textContent = 'Not quite. ' + explanation;
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions++;
+            updateScore();
+            
+            document.getElementById('next-stage3').style.display = 'inline-block';
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function nextStage3() {
+            if (currentStage < 5) {
+                loadStage(currentStage + 1);
+            } else {
+                endGame();
+            }
+        }
+
+        function loadStage4() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Case 4: Questions to Ask About Sources</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Select ALL the important questions historians ask when evaluating sources!</p>';
+            
+            const questions = [
+                { question: 'Who created it?', correct: true, emoji: '👤' },
+                { question: 'When was it created?', correct: true, emoji: '📅' },
+                { question: 'Why was it created?', correct: true, emoji: '❓' },
+                { question: 'Is it reliable?', correct: true, emoji: '✓' },
+                { question: 'What does it tell us?', correct: true, emoji: '💡' },
+                { question: 'What perspective does it show?', correct: true, emoji: '👁️' },
+                { question: 'What is missing?', correct: true, emoji: '🔍' },
+                { question: 'How does it compare to other sources?', correct: true, emoji: '⚖️' },
+                { question: 'What biases might exist?', correct: true, emoji: '🎭' },
+                { question: 'What color is it?', correct: false, emoji: '🎨' },
+                { question: 'How much does it cost?', correct: false, emoji: '💰' },
+                { question: 'Is it pretty?', correct: false, emoji: '✨' }
+            ].sort(() => Math.random() - 0.5);
+            
+            html += '<div class="source-grid">';
+            questions.forEach((q, index) => {
+                html += `
+                    <div class="source-card" data-index="${index}" data-correct="${q.correct}" onclick="toggleQuestion(${index}, ${q.correct})">
+                        <div class="source-emoji">${q.emoji}</div>
+                        <div class="source-title">${q.question}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage4()">Check Questions</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            window.selectedQuestions = new Set();
+            window.questions = questions;
+        }
+
+        function toggleQuestion(index, isCorrect) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                window.selectedQuestions.delete(index);
+            } else {
+                card.classList.add('selected');
+                window.selectedQuestions.add(index);
+            }
+        }
+
+        function checkStage4() {
+            const cards = document.querySelectorAll('.source-card');
+            let correct = 0;
+            let totalCorrect = 9; // 9 correct questions
+            
+            cards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (isCorrect && !isSelected) {
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (!isCorrect && isSelected) {
+                    card.style.borderColor = '#f44336';
+                    card.style.background = '#ffebee';
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && window.selectedQuestions.size === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You identified all ${totalCorrect} important questions! Historians ask: Who created it? When? Why? Is it reliable? What does it tell us? What perspective? What's missing? How does it compare? What biases might exist?`;
+                feedback.className = 'feedback show correct';
+                score += 45;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} important questions. Remember: Historians ask about who, when, why, reliability, perspective, what's missing, comparisons, and biases!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += cards.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function loadStage5() {
+            const gameArea = document.getElementById('game-area');
+            const question = evaluationQuestions[Math.floor(Math.random() * evaluationQuestions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Case 5: Final Investigation</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #666;">One final challenge to test your detective skills!</p>';
+            html += '<div class="evaluation-card">';
+            html += `<div class="evaluation-question">${question.question}</div>`;
+            html += '<div class="evaluation-options">';
+            
+            question.options.forEach((option, index) => {
+                html += `<div class="eval-option" onclick="selectEvalOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</div>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage5" onclick="endGame()" style="display: none;">Complete Investigation</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function updateStageIndicator() {
+            document.getElementById('stage-badge').textContent = `Case ${currentStage} of 5`;
+            const progress = (currentStage / 5) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-fill').textContent = Math.round(progress) + '%';
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function endGame() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = `Outstanding detective work! You scored ${score} points with ${percentage}% correct! You're an expert at identifying and evaluating historical sources! 🏆`;
+            } else if (percentage >= 75) {
+                message = `Excellent investigation! You scored ${score} points with ${percentage}% correct! You have strong skills in analyzing historical sources! 🌟`;
+            } else if (percentage >= 60) {
+                message = `Good detective work! You scored ${score} points with ${percentage}% correct! Keep practicing to become a master historian! 📚`;
+            } else {
+                message = `You scored ${score} points with ${percentage}% correct. Review the lesson and try again! Remember: Primary sources are from the time, secondary sources are created later! 💪`;
+            }
+            
+            document.getElementById('completion-message').textContent = message;
+            document.getElementById('completion-modal').classList.add('show');
+            
+            // Send completion message
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: message,
+                    rate: 0.9,
+                    pitch: 1.0
+                }, '*');
+                
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'historical-sources-evidence'
+                    }, '*');
+                }, 3000);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('completion-modal').classList.remove('show');
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>

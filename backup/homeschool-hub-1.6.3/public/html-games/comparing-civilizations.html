@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civilization Comparison Challenge</title>
+    <style>
+        :root {
+            --egypt: #FFD700;
+            --mesopotamia: #8B4513;
+            --china: #DC143C;
+            --bg: #F5F5DC;
+            --card-bg: #FFF8DC;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #E6E6FA 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            color: #654321;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Stage Indicator */
+        #stage-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stage-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stage-badge {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Game Area */
+        #game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        /* Stage 1: Match Features */
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .civilization-column {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            border: 4px solid transparent;
+            min-height: 300px;
+        }
+
+        .civilization-column.egypt {
+            border-color: var(--egypt);
+        }
+
+        .civilization-column.mesopotamia {
+            border-color: var(--mesopotamia);
+        }
+
+        .civilization-column.china {
+            border-color: var(--china);
+        }
+
+        .civilization-header {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .civilization-header.egypt {
+            background: var(--egypt);
+            color: #333;
+        }
+
+        .civilization-header.mesopotamia {
+            background: var(--mesopotamia);
+            color: white;
+        }
+
+        .civilization-header.china {
+            background: var(--china);
+            color: white;
+        }
+
+        .drop-zone {
+            min-height: 60px;
+            border: 3px dashed #ccc;
+            border-radius: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4CAF50;
+            background: rgba(76,175,80,0.2);
+            transform: scale(1.05);
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: #4CAF50;
+            background: rgba(76,175,80,0.1);
+        }
+
+        .feature-item {
+            background: white;
+            border: 3px solid #654321;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .feature-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .feature-item.correct {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .feature-item.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Stage 2: Multiple Choice */
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #654321;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #654321;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: #8B4513;
+        }
+
+        .option-btn.selected {
+            background: #FFF8DC;
+            border-color: #DAA520;
+        }
+
+        .option-btn.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            animation: celebrate 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Stage 3: Similarities */
+        .similarities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .similarity-card {
+            background: white;
+            border: 3px solid #4CAF50;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .similarity-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .similarity-card.selected {
+            background: #e8f5e9;
+            border-color: #2E7D32;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            border: 3px solid #4CAF50;
+            color: #2E7D32;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            border: 3px solid #f44336;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .btn {
+            background: #654321;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #8B4513;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            color: #654321;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏛️ Civilization Comparison Challenge 📊</h1>
+            <p class="subtitle">Test your knowledge of Ancient Egypt, Mesopotamia, and China!</p>
+        </header>
+
+        <div id="stage-indicator">
+            <div class="stage-info">
+                <div class="stage-badge" id="stage-badge">Stage 1 of 4</div>
+                <div class="score-display">Score: <span id="score">0</span></div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p id="completion-message"></p>
+            <button class="btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data
+        const civilizations = {
+            egypt: {
+                name: 'Ancient Egypt',
+                emoji: '🏺',
+                color: '#FFD700',
+                features: [
+                    { text: 'Nile River', id: 'egypt-nile' },
+                    { text: 'Pyramids', id: 'egypt-pyramids' },
+                    { text: 'Hieroglyphs', id: 'egypt-hieroglyphs' },
+                    { text: 'Pharaohs', id: 'egypt-pharaohs' },
+                    { text: 'Mummies', id: 'egypt-mummies' },
+                    { text: 'Papyrus', id: 'egypt-papyrus' },
+                    { text: 'Sphinx', id: 'egypt-sphinx' }
+                ]
+            },
+            mesopotamia: {
+                name: 'Ancient Mesopotamia',
+                emoji: '🏛️',
+                color: '#8B4513',
+                features: [
+                    { text: 'Tigris & Euphrates Rivers', id: 'meso-rivers' },
+                    { text: 'First Cities', id: 'meso-cities' },
+                    { text: 'Cuneiform Writing', id: 'meso-cuneiform' },
+                    { text: 'Ziggurats', id: 'meso-ziggurats' },
+                    { text: "Hammurabi's Code", id: 'meso-code' },
+                    { text: 'The Wheel', id: 'meso-wheel' },
+                    { text: 'Mud Bricks', id: 'meso-bricks' }
+                ]
+            },
+            china: {
+                name: 'Ancient China',
+                emoji: '🏯',
+                color: '#DC143C',
+                features: [
+                    { text: 'Yellow & Yangtze Rivers', id: 'china-rivers' },
+                    { text: 'Great Wall', id: 'china-wall' },
+                    { text: 'Chinese Characters', id: 'china-characters' },
+                    { text: 'Emperors', id: 'china-emperors' },
+                    { text: 'Paper Invention', id: 'china-paper' },
+                    { text: 'Silk', id: 'china-silk' },
+                    { text: 'Terracotta Army', id: 'china-terracotta' }
+                ]
+            }
+        };
+
+        const similarities = [
+            { text: 'All had rivers nearby', correct: true },
+            { text: 'All developed writing systems', correct: true },
+            { text: 'All had cities', correct: true },
+            { text: 'All had governments', correct: true },
+            { text: 'All created art', correct: true },
+            { text: 'All built amazing structures', correct: true },
+            { text: 'All had the same language', correct: false },
+            { text: 'All had the same ruler', correct: false },
+            { text: 'All built pyramids', correct: false },
+            { text: 'All used the same writing', correct: false }
+        ];
+
+        const comparisonQuestions = [
+            {
+                question: "Which civilization created the FIRST writing system?",
+                options: [
+                    "Ancient Egypt",
+                    "Ancient Mesopotamia",
+                    "Ancient China",
+                    "They all created writing at the same time"
+                ],
+                correct: 1,
+                explanation: "Ancient Mesopotamia created cuneiform, the first writing system around 3000 BCE! Egypt and China developed writing later."
+            },
+            {
+                question: "Which civilization built the Great Wall?",
+                options: [
+                    "Ancient Egypt",
+                    "Ancient Mesopotamia",
+                    "Ancient China",
+                    "All of them"
+                ],
+                correct: 2,
+                explanation: "Ancient China built the Great Wall to protect their empire! Egypt built pyramids, and Mesopotamia built ziggurats."
+            },
+            {
+                question: "What did ALL three civilizations have in common?",
+                options: [
+                    "They all built pyramids",
+                    "They all had rivers, writing, cities, governments, and art",
+                    "They all had the same ruler",
+                    "They all used the same language"
+                ],
+                correct: 1,
+                explanation: "All three civilizations had rivers nearby, developed writing systems, built cities, had governments, and created beautiful art!"
+            },
+            {
+                question: "Which civilization had Pharaohs as rulers?",
+                options: [
+                    "Ancient Egypt",
+                    "Ancient Mesopotamia",
+                    "Ancient China",
+                    "All of them"
+                ],
+                correct: 0,
+                explanation: "Ancient Egypt had Pharaohs who were seen as both kings and gods! Mesopotamia had kings, and China had emperors."
+            },
+            {
+                question: "Which civilization invented the wheel?",
+                options: [
+                    "Ancient Egypt",
+                    "Ancient Mesopotamia",
+                    "Ancient China",
+                    "All of them"
+                ],
+                correct: 1,
+                explanation: "Ancient Mesopotamia invented the wheel around 3500 BCE! This amazing invention changed transportation forever."
+            },
+            {
+                question: "What made Ancient Egypt's location special?",
+                options: [
+                    "It was between two rivers",
+                    "It was protected by deserts and the Nile River",
+                    "It had mountains all around",
+                    "It was on an island"
+                ],
+                correct: 1,
+                explanation: "Ancient Egypt was protected by deserts and the Nile River, which made it harder for enemies to attack!"
+            }
+        ];
+
+        // Game State
+        let currentStage = 1;
+        let score = 0;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let draggedElement = null;
+        let selectedOptions = new Set();
+        let selectedSimilarities = new Set();
+
+        // Initialize Game
+        function initGame() {
+            currentStage = 1;
+            score = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+            updateScore();
+            loadStage(1);
+        }
+
+        function loadStage(stage) {
+            currentStage = stage;
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+
+            updateStageIndicator();
+
+            switch(stage) {
+                case 1:
+                    loadStage1();
+                    break;
+                case 2:
+                    loadStage2();
+                    break;
+                case 3:
+                    loadStage3();
+                    break;
+                case 4:
+                    loadStage4();
+                    break;
+            }
+        }
+
+        function loadStage1() {
+            const gameArea = document.getElementById('game-area');
+            
+            // Shuffle all features
+            const allFeatures = [
+                ...civilizations.egypt.features,
+                ...civilizations.mesopotamia.features,
+                ...civilizations.china.features
+            ].sort(() => Math.random() - 0.5);
+
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: #654321;">Stage 1: Match Features to Civilizations</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Drag each feature to the correct civilization column!</p>';
+            
+            html += '<div class="match-grid">';
+            
+            // Create columns for each civilization
+            Object.keys(civilizations).forEach(civKey => {
+                const civ = civilizations[civKey];
+                html += `
+                    <div class="civilization-column ${civKey}">
+                        <div class="civilization-header ${civKey}">
+                            ${civ.emoji} ${civ.name}
+                        </div>
+                        <div class="drop-zone" data-civ="${civKey}" id="drop-${civKey}"></div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            
+            html += '<div id="features-pool" style="margin-top: 30px;">';
+            html += '<h3 style="text-align: center; margin-bottom: 20px;">Features to Match:</h3>';
+            html += '<div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">';
+            
+            allFeatures.forEach(feature => {
+                html += `
+                    <div class="feature-item" draggable="true" data-feature-id="${feature.id}" data-civ="${getCivFromFeatureId(feature.id)}">
+                        ${feature.text}
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+            
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="check-stage1" onclick="checkStage1()" disabled>Check Answers</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            
+            // Setup drag and drop
+            setupDragAndDrop();
+        }
+
+        function setupDragAndDrop() {
+            const featureItems = document.querySelectorAll('.feature-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            featureItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (draggedElement && !e.currentTarget.classList.contains('filled')) {
+                const featureId = draggedElement.dataset.featureId;
+                const correctCiv = draggedElement.dataset.civ;
+                const dropCiv = e.currentTarget.dataset.civ;
+                
+                if (correctCiv === dropCiv) {
+                    draggedElement.classList.add('correct');
+                    e.currentTarget.appendChild(draggedElement);
+                    e.currentTarget.classList.add('filled');
+                    draggedElement.draggable = false;
+                } else {
+                    draggedElement.classList.add('wrong');
+                    setTimeout(() => {
+                        draggedElement.classList.remove('wrong');
+                    }, 1000);
+                }
+                
+                checkStage1Complete();
+            }
+        }
+
+        function checkStage1Complete() {
+            const allFeatures = document.querySelectorAll('.feature-item');
+            const placedFeatures = document.querySelectorAll('.drop-zone.filled .feature-item');
+            
+            if (placedFeatures.length === allFeatures.length) {
+                document.getElementById('check-stage1').disabled = false;
+            }
+        }
+
+        function checkStage1() {
+            const allFeatures = document.querySelectorAll('.feature-item');
+            let correct = 0;
+            let total = allFeatures.length;
+            
+            allFeatures.forEach(feature => {
+                const correctCiv = feature.dataset.civ;
+                const parentZone = feature.closest('.drop-zone');
+                if (parentZone && parentZone.dataset.civ === correctCiv) {
+                    correct++;
+                    feature.classList.add('correct');
+                } else {
+                    feature.classList.add('wrong');
+                }
+            });
+            
+            score += correct * 10;
+            correctAnswers += correct;
+            totalQuestions += total;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 4) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 2000);
+        }
+
+        function loadStage2() {
+            const gameArea = document.getElementById('game-area');
+            const question = comparisonQuestions[Math.floor(Math.random() * comparisonQuestions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: #654321;">Stage 2: Multiple Choice Challenge</h2>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct})">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage2" onclick="nextStage2()" style="display: none;">Continue</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function selectOption(selectedIndex, correctIndex) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selectedIndex === correctIndex) {
+                buttons[selectedIndex].classList.add('correct');
+                feedback.textContent = '✓ Correct! ' + comparisonQuestions.find(q => q.options[correctIndex] === buttons[correctIndex].textContent)?.explanation || 'Well done!';
+                feedback.className = 'feedback show correct';
+                score += 20;
+                correctAnswers++;
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+                feedback.textContent = '✗ Not quite. ' + (comparisonQuestions.find(q => q.options[correctIndex] === buttons[correctIndex].textContent)?.explanation || 'Try again!');
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions++;
+            updateScore();
+            
+            document.getElementById('next-stage2').style.display = 'inline-block';
+            
+            // Send TTS
+            const message = feedback.textContent;
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: message,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function nextStage2() {
+            if (currentStage < 4) {
+                loadStage(currentStage + 1);
+            } else {
+                endGame();
+            }
+        }
+
+        function loadStage3() {
+            const gameArea = document.getElementById('game-area');
+            const shuffledSimilarities = [...similarities].sort(() => Math.random() - 0.5);
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: #654321;">Stage 3: Find the Similarities</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Click on ALL the things that ALL three civilizations had in common!</p>';
+            html += '<div class="similarities-grid">';
+            
+            shuffledSimilarities.forEach((similarity, index) => {
+                html += `<div class="similarity-card" data-correct="${similarity.correct}" onclick="selectSimilarity(${index}, ${similarity.correct})">${similarity.text}</div>`;
+            });
+            
+            html += '</div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage3()">Check Answers</button>';
+            html += '</div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            
+            gameArea.innerHTML = html;
+            selectedSimilarities.clear();
+        }
+
+        function selectSimilarity(index, isCorrect) {
+            const card = document.querySelectorAll('.similarity-card')[index];
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedSimilarities.delete(index);
+            } else {
+                card.classList.add('selected');
+                selectedSimilarities.add(index);
+            }
+        }
+
+        function checkStage3() {
+            const cards = document.querySelectorAll('.similarity-card');
+            let correct = 0;
+            let selected = 0;
+            let totalCorrect = similarities.filter(s => s.correct).length;
+            
+            cards.forEach((card, index) => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (isCorrect && !isSelected) {
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (!isCorrect && isSelected) {
+                    card.style.borderColor = '#f44336';
+                    card.style.background = '#ffebee';
+                }
+                
+                if (isSelected) selected++;
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && selected === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You found all ${totalCorrect} similarities! All three civilizations had rivers, writing, cities, governments, and art!`;
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} correct similarities. Remember: all three had rivers, writing, cities, governments, and art!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += similarities.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 4) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage4() {
+            const gameArea = document.getElementById('game-area');
+            const question = comparisonQuestions[Math.floor(Math.random() * comparisonQuestions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: #654321;">Stage 4: Final Challenge</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #666;">One more challenging question to test your knowledge!</p>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct})">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage4" onclick="endGame()" style="display: none;">Finish Game</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function getCivFromFeatureId(featureId) {
+            if (featureId.startsWith('egypt-')) return 'egypt';
+            if (featureId.startsWith('meso-')) return 'mesopotamia';
+            if (featureId.startsWith('china-')) return 'china';
+            return null;
+        }
+
+        function updateStageIndicator() {
+            document.getElementById('stage-badge').textContent = `Stage ${currentStage} of 4`;
+            const progress = (currentStage / 4) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-fill').textContent = Math.round(progress) + '%';
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function endGame() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = `Outstanding! You scored ${score} points with ${percentage}% correct! You're a true history expert! 🏆`;
+            } else if (percentage >= 70) {
+                message = `Great job! You scored ${score} points with ${percentage}% correct! You really understand these civilizations! 🌟`;
+            } else if (percentage >= 50) {
+                message = `Good effort! You scored ${score} points with ${percentage}% correct! Keep learning about these amazing civilizations! 📚`;
+            } else {
+                message = `You scored ${score} points with ${percentage}% correct. Review the lesson and try again! 💪`;
+            }
+            
+            document.getElementById('completion-message').textContent = message;
+            document.getElementById('completion-modal').classList.add('show');
+            
+            // Send completion message
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: message,
+                    rate: 0.9,
+                    pitch: 1.1
+                }, '*');
+                
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'comparing-civilizations'
+                    }, '*');
+                }, 3000);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('completion-modal').classList.remove('show');
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dino Time: Explorer Edition</title>
+    <style>
+        :root {
+            --triassic: #E65100;
+            --jurassic: #2E7D32;
+            --cretaceous: #1565C0;
+            --bg-color: #FAFAFA;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            touch-action: none;
+            color: #333;
+        }
+
+        /* --- HEADER --- */
+        #narrator-bar {
+            width: 100%;
+            background: white;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+            border-bottom: 4px solid #FFD700;
+        }
+
+        /* --- MAIN GAME AREA --- */
+        #game-board {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* --- TIMELINE ZONES --- */
+        #timeline {
+            display: flex;
+            justify-content: space-between;
+            height: 55%;
+            gap: 8px;
+        }
+
+        .era-zone {
+            flex: 1;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid transparent;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Background Art for Zones */
+        .era-bg {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 60%;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .era-title {
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            padding: 8px;
+            font-size: 1rem;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Container for dropped dinos */
+        .collection-area {
+            flex: 1;
+            z-index: 1;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+        
+        .mini-dino {
+            width: 70px;
+            height: 70px;
+            margin-top: -20px;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* --- STAGE AREA --- */
+        #stage {
+            height: 35%;
+            background: white;
+            border-radius: 20px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            border: 2px dashed #ddd;
+        }
+
+        #current-dino {
+            width: 160px;
+            height: 160px;
+            cursor: pointer;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.15));
+            transition: transform 0.2s;
+            animation: float 3s ease-in-out infinite;
+        }
+        #current-dino:hover { transform: scale(1.05); }
+        #current-dino:active { transform: scale(0.95); }
+
+        /* --- ANIMATIONS & EFFECTS --- */
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+        
+        .highlight {
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px currentColor; transform: scale(1); }
+            to { box-shadow: 0 0 20px currentColor; transform: scale(1.03); }
+        }
+
+        .move-anim {
+            position: fixed !important;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+
+        /* --- WIN SCREEN --- */
+        #win-modal {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255,255,255,0.95);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 2000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        #win-modal.show { opacity: 1; pointer-events: auto; }
+
+        button.btn {
+            background: #FFD700; border: none; padding: 15px 40px;
+            font-size: 1.5rem; border-radius: 50px; cursor: pointer;
+            color: #333; font-weight: bold; margin-top: 20px;
+            box-shadow: 0 5px 0 #F57F17;
+        }
+        button.btn:active { transform: translateY(4px); box-shadow: none; }
+
+    </style>
+</head>
+<body>
+
+    <div id="narrator-bar">Welcome, Time Traveler!</div>
+
+    <div id="game-board">
+        <div id="timeline">
+            <div class="era-zone" id="zone-triassic" style="border-color: var(--triassic); color: var(--triassic);">
+                <div class="era-title" style="background: var(--triassic);">Triassic</div>
+                <svg class="era-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M0,100 L20,70 L40,100 L60,60 L100,100 Z" fill="#FFE0B2"/>
+                    <circle cx="80" cy="20" r="10" fill="#FFCC80" opacity="0.5"/>
+                </svg>
+                <div class="collection-area"></div>
+            </div>
+
+            <div class="era-zone" id="zone-jurassic" style="border-color: var(--jurassic); color: var(--jurassic);">
+                <div class="era-title" style="background: var(--jurassic);">Jurassic</div>
+                <svg class="era-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M10,100 Q30,40 50,100 T90,100" fill="#C8E6C9"/>
+                    <rect x="20" y="50" width="5" height="50" fill="#A1887F"/>
+                    <circle cx="22" cy="50" r="15" fill="#81C784"/>
+                </svg>
+                <div class="collection-area"></div>
+            </div>
+
+            <div class="era-zone" id="zone-cretaceous" style="border-color: var(--cretaceous); color: var(--cretaceous);">
+                <div class="era-title" style="background: var(--cretaceous);">Cretaceous</div>
+                <svg class="era-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M0,80 Q50,110 100,80 L100,100 L0,100 Z" fill="#BBDEFB"/>
+                    <path d="M10,90 L20,70 L30,90" fill="#81D4FA"/>
+                </svg>
+                <div class="collection-area"></div>
+            </div>
+        </div>
+
+        <div id="stage">
+            <div id="current-dino"></div>
+        </div>
+    </div>
+
+    <div id="win-modal">
+        <h1 style="font-size: 3rem; color: #2E7D32; margin:0;">Great Job!</h1>
+        <div style="font-size: 5rem;">🦕🦖✨</div>
+        <p style="font-size: 1.5rem;">You completed the timeline!</p>
+        <button class="btn" onclick="location.reload()">Play Again</button>
+    </div>
+
+    <script>
+        // --- DETAILED SVG ART (No external library needed!) ---
+        const arts = {
+            // Triassic: Coelophysis (Small runner)
+            coelo: `<svg viewBox="0 0 200 200">
+                <path d="M40,140 Q60,130 80,140 L90,110 L140,120 L180,110 L190,115 L180,125 L140,135 L100,150 L80,180 L60,190 M100,150 L120,180 L140,190 M40,140 L30,120 L10,125 L30,140" fill="#D84315" stroke="#BF360C" stroke-width="3"/>
+                <circle cx="25" cy="128" r="3" fill="white"/>
+            </svg>`,
+            
+            // Triassic: Plateosaurus (Long neck, bipedal)
+            plateo: `<svg viewBox="0 0 200 200">
+                <path d="M60,120 Q80,100 100,120 L120,80 L140,50 L160,55 L150,80 L120,110 L100,150 L100,180 L80,190 M100,150 L130,180 L150,190 M60,120 L50,110 L40,140 L60,150" fill="#E65100" stroke="#BF360C" stroke-width="3"/>
+                <circle cx="150" cy="60" r="3" fill="white"/>
+            </svg>`,
+
+            // Jurassic: Stegosaurus (Plates)
+            stego: `<svg viewBox="0 0 200 200">
+                <path d="M20,140 Q60,100 140,120 L180,140 L170,160 L140,150 L60,160 L40,190 L20,190 M140,150 L130,190 L110,190" fill="#43A047" stroke="#1B5E20" stroke-width="3"/>
+                <path d="M40,100 L60,60 L80,100 M80,90 L100,50 L120,90 M120,95 L140,60 L160,110" fill="#FDD835" stroke="#F57F17" stroke-width="2"/>
+                <circle cx="30" cy="145" r="3" fill="white"/>
+            </svg>`,
+
+            // Jurassic: Brachiosaurus (Huge neck)
+            brachio: `<svg viewBox="0 0 200 200">
+                <path d="M40,140 Q80,120 120,140 L140,100 L160,20 L180,25 L170,100 L140,160 L120,190 L100,195 M140,160 L160,190 L180,195 M40,140 L30,180 L50,190" fill="#2E7D32" stroke="#1B5E20" stroke-width="3"/>
+                <circle cx="170" cy="30" r="3" fill="white"/>
+            </svg>`,
+
+            // Cretaceous: T-Rex (Big head, tiny arms)
+            trex: `<svg viewBox="0 0 200 200">
+                <path d="M60,130 Q100,110 140,130 L170,110 L190,120 L170,150 L140,160 L120,190 L100,195 M140,160 L160,190 L180,195 M60,130 L40,150 L20,170 M150,130 L140,140" fill="#1565C0" stroke="#0D47A1" stroke-width="3"/>
+                <path d="M170,150 L190,150 L180,140" fill="white"/>
+                <circle cx="180" cy="125" r="3" fill="white"/>
+            </svg>`,
+
+            // Cretaceous: Triceratops (Horns)
+            trice: `<svg viewBox="0 0 200 200">
+                <path d="M160,130 Q120,90 60,110 L20,130 L30,150 L60,140 L140,150 L160,180 L180,180 M60,140 L70,180 L90,180" fill="#1976D2" stroke="#0D47A1" stroke-width="3"/>
+                <path d="M40,90 L20,50 L50,100 M60,80 L80,40 L90,90 M20,110 L10,90" fill="#F48FB1" stroke="#C2185B" stroke-width="2"/>
+                <circle cx="50" cy="120" r="3" fill="white"/>
+            </svg>`
+        };
+
+        const timelineData = [
+            { id: 'coelo', svg: arts.coelo, zone: 'zone-triassic', text: "Coelophysis lived in the Triassic!", name: "Coelophysis" },
+            { id: 'brachio', svg: arts.brachio, zone: 'zone-jurassic', text: "Brachiosaurus is a Jurassic giant!", name: "Brachiosaurus" },
+            { id: 'trice', svg: arts.trice, zone: 'zone-cretaceous', text: "Triceratops lived in the Cretaceous!", name: "Triceratops" },
+            { id: 'plateo', svg: arts.plateo, zone: 'zone-triassic', text: "Plateosaurus is from the Triassic.", name: "Plateosaurus" },
+            { id: 'stego', svg: arts.stego, zone: 'zone-jurassic', text: "Stegosaurus is from the Jurassic.", name: "Stegosaurus" },
+            { id: 'trex', svg: arts.trex, zone: 'zone-cretaceous', text: "T-Rex lived in the Cretaceous.", name: "T-Rex" }
+        ];
+
+        let currentIndex = 0;
+        let isMoving = false;
+        const synth = window.speechSynthesis;
+
+        function loadLevel() {
+            if (currentIndex >= timelineData.length) {
+                document.getElementById('win-modal').classList.add('show');
+                speak("Amazing! You finished the dinosaur timeline.");
+                return;
+            }
+
+            const data = timelineData[currentIndex];
+            const dinoEl = document.getElementById('current-dino');
+            
+            // Clear highlights
+            document.querySelectorAll('.era-zone').forEach(z => z.classList.remove('highlight'));
+
+            // Set Dino
+            dinoEl.innerHTML = data.svg;
+            
+            // Highlight Answer Zone
+            const zone = document.getElementById(data.zone);
+            zone.classList.add('highlight');
+
+            // Narrate
+            const question = `When did ${data.name} live? Tap the dinosaur!`;
+            updateText(question);
+            speak(question);
+
+            // Interaction
+            dinoEl.onclick = () => {
+                if(isMoving) return;
+                isMoving = true;
+                
+                // Speak Answer
+                speak(data.text);
+                updateText(data.text);
+
+                // Animate
+                const startRect = dinoEl.getBoundingClientRect();
+                const targetZone = document.getElementById(data.zone);
+                const targetArea = targetZone.querySelector('.collection-area');
+                const endRect = targetArea.getBoundingClientRect();
+
+                // Create flying clone
+                const clone = dinoEl.cloneNode(true);
+                clone.className = 'move-anim';
+                clone.style.width = startRect.width + 'px';
+                clone.style.height = startRect.height + 'px';
+                clone.style.left = startRect.left + 'px';
+                clone.style.top = startRect.top + 'px';
+                document.body.appendChild(clone);
+
+                // Hiding original
+                dinoEl.style.opacity = 0;
+                targetZone.classList.remove('highlight');
+
+                // Trigger Move
+                requestAnimationFrame(() => {
+                    const destX = endRect.left + (endRect.width/2) - (startRect.width/2);
+                    const destY = endRect.bottom - 80; // offset from bottom
+                    clone.style.transform = `translate(${destX - startRect.left}px, ${destY - startRect.top}px) scale(0.4)`;
+                });
+
+                // Cleanup
+                setTimeout(() => {
+                    clone.remove();
+                    const mini = document.createElement('div');
+                    mini.className = 'mini-dino';
+                    mini.innerHTML = data.svg;
+                    targetArea.appendChild(mini);
+                    
+                    dinoEl.style.opacity = 1;
+                    currentIndex++;
+                    isMoving = false;
+                    setTimeout(loadLevel, 1500);
+                }, 800);
+            };
+        }
+
+        function updateText(msg) {
+            document.getElementById('narrator-bar').innerText = msg;
+        }
+
+        function speak(msg) {
+            if(synth.speaking) synth.cancel();
+            const u = new SpeechSynthesisUtterance(msg);
+            u.rate = 1.0; u.pitch = 1.1;
+            synth.speak(u);
+        }
+
+        window.onload = loadLevel;
+
+    </script>
+</body>
+</html>

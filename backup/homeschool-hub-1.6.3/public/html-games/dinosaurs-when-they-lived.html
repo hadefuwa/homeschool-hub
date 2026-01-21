@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dino Time Story</title>
+    <style>
+        :root {
+            --triassic-color: #D84315;
+            --jurassic-color: #2E7D32;
+            --cretaceous-color: #1565C0;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            touch-action: none;
+            color: #333;
+        }
+
+        /* --- NARRATOR BAR --- */
+        #narrator-bar {
+            width: 95%;
+            min-height: 60px;
+            background: white;
+            border-bottom: 4px solid #FFD700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        /* --- TIMELINE ZONES --- */
+        #timeline-container {
+            flex: 2;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            gap: 10px;
+        }
+
+        .era-zone {
+            position: relative;
+            width: 30%;
+            height: 85%;
+            border: 4px solid transparent;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .era-label {
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            padding: 5px 0;
+            font-size: 1rem;
+            z-index: 2;
+        }
+        
+        /* SVG Background Layer */
+        .era-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            opacity: 0.7;
+        }
+
+        /* Container for placed dinos */
+        .placed-container {
+            flex: 1;
+            z-index: 1;
+            display: flex;
+            flex-direction: column-reverse; /* Stack from bottom */
+            align-items: center;
+            padding-bottom: 10px;
+        }
+        .placed-container svg {
+            width: 60px; height: 60px;
+            margin-top: -15px; /* Overlap slightly */
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+        }
+
+        /* Flashing Highlight for the correct answer */
+        .highlight-flash {
+            animation: flash 1s infinite alternate;
+        }
+        @keyframes flash {
+            from { box-shadow: 0 0 5px #FFD700; transform: scale(1); }
+            to { box-shadow: 0 0 25px #FFD700, 0 0 10px #FFD700 inset; transform: scale(1.05); }
+        }
+
+        /* --- STAGE (Current Dino) --- */
+        #dino-stage {
+            flex: 1;
+            width: 100%;
+            background: rgba(255,255,255,0.5);
+            border-radius: 30px 30px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* The Dino on Stage */
+        #current-dino {
+            width: 120px;
+            height: 120px;
+            cursor: pointer;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+            transition: transform 0.1s;
+            animation: float 2s ease-in-out infinite;
+        }
+        #current-dino:active { transform: scale(0.9); }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+        /* Animation class for moving to the zone */
+        .move-to-zone {
+            position: fixed !important;
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 1000;
+        }
+
+        /* Win Screen */
+        #win-screen {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255,255,255,0.95);
+            display:flex; flex-direction:column; justify-content:center; align-items:center;
+            z-index:2000; visibility:hidden; opacity:0; transition:opacity 0.5s;
+        }
+        #win-screen.show { visibility:visible; opacity:1; }
+        button.reset-btn {
+            padding: 15px 30px; font-size: 1.5rem;
+            background: #FFD700; border:none; border-radius:30px;
+            cursor:pointer; font-weight:bold; color:#333; margin-top:20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="narrator-bar">Welcome! Let's learn about dinosaur times.</div>
+
+    <div id="timeline-container">
+        <div class="era-zone" id="zone-triassic" style="border-color: var(--triassic-color);">
+            <div class="era-label" style="background: var(--triassic-color);">Triassic<br><small>The Beginning</small></div>
+            <svg class="era-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <rect width="100" height="100" fill="#FFE0B2"/>
+                <path d="M0,80 Q20,70 50,85 T100,75 L100,100 L0,100 Z" fill="#E65100"/>
+                <path d="M10,80 L15,60 L20,80 M80,75 L85,55 L90,75" stroke="#BF360C" stroke-width="2"/>
+            </svg>
+            <div class="placed-container"></div>
+        </div>
+
+        <div class="era-zone" id="zone-jurassic" style="border-color: var(--jurassic-color);">
+            <div class="era-label" style="background: var(--jurassic-color);">Jurassic<br><small>The Middle</small></div>
+             <svg class="era-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <rect width="100" height="100" fill="#C8E6C9"/>
+                <path d="M0,85 Q30,95 60,80 T100,90 L100,100 L0,100 Z" fill="#2E7D32"/>
+                <rect x="20" y="40" width="5" height="40" fill="#5D4037"/>
+                <circle cx="22.5" cy="40" r="15" fill="#388E3C"/>
+                <rect x="70" y="30" width="5" height="50" fill="#5D4037"/>
+                <circle cx="72.5" cy="30" r="18" fill="#388E3C"/>
+            </svg>
+            <div class="placed-container"></div>
+        </div>
+
+        <div class="era-zone" id="zone-cretaceous" style="border-color: var(--cretaceous-color);">
+            <div class="era-label" style="background: var(--cretaceous-color);">Cretaceous<br><small>The End</small></div>
+             <svg class="era-bg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <rect width="100" height="100" fill="#BBDEFB"/>
+                <path d="M0,85 Q30,75 60,90 T100,80 L100,100 L0,100 Z" fill="#0D47A1"/>
+                <circle cx="20" cy="85" r="5" fill="#F06292"/>
+                <circle cx="80" cy="85" r="5" fill="#F06292"/>
+                <path d="M10,90 Q25,85 40,95 M60,95 Q75,85 90,90" stroke="#1B5E20" stroke-width="2" fill="none"/>
+            </svg>
+            <div class="placed-container"></div>
+        </div>
+    </div>
+
+    <div id="dino-stage">
+        </div>
+
+    <div id="win-screen">
+        <h1>The End!</h1>
+        <p>You learned all about when dinosaurs lived.</p>
+        <button class="reset-btn" onclick="location.reload()">Read Again</button>
+    </div>
+
+    <script>
+        // --- IMPROVED SVG DINO DEFINITIONS WITH BETTER GRAPHICS ---
+        const svgs = {
+            // Triassic: Coelophysis - Small, nimble bipedal dinosaur
+            coelo: `<svg viewBox="0 0 120 100">
+                <!-- Shadow -->
+                <ellipse cx="60" cy="95" rx="35" ry="8" fill="rgba(0,0,0,0.15)"/>
+                <!-- Tail -->
+                <path d="M85,60 Q95,55 100,50 Q105,45 108,42" stroke="#C62828" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <path d="M85,60 Q95,55 100,50 Q105,45 108,42" stroke="#D84315" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <!-- Body -->
+                <ellipse cx="60" cy="55" rx="25" ry="20" fill="#C62828"/>
+                <ellipse cx="60" cy="55" rx="20" ry="16" fill="#D84315"/>
+                <ellipse cx="55" cy="55" rx="15" ry="12" fill="#E64A19"/>
+                <!-- Back leg -->
+                <path d="M70,70 L75,85 L72,92" stroke="#BF360C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <circle cx="72" cy="92" r="3" fill="#8D2A0D"/>
+                <!-- Front leg -->
+                <path d="M50,70 L52,85 L50,92" stroke="#BF360C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <circle cx="50" cy="92" r="3" fill="#8D2A0D"/>
+                <!-- Neck and Head -->
+                <path d="M45,45 Q35,35 32,25" stroke="#C62828" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <ellipse cx="32" cy="22" rx="8" ry="10" fill="#D84315"/>
+                <ellipse cx="33" cy="22" rx="6" ry="8" fill="#E64A19"/>
+                <!-- Eye -->
+                <circle cx="30" cy="20" r="2.5" fill="white"/>
+                <circle cx="29.5" cy="20" r="1.5" fill="black"/>
+                <!-- Mouth -->
+                <path d="M25,24 Q27,26 29,25" stroke="#BF360C" stroke-width="1.5" fill="none"/>
+                <!-- Small arms -->
+                <path d="M48,55 L42,62" stroke="#BF360C" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <!-- Spots -->
+                <circle cx="65" cy="50" r="2" fill="#BF360C" opacity="0.6"/>
+                <circle cx="58" cy="62" r="2" fill="#BF360C" opacity="0.6"/>
+            </svg>`,
+            
+            // Triassic: Plateosaurus - Early large herbivore
+            plateo: `<svg viewBox="0 0 120 100">
+                <!-- Shadow -->
+                <ellipse cx="65" cy="95" rx="40" ry="10" fill="rgba(0,0,0,0.15)"/>
+                <!-- Tail -->
+                <path d="M88,65 Q100,60 110,55" stroke="#A0522D" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <path d="M88,65 Q100,60 110,55" stroke="#BF360C" stroke-width="7" fill="none" stroke-linecap="round"/>
+                <!-- Back Body -->
+                <ellipse cx="70" cy="60" rx="22" ry="18" fill="#8B4513"/>
+                <ellipse cx="68" cy="60" rx="18" ry="15" fill="#A0522D"/>
+                <!-- Front Body -->
+                <ellipse cx="50" cy="55" rx="20" ry="16" fill="#8B4513"/>
+                <ellipse cx="48" cy="55" rx="16" ry="13" fill="#A0522D"/>
+                <!-- Back leg -->
+                <path d="M75,75 L78,88 L76,93" stroke="#6B3410" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <ellipse cx="76" cy="93" rx="4" ry="2" fill="#4A2508"/>
+                <!-- Front leg -->
+                <path d="M55,70 L58,88 L56,93" stroke="#6B3410" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <ellipse cx="56" cy="93" rx="4" ry="2" fill="#4A2508"/>
+                <!-- Neck -->
+                <path d="M40,48 Q30,35 28,20" stroke="#8B4513" stroke-width="11" fill="none" stroke-linecap="round"/>
+                <path d="M40,48 Q30,35 28,20" stroke="#A0522D" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <!-- Head -->
+                <ellipse cx="26" cy="16" rx="9" ry="12" fill="#8B4513"/>
+                <ellipse cx="27" cy="16" rx="7" ry="10" fill="#A0522D"/>
+                <!-- Eye -->
+                <circle cx="24" cy="14" r="2.5" fill="white"/>
+                <circle cx="23.5" cy="14" r="1.5" fill="black"/>
+                <!-- Snout -->
+                <ellipse cx="22" cy="20" rx="4" ry="5" fill="#BF360C"/>
+                <!-- Small arm -->
+                <path d="M45,58 L38,68" stroke="#6B3410" stroke-width="4" fill="none" stroke-linecap="round"/>
+            </svg>`,
+            
+            // Jurassic: Stegosaurus - Iconic plated dinosaur
+            stego: `<svg viewBox="0 0 140 100">
+                <!-- Shadow -->
+                <ellipse cx="70" cy="95" rx="50" ry="10" fill="rgba(0,0,0,0.15)"/>
+                <!-- Tail -->
+                <path d="M100,70 Q115,68 125,65" stroke="#2E7D32" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <!-- Tail spikes -->
+                <path d="M120,65 L125,50 L128,62" fill="#C62828"/>
+                <path d="M115,66 L118,52 L122,64" fill="#D32F2F"/>
+                <!-- Body -->
+                <ellipse cx="70" cy="68" rx="35" ry="20" fill="#1B5E20"/>
+                <ellipse cx="68" cy="68" rx="30" ry="17" fill="#2E7D32"/>
+                <ellipse cx="65" cy="68" rx="25" ry="14" fill="#388E3C"/>
+                <!-- Back plates (going down the back) -->
+                <path d="M95,58 L102,30 L105,58" fill="#FFD700"/>
+                <path d="M95,58 L102,30 L105,58" fill="#FFA000" opacity="0.6"/>
+                <path d="M85,55 L90,25 L95,55" fill="#FFD700"/>
+                <path d="M85,55 L90,25 L95,55" fill="#FFA000" opacity="0.6"/>
+                <path d="M72,53 L75,20 L80,53" fill="#FFD700"/>
+                <path d="M72,53 L75,20 L80,53" fill="#FFA000" opacity="0.6"/>
+                <path d="M58,55 L60,30 L65,55" fill="#FFD700"/>
+                <path d="M58,55 L60,30 L65,55" fill="#FFA000" opacity="0.6"/>
+                <path d="M45,57 L45,35 L50,57" fill="#FFD700"/>
+                <path d="M45,57 L45,35 L50,57" fill="#FFA000" opacity="0.6"/>
+                <!-- Back legs -->
+                <path d="M85,85 L88,93" stroke="#1B5E20" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <ellipse cx="88" cy="93" rx="5" ry="2.5" fill="#0D3D0D"/>
+                <path d="M70,85 L73,93" stroke="#1B5E20" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <ellipse cx="73" cy="93" rx="5" ry="2.5" fill="#0D3D0D"/>
+                <!-- Front legs -->
+                <path d="M55,82 L58,93" stroke="#1B5E20" stroke-width="7" fill="none" stroke-linecap="round"/>
+                <ellipse cx="58" cy="93" rx="4" ry="2" fill="#0D3D0D"/>
+                <path d="M42,82 L45,93" stroke="#1B5E20" stroke-width="7" fill="none" stroke-linecap="round"/>
+                <ellipse cx="45" cy="93" rx="4" ry="2" fill="#0D3D0D"/>
+                <!-- Head and neck -->
+                <path d="M35,65 Q25,58 20,50" stroke="#2E7D32" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <ellipse cx="17" cy="45" rx="7" ry="9" fill="#2E7D32"/>
+                <ellipse cx="18" cy="45" rx="5" ry="7" fill="#388E3C"/>
+                <!-- Eye -->
+                <circle cx="15" cy="43" r="2" fill="white"/>
+                <circle cx="14.5" cy="43" r="1.2" fill="black"/>
+                <!-- Snout -->
+                <path d="M12,47 Q10,49 12,51" stroke="#1B5E20" stroke-width="1.5" fill="none"/>
+            </svg>`,
+            
+            // Jurassic: Brachiosaurus - Giant long-necked sauropod
+            brachio: `<svg viewBox="0 0 120 110">
+                <!-- Shadow -->
+                <ellipse cx="60" cy="105" rx="45" ry="8" fill="rgba(0,0,0,0.15)"/>
+                <!-- Tail -->
+                <path d="M85,80 Q100,78 110,75" stroke="#1B5E20" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <path d="M85,80 Q100,78 110,75" stroke="#2E7D32" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <!-- Body -->
+                <ellipse cx="60" cy="75" rx="30" ry="22" fill="#1B5E20"/>
+                <ellipse cx="58" cy="75" rx="26" ry="19" fill="#2E7D32"/>
+                <ellipse cx="56" cy="75" rx="22" ry="16" fill="#388E3C"/>
+                <!-- Pattern on body -->
+                <circle cx="50" cy="70" r="3" fill="#4CAF50" opacity="0.5"/>
+                <circle cx="65" cy="72" r="3" fill="#4CAF50" opacity="0.5"/>
+                <circle cx="58" cy="80" r="2.5" fill="#4CAF50" opacity="0.5"/>
+                <!-- Back legs -->
+                <path d="M75,95 L78,103" stroke="#1B5E20" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <ellipse cx="78" cy="103" rx="5" ry="2.5" fill="#0D3D0D"/>
+                <path d="M58,95 L61,103" stroke="#1B5E20" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <ellipse cx="61" cy="103" rx="5" ry="2.5" fill="#0D3D0D"/>
+                <!-- Front legs (longer) -->
+                <path d="M45,90 L48,103" stroke="#1B5E20" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <ellipse cx="48" cy="103" rx="5.5" ry="2.5" fill="#0D3D0D"/>
+                <path d="M32,90 L35,103" stroke="#1B5E20" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <ellipse cx="35" cy="103" rx="5.5" ry="2.5" fill="#0D3D0D"/>
+                <!-- Long neck going up -->
+                <path d="M40,70 Q35,50 32,30 Q30,15 28,8" stroke="#1B5E20" stroke-width="11" fill="none" stroke-linecap="round"/>
+                <path d="M40,70 Q35,50 32,30 Q30,15 28,8" stroke="#2E7D32" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <!-- Head at top -->
+                <ellipse cx="27" cy="6" rx="6" ry="8" fill="#2E7D32"/>
+                <ellipse cx="28" cy="6" rx="4.5" ry="6" fill="#388E3C"/>
+                <!-- Eye -->
+                <circle cx="25" cy="5" r="1.8" fill="white"/>
+                <circle cx="24.7" cy="5" r="1" fill="black"/>
+                <!-- Nostril on top of head -->
+                <circle cx="27" cy="3" r="1" fill="#1B5E20"/>
+                <!-- Snout -->
+                <ellipse cx="24" cy="8" rx="3" ry="4" fill="#2E7D32"/>
+            </svg>`,
+            
+            // Cretaceous: T-Rex - King of dinosaurs
+            trex: `<svg viewBox="0 0 130 100">
+                <!-- Shadow -->
+                <ellipse cx="65" cy="95" rx="40" ry="10" fill="rgba(0,0,0,0.15)"/>
+                <!-- Tail -->
+                <path d="M90,60 Q105,55 118,50" stroke="#0D47A1" stroke-width="12" fill="none" stroke-linecap="round"/>
+                <path d="M90,60 Q105,55 118,50" stroke="#1565C0" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <path d="M90,60 Q105,55 118,50" stroke="#1976D2" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <!-- Body -->
+                <ellipse cx="65" cy="55" rx="28" ry="22" fill="#0D47A1"/>
+                <ellipse cx="63" cy="55" rx="24" ry="19" fill="#1565C0"/>
+                <ellipse cx="60" cy="55" rx="20" ry="16" fill="#1976D2"/>
+                <!-- Stripes on body -->
+                <ellipse cx="70" cy="50" rx="5" ry="8" fill="#0D47A1" opacity="0.4"/>
+                <ellipse cx="58" cy="52" rx="4" ry="7" fill="#0D47A1" opacity="0.4"/>
+                <!-- Massive back leg -->
+                <path d="M75,75 L82,88 L79,94" stroke="#0D47A1" stroke-width="12" fill="none" stroke-linecap="round"/>
+                <path d="M75,75 L82,88 L79,94" stroke="#1565C0" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <ellipse cx="79" cy="94" rx="6" ry="3" fill="#0A2F5C"/>
+                <!-- Claws on foot -->
+                <path d="M76,94 L74,97" stroke="#0A2F5C" stroke-width="2"/>
+                <path d="M79,94 L79,98" stroke="#0A2F5C" stroke-width="2"/>
+                <path d="M82,94 L84,97" stroke="#0A2F5C" stroke-width="2"/>
+                <!-- Front leg -->
+                <path d="M55,75 L60,88 L58,94" stroke="#0D47A1" stroke-width="11" fill="none" stroke-linecap="round"/>
+                <path d="M55,75 L60,88 L58,94" stroke="#1565C0" stroke-width="8" fill="none" stroke-linecap="round"/>
+                <ellipse cx="58" cy="94" rx="5.5" ry="3" fill="#0A2F5C"/>
+                <!-- Tiny arms -->
+                <path d="M48,52 L42,58" stroke="#0D47A1" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M42,58 L40,62" stroke="#0D47A1" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <!-- Neck and massive head -->
+                <path d="M45,45 Q38,38 35,30" stroke="#0D47A1" stroke-width="14" fill="none" stroke-linecap="round"/>
+                <ellipse cx="30" cy="25" rx="12" ry="14" fill="#0D47A1"/>
+                <ellipse cx="31" cy="25" rx="10" ry="12" fill="#1565C0"/>
+                <!-- Eye ridge -->
+                <path d="M24,20 Q27,18 32,20" stroke="#0A2F5C" stroke-width="2" fill="none"/>
+                <!-- Eye -->
+                <circle cx="27" cy="22" r="3" fill="yellow"/>
+                <circle cx="26.5" cy="22" r="2" fill="black"/>
+                <!-- Fearsome mouth -->
+                <path d="M20,28 Q25,35 32,32" stroke="#0A2F5C" stroke-width="2.5" fill="none"/>
+                <!-- Teeth -->
+                <path d="M22,28 L21,32 M25,29 L24,34 M28,30 L27,34 M31,31 L30,33" stroke="white" stroke-width="1.5"/>
+                <!-- Nostril -->
+                <circle cx="23" cy="25" r="1.5" fill="#0A2F5C"/>
+            </svg>`,
+            
+            // Cretaceous: Triceratops - Three-horned face
+            trice: `<svg viewBox="0 0 130 100">
+                <!-- Shadow -->
+                <ellipse cx="70" cy="95" rx="45" ry="10" fill="rgba(0,0,0,0.15)"/>
+                <!-- Tail -->
+                <path d="M105,70 Q118,68 125,65" stroke="#1565C0" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <path d="M105,70 Q118,68 125,65" stroke="#1976D2" stroke-width="7" fill="none" stroke-linecap="round"/>
+                <!-- Body -->
+                <ellipse cx="75" cy="68" rx="32" ry="20" fill="#0D47A1"/>
+                <ellipse cx="73" cy="68" rx="28" ry="17" fill="#1565C0"/>
+                <ellipse cx="70" cy="68" rx="24" ry="14" fill="#1976D2"/>
+                <!-- Body patterns -->
+                <circle cx="80" cy="65" r="3" fill="#0D47A1" opacity="0.5"/>
+                <circle cx="68" cy="70" r="3" fill="#0D47A1" opacity="0.5"/>
+                <!-- Back legs -->
+                <path d="M90,85 L93,93" stroke="#0D47A1" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <ellipse cx="93" cy="93" rx="6" ry="3" fill="#0A2F5C"/>
+                <path d="M75,85 L78,93" stroke="#0D47A1" stroke-width="10" fill="none" stroke-linecap="round"/>
+                <ellipse cx="78" cy="93" rx="6" ry="3" fill="#0A2F5C"/>
+                <!-- Front legs -->
+                <path d="M60,82 L63,93" stroke="#0D47A1" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <ellipse cx="63" cy="93" rx="5.5" ry="3" fill="#0A2F5C"/>
+                <path d="M47,82 L50,93" stroke="#0D47A1" stroke-width="9" fill="none" stroke-linecap="round"/>
+                <ellipse cx="50" cy="93" rx="5.5" ry="3" fill="#0A2F5C"/>
+                <!-- Neck -->
+                <path d="M50,65 Q42,60 38,55" stroke="#1565C0" stroke-width="12" fill="none" stroke-linecap="round"/>
+                <!-- Frill (large shield behind head) -->
+                <ellipse cx="35" cy="48" rx="20" ry="18" fill="#F48FB1"/>
+                <ellipse cx="35" cy="48" rx="17" ry="15" fill="#F8BBD0"/>
+                <!-- Frill pattern -->
+                <circle cx="30" cy="42" r="3" fill="#EC407A" opacity="0.6"/>
+                <circle cx="40" cy="43" r="3" fill="#EC407A" opacity="0.6"/>
+                <circle cx="35" cy="52" r="2.5" fill="#EC407A" opacity="0.6"/>
+                <circle cx="28" cy="50" r="2" fill="#EC407A" opacity="0.6"/>
+                <circle cx="42" cy="51" r="2" fill="#EC407A" opacity="0.6"/>
+                <!-- Head over frill -->
+                <ellipse cx="32" cy="52" rx="11" ry="10" fill="#0D47A1"/>
+                <ellipse cx="33" cy="52" rx="9" ry="8" fill="#1565C0"/>
+                <!-- Three horns -->
+                <path d="M28,48 L22,40" stroke="#E0E0E0" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M28,48 L22,40" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M38,48 L44,40" stroke="#E0E0E0" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M38,48 L44,40" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M33,56 L33,46" stroke="#E0E0E0" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                <path d="M33,56 L33,46" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <!-- Eye -->
+                <circle cx="30" cy="52" r="2.5" fill="white"/>
+                <circle cx="29.7" cy="52" r="1.5" fill="black"/>
+                <!-- Beak -->
+                <path d="M25,56 Q27,59 30,58" stroke="#0A2F5C" stroke-width="2" fill="none"/>
+            </svg>`
+        };
+
+        // --- GAME DATA ---
+        const gameQueue = [
+            { id: 'coelo', name: 'Coelophysis', svg: svgs.coelo, zone: 'zone-triassic', 
+              question: "When did little Coelophysis live?",
+              answer: "It lived in the Triassic, the very beginning! It was small and fast." },
+            { id: 'brachio', name: 'Brachiosaurus', svg: svgs.brachio, zone: 'zone-jurassic', 
+              question: "When did the giant Brachiosaurus live?",
+              answer: "It lived in the Jurassic, the middle time. It had a huge long neck to eat tall trees." },
+             { id: 'trice', name: 'Triceratops', svg: svgs.trice, zone: 'zone-cretaceous', 
+              question: "When did Triceratops with its three horns live?",
+              answer: "It lived in the Cretaceous, at the end. Its horns helped keep it safe." },
+            { id: 'plateo', name: 'Plateosaurus', svg: svgs.plateo, zone: 'zone-triassic', 
+              question: "When did Plateosaurus live?",
+              answer: "The Triassic! It was one of the first big dinosaurs." },
+            { id: 'stego', name: 'Stegosaurus', svg: svgs.stego, zone: 'zone-jurassic', 
+              question: "When did spiky Stegosaurus live?",
+              answer: "The Jurassic period! It had plates on its back." },
+            { id: 'trex', name: 'T-Rex', svg: svgs.trex, zone: 'zone-cretaceous', 
+              question: "When did the mighty T-Rex live?",
+              answer: "The Cretaceous! T-Rex lived at the very end of the dinosaur times." }
+        ];
+
+        let currentIndex = 0;
+        let isAnimating = false;
+
+        // Helper function to use new TTS via parent window
+        let isSpeaking = false;
+        function speak(text, options = {}) {
+            // Stop any current speech first
+            if (window.parent && window.parent !== window) {
+                // Request parent to stop current speech
+                window.parent.postMessage({
+                    type: 'html-game-tts-stop'
+                }, '*');
+            } else {
+                // Fallback: stop Web Speech API
+                const synth = window.speechSynthesis;
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+            }
+            
+            // Small delay to ensure stop completes
+            setTimeout(() => {
+                // Try to use parent window TTS (new system)
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'html-game-tts',
+                        text: text,
+                        volume: options.volume || 1.0,
+                        rate: options.rate || 0.9,
+                        pitch: options.pitch || 1.1
+                    }, '*');
+                } else {
+                    // Fallback to Web Speech API if no parent
+                    const synth = window.speechSynthesis;
+                    if (synth.speaking) {
+                        synth.cancel();
+                    }
+                    const utterThis = new SpeechSynthesisUtterance(text);
+                    utterThis.pitch = options.pitch || 1.1;
+                    utterThis.rate = options.rate || 0.9;
+                    utterThis.volume = options.volume || 1.0;
+                    synth.speak(utterThis);
+                }
+            }, 100);
+        }
+
+        function initGame() {
+            loadNextDino();
+        }
+
+        function loadNextDino() {
+            if (currentIndex >= gameQueue.length) {
+                document.getElementById('win-screen').classList.add('show');
+                speak("The end! You learned all about dinosaur times.");
+                
+                // Notify parent window that game is complete
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'dinosaurs-when-they-lived'
+                    }, '*');
+                }
+                return;
+            }
+
+            const data = gameQueue[currentIndex];
+            const stage = document.getElementById('dino-stage');
+            
+            // 1. Clear previous highlights
+            document.querySelectorAll('.era-zone').forEach(z => {
+                z.classList.remove('highlight-flash');
+                z.style.borderColor = ''; // reset to CSS default
+            });
+
+            // 2. Place new dino on stage
+            stage.innerHTML = `<div id="current-dino">${data.svg}</div>`;
+            
+            // 3. Ask Question & Highlight Answer Zone
+            updateNarrator(data.question + " (Tap the dinosaur!)");
+            speak(data.question);
+            
+            const correctZone = document.getElementById(data.zone);
+            correctZone.classList.add('highlight-flash');
+            // Force the border color to match the zone's theme color for the flash effect
+            correctZone.style.borderColor = getComputedStyle(correctZone.querySelector('.era-label')).backgroundColor;
+
+            // 4. Enable Tap
+            document.getElementById('current-dino').onclick = () => handleDinoTap(data);
+            isAnimating = false;
+        }
+
+        function handleDinoTap(data) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const dinoEl = document.getElementById('current-dino');
+            const targetZone = document.getElementById(data.zone);
+            const targetContainer = targetZone.querySelector('.placed-container');
+
+            // 1. Stop flashing
+            targetZone.classList.remove('highlight-flash');
+            targetZone.style.borderColor = '';
+
+            // 2. Speak Answer
+            speak(data.answer);
+            updateNarrator(data.answer);
+
+            // 3. Animate Move
+            // Get start and end positions
+            const startRect = dinoEl.getBoundingClientRect();
+            // We want to land near the bottom of the target container
+            const endRect = targetContainer.getBoundingClientRect();
+            const endX = endRect.left + (endRect.width / 2) - (startRect.width / 2);
+            const endY = endRect.bottom - startRect.height - 10; // 10px padding from bottom
+
+            // Set fixed position for animation
+            dinoEl.style.position = 'fixed';
+            dinoEl.style.left = startRect.left + 'px';
+            dinoEl.style.top = startRect.top + 'px';
+            dinoEl.style.zIndex = 1000;
+            dinoEl.classList.add('move-to-zone');
+
+            // Trigger animation on next frame
+            requestAnimationFrame(() => {
+                dinoEl.style.transform = `translate(${endX - startRect.left}px, ${endY - startRect.top}px) scale(0.6)`; // Shrink slightly to fit better
+            });
+
+            // 4. Cleanup after animation
+            setTimeout(() => {
+                dinoEl.remove();
+                // Add a static SVG to the container
+                targetContainer.innerHTML += data.svg;
+                
+                currentIndex++;
+                // Wait a moment before starting next turn
+                setTimeout(loadNextDino, 2000);
+            }, 1000); // Match CSS transition time
+        }
+
+        function updateNarrator(text) {
+            document.getElementById('narrator-bar').innerText = text;
+        }
+
+        window.onload = initGame;
+
+    </script>
+</body>
+</html>

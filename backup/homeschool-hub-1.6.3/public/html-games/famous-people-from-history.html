@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Hero Detective</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --bg: #ecf0f1;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            /* More academic feel */
+            background-color: var(--bg);
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            border-bottom: 4px solid var(--accent);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        p {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        /* --- CLUE COMPUTER --- */
+        #clue-terminal {
+            background: #34495e;
+            color: #2ecc71;
+            /* Retro terminal green */
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            position: relative;
+            border: 4px solid #2c3e50;
+        }
+
+        #clue-terminal::before {
+            content: "ARCHIVE_TERMINAL_V.9.0";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #34495e;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            color: #bdc3c7;
+        }
+
+        #clue-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        /* --- PORTRAIT GRID --- */
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .hero-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+            border-color: #bdc3c7;
+        }
+
+        .hero-name {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #34495e;
+        }
+
+        .hero-svg {
+            width: 100px;
+            height: 100px;
+            filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.1));
+            transition: filter 0.3s;
+        }
+
+        /* --- STATES --- */
+        .hero-card.correct {
+            border-color: #27ae60;
+            background-color: #eafaf1;
+        }
+
+        .hero-card.wrong {
+            border-color: #c0392b;
+            animation: shake 0.4s;
+        }
+
+        .hero-card.dimmed {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* --- MODAL FOR FACTS --- */
+        #fact-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #fact-modal.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .file-folder {
+            background: #f1c40f;
+            /* Manila folder color */
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 5px 20px 5px 5px;
+            position: relative;
+            box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        .file-folder::before {
+            content: "CONFIDENTIAL";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #c0392b;
+            border: 2px solid #c0392b;
+            padding: 2px 8px;
+            font-weight: bold;
+            transform: rotate(-10deg);
+            font-family: 'Courier New', monospace;
+            opacity: 0.6;
+        }
+
+        .fact-title {
+            font-size: 1.8rem;
+            border-bottom: 2px solid #d35400;
+            margin-bottom: 10px;
+        }
+
+        .fact-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        button.next-btn {
+            background: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            float: right;
+            font-family: inherit;
+        }
+
+        button.next-btn:hover {
+            background: #3498db;
+        }
+
+        /* Score Badge */
+        #score-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="score-badge">Files Solved: <span id="score">0</span>/6</div>
+
+    <header>
+        <h1>History Hero Detective</h1>
+        <p>Read the clues. Find the legend.</p>
+    </header>
+
+    <div id="clue-terminal">
+        <span id="cursor">> </span><span id="clue-text">Initializing Archive...</span>
+    </div>
+
+    <div id="gallery">
+    </div>
+
+    <div id="fact-modal">
+        <div class="file-folder">
+            <h2 class="fact-title" id="modal-title">Name</h2>
+            <div class="fact-content" id="modal-text">Fact goes here.</div>
+            <button class="next-btn" onclick="nextRound()">Next Case</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & ASSETS ---
+        const heroes = [
+            {
+                id: 'einstein',
+                name: 'Albert Einstein',
+                svg: `<svg viewBox="0 0 100 100" class="hero-svg">
+                    <circle cx="50" cy="50" r="45" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/>
+                    <path d="M20,40 Q50,10 80,40" fill="white" stroke="#bdc3c7" stroke-width="15"/>
+                    <path d="M15,50 Q10,30 25,20 Q50,5 75,20 Q90,30 85,50" fill="white"/> 
+                    <circle cx="35" cy="55" r="5" fill="#333"/>
+                    <circle cx="65" cy="55" r="5" fill="#333"/>
+                    <path d="M40,70 Q50,65 60,70" stroke="#333" stroke-width="3" fill="none"/> 
+                    <rect x="35" y="65" width="30" height="4" fill="#7f8c8d"/> 
+                </svg>`,
+                clue: "I was a physicist with wild hair. I figured out that E = mc². I am a genius!",
+                fact: "Albert Einstein didn't speak until he was 4 years old! He won the Nobel Prize for Physics in 1921."
+            },
+            {
+                id: 'cleopatra',
+                name: 'Cleopatra',
+                svg: `<svg viewBox="0 0 100 100" class="hero-svg">
+                    <circle cx="50" cy="50" r="45" fill="#e0c097"/>
+                    <path d="M15,50 Q50,10 85,50 L85,90 L15,90 Z" fill="#2c3e50"/> 
+                    <rect x="25" y="25" width="50" height="15" fill="#f1c40f"/> 
+                    <circle cx="50" cy="32" r="5" fill="#e74c3c"/>
+                    <path d="M30,55 Q40,50 45,55" stroke="black" stroke-width="2" fill="none"/>
+                    <path d="M55,55 Q60,50 70,55" stroke="black" stroke-width="2" fill="none"/>
+                    <circle cx="38" cy="60" r="3" fill="black"/>
+                    <circle cx="62" cy="60" r="3" fill="black"/>
+                </svg>`,
+                clue: "I was the last Queen of Ancient Egypt. I was very smart and spoke many languages.",
+                fact: "Cleopatra wasn't actually Egyptian! She was Greek, but she was the first in her family to learn the Egyptian language."
+            },
+            {
+                id: 'lincoln',
+                name: 'Abraham Lincoln',
+                svg: `<svg viewBox="0 0 100 100" class="hero-svg">
+                    <rect x="30" y="5" width="40" height="35" fill="#2c3e50"/>
+                    <rect x="20" y="40" width="60" height="5" fill="#2c3e50"/>
+                    <circle cx="50" cy="65" r="25" fill="#e0c097"/>
+                    <path d="M30,65 L30,90 Q50,100 70,90 L70,65" fill="#2c3e50"/> 
+                    <circle cx="40" cy="60" r="3" fill="black"/>
+                    <circle cx="60" cy="60" r="3" fill="black"/>
+                </svg>`,
+                clue: "I was the 16th US President. I wore a tall hat and helped end slavery.",
+                fact: "Lincoln was 6 feet 4 inches tall—the tallest President ever! He used to keep important papers inside his tall hat."
+            },
+            {
+                id: 'earhart',
+                name: 'Amelia Earhart',
+                svg: `<svg viewBox="0 0 100 100" class="hero-svg">
+                    <circle cx="50" cy="55" r="30" fill="#e0c097"/>
+                    <path d="M20,20 Q50,5 80,20 L80,60 Q50,50 20,60 Z" fill="#8d6e63"/> 
+                    <circle cx="35" cy="55" r="8" fill="#333" stroke="#ccc" stroke-width="3"/>
+                    <circle cx="65" cy="55" r="8" fill="#333" stroke="#ccc" stroke-width="3"/>
+                    <path d="M45,75 Q50,80 55,75" stroke="#333" stroke-width="2" fill="none"/>
+                </svg>`,
+                clue: "I was a brave pilot. I was the first woman to fly solo across the Atlantic Ocean.",
+                fact: "Amelia bought her first plane and painted it bright yellow. She named it 'The Canary'."
+            },
+            {
+                id: 'shakespeare',
+                name: 'William Shakespeare',
+                svg: `<svg viewBox="0 0 100 100" class="hero-svg">
+                     <circle cx="50" cy="50" r="30" fill="#e0c097"/>
+                     <path d="M20,50 Q10,20 50,20 Q90,20 80,50" fill="#5d4037"/> 
+                     <circle cx="50" cy="30" r="15" fill="#e0c097"/> 
+                     <path d="M30,80 Q50,95 70,80" fill="none" stroke="white" stroke-width="8" stroke-dasharray="5,2"/>
+                     <path d="M45,65 L55,65 L50,70 Z" fill="#333"/> 
+                     <path d="M40,55 L45,55" stroke="#333" stroke-width="2"/>
+                     <path d="M55,55 L60,55" stroke="#333" stroke-width="2"/>
+                </svg>`,
+                clue: "I am a famous writer from England. I wrote 'Romeo and Juliet'. To be or not to be?",
+                fact: "Shakespeare invented over 1,700 words that we still use today, like 'lonely', 'gossip', and 'fashionable'!"
+            },
+            {
+                id: 'rosa',
+                name: 'Rosa Parks',
+                svg: `<svg viewBox="0 0 100 100" class="hero-svg">
+                    <circle cx="50" cy="55" r="30" fill="#8d6e63"/>
+                    <path d="M20,50 Q50,20 80,50" fill="#333"/> 
+                    <circle cx="38" cy="55" r="6" fill="none" stroke="#333" stroke-width="2"/>
+                    <circle cx="62" cy="55" r="6" fill="none" stroke="#333" stroke-width="2"/>
+                    <line x1="44" y1="55" x2="56" y2="55" stroke="#333" stroke-width="2"/>
+                    <path d="M20,80 Q50,90 80,80" fill="#2980b9"/>
+                </svg>`,
+                clue: "I refused to give up my seat on a bus. I helped start the Civil Rights Movement.",
+                fact: "Rosa's birthday, February 4th, and the day she was arrested, December 1st, are both 'Rosa Parks Day' in some states."
+            }
+        ];
+
+        let currentRound = 0;
+        let score = 0;
+        let gameActive = true;
+        let shuffledHeroes = [];
+        let targetHero = null;
+
+        const synth = window.speechSynthesis;
+
+        function initGame() {
+            score = 0;
+            currentRound = 0;
+            document.getElementById('score').innerText = 0;
+
+            // Create the card grid
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            // We show all heroes, but shuffle the target order
+            shuffledHeroes = [...heroes].sort(() => Math.random() - 0.5);
+
+            // Render all heroes to the grid (alphabetical or standard order for display)
+            heroes.forEach(hero => {
+                const card = document.createElement('div');
+                card.className = 'hero-card';
+                card.id = `card-${hero.id}`;
+                card.onclick = () => checkAnswer(hero.id);
+
+                card.innerHTML = `
+                    ${hero.svg}
+                    <div class="hero-name">${hero.name}</div>
+                `;
+                gallery.appendChild(card);
+            });
+
+            startRound();
+        }
+
+        function startRound() {
+            if (currentRound >= shuffledHeroes.length) {
+                endGame();
+                return;
+            }
+
+            targetHero = shuffledHeroes[currentRound];
+            gameActive = true;
+
+            // Typewriter effect for clue
+            const terminal = document.getElementById('clue-text');
+            terminal.innerText = '';
+            let i = 0;
+            const text = targetHero.clue;
+
+            function typeWriter() {
+                if (i < text.length) {
+                    terminal.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 30);
+                } else {
+                    speak(text);
+                }
+            }
+            typeWriter();
+        }
+
+        function checkAnswer(selectedId) {
+            if (!gameActive) return;
+
+            const selectedCard = document.getElementById(`card-${selectedId}`);
+
+            if (selectedId === targetHero.id) {
+                // Correct
+                gameActive = false;
+                selectedCard.classList.add('correct');
+                score++;
+                document.getElementById('score').innerText = score;
+                speak("Access Granted. Opening File.");
+
+                setTimeout(() => {
+                    showFact(targetHero);
+                }, 1000);
+            } else {
+                // Wrong
+                selectedCard.classList.add('wrong');
+                speak("Access Denied. Try again.");
+                setTimeout(() => selectedCard.classList.remove('wrong'), 500);
+            }
+        }
+
+        function showFact(hero) {
+            document.getElementById('modal-title').innerText = "File: " + hero.name;
+            document.getElementById('modal-text').innerText = hero.fact;
+            document.getElementById('fact-modal').classList.add('visible');
+            speak(hero.fact);
+        }
+
+        function nextRound() {
+            document.getElementById('fact-modal').classList.remove('visible');
+
+            // Mark the finished card as dimmed so they don't pick it again
+            document.getElementById(`card-${targetHero.id}`).classList.add('dimmed');
+
+            currentRound++;
+            startRound();
+        }
+
+        function endGame() {
+            document.getElementById('clue-text').innerText = "MISSION COMPLETE. ALL FILES UNLOCKED.";
+            speak("Mission Complete. You are a history expert.");
+
+            // Notify parent window that game is complete
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-complete',
+                    game: 'famous-people-from-history'
+                }, '*');
+            }
+        }
+
+        function speak(text) {
+            // Try to use parent window TTS if available
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: text,
+                    rate: 0.9,
+                    pitch: 1.0
+                }, '*');
+            } else {
+                if (synth.speaking) synth.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.rate = 1.0;
+                u.pitch = 1;
+                synth.speak(u);
+            }
+        }
+
+        window.onload = initGame;
+
+    </script>
+</body>
+
+</html>

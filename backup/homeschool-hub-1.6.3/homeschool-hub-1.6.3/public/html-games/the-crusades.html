@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Crusades Challenge</title>
+    <style>
+        :root {
+            --primary: #8B0000;
+            --accent: #FFD700;
+            --bg: #FFF5F5;
+            --card-bg: #FFFFFF;
+            --crusader: #4169E1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #FFE5E5 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            color: var(--primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Stage Indicator */
+        #stage-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stage-badge {
+            background: linear-gradient(135deg, var(--primary), #DC143C);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Game Area */
+        #game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, var(--card-bg), #F5F5F5);
+            border: 4px solid var(--primary);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .category-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #FFF8DC, #FFEAA7);
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .category-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .category-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Feature Items */
+        .feature-item {
+            background: white;
+            border: 3px solid #8B0000;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .feature-item.selected {
+            background: #FFF8DC;
+            border-color: var(--accent);
+        }
+
+        .feature-item.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+
+        .feature-item.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Question Cards */
+        .question-card {
+            background: linear-gradient(135deg, var(--card-bg), #F5F5F5);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: var(--primary);
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .option-btn.selected {
+            background: #FFF8DC;
+            border-color: var(--accent);
+        }
+
+        .option-btn.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            animation: celebrate 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Timeline Visual */
+        .timeline-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .timeline-event {
+            background: linear-gradient(135deg, #FFF8DC, #FFEAA7);
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .timeline-year {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .timeline-event-name {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        /* Map Visual */
+        .map-visual {
+            text-align: center;
+            font-size: 5rem;
+            margin: 30px 0;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        /* Effects Grid */
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .effect-card {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .effect-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .effect-card.selected {
+            border-color: var(--accent);
+            background: #FFF8DC;
+        }
+
+        .effect-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .effect-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            border: 3px solid #4CAF50;
+            color: #2E7D32;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            border: 3px solid #f44336;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #DC143C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚔️ The Crusades Challenge ⚔️</h1>
+            <p class="subtitle">Learn about the wars that changed the Middle Ages!</p>
+        </header>
+
+        <div id="stage-indicator">
+            <div class="stage-badge" id="stage-badge">Stage 1 of 5</div>
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p id="completion-message"></p>
+            <button class="btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data - Enhanced for Year 4
+        const categories = {
+            what: {
+                name: 'What Were the Crusades?',
+                emoji: '⚔️',
+                features: [
+                    { text: 'Wars between Christians and Muslims', correct: true },
+                    { text: 'Happened in the Middle Ages (1095-1291)', correct: true },
+                    { text: 'Fought for control of the Holy Land', correct: true },
+                    { text: 'Many crusades happened over time', correct: true },
+                    { text: 'Peaceful trade agreements', correct: false },
+                    { text: 'Only happened in one year', correct: false }
+                ]
+            },
+            why: {
+                name: 'Why They Happened',
+                emoji: '🎯',
+                features: [
+                    { text: 'The Holy Land (Jerusalem) was important to both sides', correct: true },
+                    { text: 'Pope Urban II called for Christians to help', correct: true },
+                    { text: 'People believed it would bring them closer to God', correct: true },
+                    { text: 'Both Christians and Muslims wanted control', correct: true },
+                    { text: 'They happened for fun', correct: false },
+                    { text: 'Only one side wanted the Holy Land', correct: false }
+                ]
+            },
+            knights: {
+                name: 'Knights and the Journey',
+                emoji: '🛡️',
+                features: [
+                    { text: 'Knights traveled far from Europe to the Middle East', correct: true },
+                    { text: 'It was a very long and dangerous journey', correct: true },
+                    { text: 'They fought in many battles', correct: true },
+                    { text: 'Knights Templar and Knights Hospitaller were formed', correct: true },
+                    { text: 'The journey was short and easy', correct: false },
+                    { text: 'Knights stayed home', correct: false }
+                ]
+            },
+            events: {
+                name: 'Important Events',
+                emoji: '📅',
+                features: [
+                    { text: 'First Crusade captured Jerusalem in 1099', correct: true },
+                    { text: 'Saladin took Jerusalem back in 1187', correct: true },
+                    { text: 'Last stronghold (Acre) lost in 1291', correct: true },
+                    { text: 'Crusades lasted from 1095 to 1291', correct: true },
+                    { text: 'Crusades only lasted one year', correct: false },
+                    { text: 'Jerusalem was never captured', correct: false }
+                ]
+            },
+            effects: {
+                name: 'Effects of the Crusades',
+                emoji: '🌍',
+                features: [
+                    { text: 'Many people died in the wars', correct: true },
+                    { text: 'People learned about new foods and spices', correct: true },
+                    { text: 'Trade increased between Europe and the Middle East', correct: true },
+                    { text: 'People learned about different cultures and ideas', correct: true },
+                    { text: 'Nothing changed', correct: false },
+                    { text: 'People did not learn anything new', correct: false }
+                ]
+            }
+        };
+
+        const questions = [
+            {
+                question: "What were the Crusades?",
+                options: ["Peaceful meetings", "Wars between Christians and Muslims for control of the Holy Land", "Trade agreements", "Religious ceremonies"],
+                correct: 1,
+                explanation: "The Crusades were wars that happened in the Middle Ages! Christians fought Muslims, and they wanted control of the Holy Land, especially Jerusalem!"
+            },
+            {
+                question: "When did the Crusades happen?",
+                options: ["500-600 AD", "1095-1291 AD", "1500-1600 AD", "1800-1900 AD"],
+                correct: 1,
+                explanation: "The Crusades happened from 1095 to 1291 AD - that's almost 200 years! They were a series of wars that lasted a very long time!"
+            },
+            {
+                question: "Who called for the First Crusade?",
+                options: ["A king", "Pope Urban II", "A knight", "A merchant"],
+                correct: 1,
+                explanation: "Pope Urban II called for the First Crusade! He asked Christians in Europe to help take back the Holy Land from Muslim control!"
+            },
+            {
+                question: "What happened in 1099 during the First Crusade?",
+                options: ["Nothing", "Crusaders captured Jerusalem", "The Crusades ended", "Knights went home"],
+                correct: 1,
+                explanation: "In 1099, the Crusaders successfully captured Jerusalem! This was a major victory for the Christian forces during the First Crusade!"
+            },
+            {
+                question: "Who was Saladin?",
+                options: ["A Crusader knight", "A powerful Muslim leader who took Jerusalem back in 1187", "A European king", "A pope"],
+                correct: 1,
+                explanation: "Saladin was a powerful Muslim leader! In 1187, he took Jerusalem back from the Crusaders, which led to the Third Crusade!"
+            },
+            {
+                question: "What were the Knights Templar and Knights Hospitaller?",
+                options: ["Regular knights", "Special groups of knights formed to protect pilgrims and holy sites", "Merchants", "Farmers"],
+                correct: 1,
+                explanation: "The Knights Templar and Knights Hospitaller were special groups of knights! They were formed to protect pilgrims traveling to holy sites in the Middle East!"
+            },
+            {
+                question: "What did Europeans learn from the Crusades?",
+                options: ["Nothing", "New foods, spices, ideas, and building styles from the Middle East", "Only about war", "Only about religion"],
+                correct: 1,
+                explanation: "Even though the Crusades were wars, Europeans learned many things! They discovered new foods like rice and spices, new ideas, and different building styles from the Middle East!"
+            },
+            {
+                question: "When did the Crusades in the Holy Land end?",
+                options: ["1099", "1187", "1291 when Acre was lost", "1400"],
+                correct: 2,
+                explanation: "The Crusades in the Holy Land ended in 1291 when the last Christian stronghold, called Acre, was lost! This marked the end of the Crusades in that region!"
+            }
+        ];
+
+        const timelineEvents = [
+            { year: '1095', event: 'Pope Urban II calls for First Crusade', order: 1 },
+            { year: '1099', event: 'Crusaders capture Jerusalem', order: 2 },
+            { year: '1187', event: 'Saladin takes Jerusalem back', order: 3 },
+            { year: '1291', event: 'Last stronghold (Acre) lost, Crusades end', order: 4 }
+        ];
+
+        const effects = [
+            { effect: 'Many people died', correct: true, emoji: '💔' },
+            { effect: 'People learned about new foods and spices', correct: true, emoji: '🌶️' },
+            { effect: 'Trade increased between Europe and Middle East', correct: true, emoji: '📦' },
+            { effect: 'People learned about different cultures', correct: true, emoji: '🌍' },
+            { effect: 'Countries and borders changed', correct: true, emoji: '🗺️' },
+            { effect: 'Nothing changed at all', correct: false, emoji: '❌' },
+            { effect: 'Everyone became friends', correct: false, emoji: '🤝' },
+            { effect: 'Only bad things happened', correct: false, emoji: '😢' }
+        ];
+
+        // Game State
+        let currentStage = 1;
+        let score = 0;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let selectedCategory = null;
+        let selectedFeatures = new Set();
+        let selectedTimelineOrder = [];
+        let selectedEffects = new Set();
+
+        // Initialize Game
+        function initGame() {
+            currentStage = 1;
+            score = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+            updateScore();
+            loadStage(1);
+        }
+
+        function loadStage(stage) {
+            currentStage = stage;
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+
+            updateStageIndicator();
+
+            switch(stage) {
+                case 1:
+                    loadStage1();
+                    break;
+                case 2:
+                    loadStage2();
+                    break;
+                case 3:
+                    loadStage3();
+                    break;
+                case 4:
+                    loadStage4();
+                    break;
+                case 5:
+                    loadStage5();
+                    break;
+            }
+        }
+
+        function loadStage1() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 1: Match Features to Categories</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Select a category, then click on the features that belong to it!</p>';
+            
+            html += '<div class="category-grid">';
+            Object.keys(categories).forEach(key => {
+                const cat = categories[key];
+                html += `
+                    <div class="category-card" data-category="${key}" onclick="selectCategory('${key}')">
+                        <div class="category-emoji">${cat.emoji}</div>
+                        <div class="category-name">${cat.name}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="features-section" style="display: none;">';
+            html += '<h3 style="text-align: center; margin: 30px 0 20px 0; font-size: 1.4rem;">Click on the features that belong to this category:</h3>';
+            html += '<div id="features-container"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage1()">Check Answers</button>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            
+            gameArea.innerHTML = html;
+            selectedFeatures.clear();
+        }
+
+        function selectCategory(categoryKey) {
+            selectedCategory = categoryKey;
+            const cards = document.querySelectorAll('.category-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            document.querySelector(`[data-category="${categoryKey}"]`).classList.add('selected');
+            
+            const featuresSection = document.getElementById('features-section');
+            const featuresContainer = document.getElementById('features-container');
+            
+            // Get all features and shuffle
+            const allFeatures = [];
+            Object.keys(categories).forEach(key => {
+                categories[key].features.forEach(feature => {
+                    allFeatures.push({ text: feature.text, correct: key === categoryKey && feature.correct, category: key });
+                });
+            });
+            
+            const shuffled = allFeatures.sort(() => Math.random() - 0.5);
+            
+            featuresContainer.innerHTML = '';
+            shuffled.forEach((feature, index) => {
+                const featureCard = document.createElement('div');
+                featureCard.className = 'feature-item';
+                featureCard.textContent = feature.text;
+                featureCard.dataset.index = index;
+                featureCard.dataset.correct = feature.correct;
+                featureCard.onclick = () => toggleFeature(index);
+                featuresContainer.appendChild(featureCard);
+            });
+            
+            featuresSection.style.display = 'block';
+        }
+
+        function toggleFeature(index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedFeatures.delete(index);
+            } else {
+                card.classList.add('selected');
+                selectedFeatures.add(index);
+            }
+        }
+
+        function checkStage1() {
+            const cards = document.querySelectorAll('.feature-item');
+            let correct = 0;
+            let selected = 0;
+            let totalCorrect = categories[selectedCategory].features.filter(f => f.correct).length;
+            
+            cards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.classList.add('correct');
+                } else if (isCorrect && !isSelected) {
+                    card.classList.add('correct');
+                } else if (!isCorrect && isSelected) {
+                    card.classList.add('wrong');
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && selectedFeatures.size === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You found all ${totalCorrect} correct features for ${categories[selectedCategory].name}!`;
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} correct features. Keep trying!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += cards.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage2() {
+            const gameArea = document.getElementById('game-area');
+            const question = questions[Math.floor(Math.random() * questions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 2: Knowledge Challenge</h2>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage2" onclick="nextStage2()" style="display: none;">Continue</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function selectOption(selectedIndex, correctIndex, explanation) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selectedIndex === correctIndex) {
+                buttons[selectedIndex].classList.add('correct');
+                feedback.textContent = '✓ Correct! ' + explanation;
+                feedback.className = 'feedback show correct';
+                score += 20;
+                correctAnswers++;
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+                feedback.textContent = '✗ Not quite. ' + explanation;
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions++;
+            updateScore();
+            
+            document.getElementById('next-stage2').style.display = 'inline-block';
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function nextStage2() {
+            if (currentStage < 5) {
+                loadStage(currentStage + 1);
+            } else {
+                endGame();
+            }
+        }
+
+        function loadStage3() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 3: Crusades Timeline</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Put these important events in the correct chronological order!</p>';
+            
+            const shuffledEvents = [...timelineEvents].sort(() => Math.random() - 0.5);
+            
+            html += '<div class="timeline-container">';
+            shuffledEvents.forEach((event, index) => {
+                html += `
+                    <div class="timeline-event" data-year="${event.year}" data-order="${event.order}" onclick="selectTimelineEvent('${event.year}', ${event.order})">
+                        <div class="timeline-year">${event.year}</div>
+                        <div class="timeline-event-name">${event.event}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="selected-timeline" style="margin-top: 30px; min-height: 60px; padding: 15px; background: #F5E6D3; border-radius: 10px; border: 2px dashed var(--primary); text-align: center;"></div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage3()">Check Order</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedTimelineOrder = [];
+        }
+
+        function selectTimelineEvent(year, order) {
+            const event = document.querySelector(`[data-year="${year}"]`);
+            const existingIndex = selectedTimelineOrder.findIndex(e => e.year === year);
+            
+            if (existingIndex !== -1) {
+                // Remove if already selected
+                selectedTimelineOrder.splice(existingIndex, 1);
+                event.classList.remove('selected');
+            } else {
+                // Add to selection
+                selectedTimelineOrder.push({ year, order });
+                event.classList.add('selected');
+            }
+            
+            updateTimelineDisplay();
+        }
+
+        function updateTimelineDisplay() {
+            const display = document.getElementById('selected-timeline');
+            if (selectedTimelineOrder.length === 0) {
+                display.innerHTML = '<p style="color: #666; font-style: italic;">Click events in chronological order...</p>';
+            } else {
+                display.innerHTML = selectedTimelineOrder.map((e, i) => 
+                    `${i + 1}. ${e.year}`
+                ).join(' → ');
+            }
+        }
+
+        function checkStage3() {
+            const correctOrder = [1, 2, 3, 4];
+            const selectedOrder = selectedTimelineOrder.map(e => e.order);
+            const isCorrect = JSON.stringify(selectedOrder) === JSON.stringify(correctOrder);
+            
+            const feedback = document.getElementById('feedback');
+            if (isCorrect && selectedTimelineOrder.length === 4) {
+                feedback.textContent = '✓ Perfect! The correct order is: 1095 (Pope calls for Crusade) → 1099 (Jerusalem captured) → 1187 (Saladin takes it back) → 1291 (Crusades end)!';
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers += 4;
+            } else {
+                feedback.textContent = 'Not quite. The correct order is: 1095 → 1099 → 1187 → 1291. Try again!';
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions += 4;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage4() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 4: Effects of the Crusades</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Select ALL the real effects of the Crusades!</p>';
+            
+            const shuffledEffects = effects.sort(() => Math.random() - 0.5);
+            
+            html += '<div class="effects-grid">';
+            shuffledEffects.forEach((effect, index) => {
+                html += `
+                    <div class="effect-card" data-index="${index}" data-correct="${effect.correct}" onclick="toggleEffect(${index}, ${effect.correct})">
+                        <div class="effect-emoji">${effect.emoji}</div>
+                        <div class="effect-text">${effect.effect}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage4()">Check Answers</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedEffects.clear();
+        }
+
+        function toggleEffect(index, isCorrect) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedEffects.delete(index);
+            } else {
+                card.classList.add('selected');
+                selectedEffects.add(index);
+            }
+        }
+
+        function checkStage4() {
+            const cards = document.querySelectorAll('.effect-card');
+            let correct = 0;
+            let selected = 0;
+            let totalCorrect = 5; // 5 correct effects
+            
+            cards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (isCorrect && !isSelected) {
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (!isCorrect && isSelected) {
+                    card.style.borderColor = '#f44336';
+                    card.style.background = '#ffebee';
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && selectedEffects.size === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You found all ${totalCorrect} correct effects! The Crusades had many important effects: people died, but also trade increased and people learned about new cultures, foods, and ideas!`;
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} correct effects. Remember: The Crusades caused deaths, but also increased trade and helped people learn about new cultures and foods!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += cards.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 5) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage5() {
+            const gameArea = document.getElementById('game-area');
+            const question = questions[Math.floor(Math.random() * questions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 5: Final Challenge</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #666;">One more challenging question to test your knowledge!</p>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage5" onclick="endGame()" style="display: none;">Finish Game</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function updateStageIndicator() {
+            document.getElementById('stage-badge').textContent = `Stage ${currentStage} of 5`;
+            const progress = (currentStage / 5) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-fill').textContent = Math.round(progress) + '%';
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function endGame() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = `Outstanding! You scored ${score} points with ${percentage}% correct! You're a true expert on The Crusades! 🏆`;
+            } else if (percentage >= 70) {
+                message = `Great job! You scored ${score} points with ${percentage}% correct! You really understand this important time in history! 🌟`;
+            } else if (percentage >= 50) {
+                message = `Good effort! You scored ${score} points with ${percentage}% correct! Keep learning about the Crusades! 📚`;
+            } else {
+                message = `You scored ${score} points with ${percentage}% correct. Review the lesson and try again! 💪`;
+            }
+            
+            document.getElementById('completion-message').textContent = message;
+            document.getElementById('completion-modal').classList.add('show');
+            
+            // Send completion message
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: message,
+                    rate: 0.9,
+                    pitch: 1.1
+                }, '*');
+                
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'the-crusades'
+                    }, '*');
+                }, 3000);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('completion-modal').classList.remove('show');
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>

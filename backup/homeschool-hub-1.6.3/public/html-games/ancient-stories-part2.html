@@ -1,0 +1,281 @@
+﻿x;
+      margin-bottom:10px;
+    }
+    .event .t{font-weight:700; font-size:13px}
+    .event .d{margin-top:6px; color:var(--muted); font-size:12px; line-height:1.4}
+    .event .tag{
+      display:inline-block;
+      font-size:11px;
+      margin-top:8px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+
+    .choices{display:grid; gap:10px; margin-top:10px}
+    .choice{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius:12px;
+      padding:10px;
+      cursor:pointer;
+      transition: background .2s ease, transform .06s ease;
+    }
+    .choice:hover{background: rgba(255,255,255,.06)}
+    .choice:active{transform: translateY(1px)}
+    .choice .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .choice .name{font-weight:800; font-size:13px}
+    .delta{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .chip{
+      font-size:11px;
+      padding:3px 7px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color:var(--muted);
+      background: rgba(0,0,0,.10);
+    }
+    .chip.good{border-color: rgba(61,220,151,.35); color: rgba(61,220,151,.95)}
+    .chip.warn{border-color: rgba(255,204,102,.35); color: rgba(255,204,102,.95)}
+    .chip.bad{border-color: rgba(255,107,107,.35); color: rgba(255,107,107,.95)}
+    .footer{
+      padding:10px 14px 14px;
+      border-top:1px solid var(--border);
+      background: rgba(0,0,0,.12);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:11px;
+      padding:3px 7px;
+      border-radius:8px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background: rgba(0,0,0,.55);
+      z-index:1000;
+    }
+    .modal.show{display:flex}
+    .modalBox{
+      width:min(720px, 100%);
+      background: var(--panel);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalBox header{
+      max-width:none;
+      margin:0;
+      padding:14px;
+      border-bottom:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+    .modalBox header h3{margin:0; font-size:15px}
+    .modalBody{padding:14px; color:var(--muted); font-size:13px; line-height:1.5}
+    .quizQ{font-weight:800; color:var(--text); margin-bottom:10px}
+    .quizAns{display:grid; gap:10px}
+    .ansBtn{
+      text-align:left;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .ansBtn:hover{background: rgba(255,255,255,.07)}
+    .ansBtn.correct{border-color: rgba(61,220,151,.5); background: rgba(61,220,151,.12)}
+    .ansBtn.wrong{border-color: rgba(255,107,107,.5); background: rgba(255,107,107,.10)}
+  </style>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1>Ancient Stories: The First Cities</h1>
+      <p class="sub">
+        Build a first city by making choices each year. You must balance food, people, trade, stability, and knowledge.
+        Learn why cities formed near rivers, how writing and law changed society, and how trade made cities powerful.
+      </p>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="btnHelp">How to play</button>
+      <button class="btn" id="btnReset">Reset</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>City Builder</h2>
+      <div class="pad">
+        <div class="row" style="justify-content:space-between">
+          <div class="row">
+            <span class="pill"><span class="dot"></span><strong id="cityName">Choose a city</strong></span>
+            <span class="pill"><span class="dot" style="background:var(--good)"></span>Year: <strong id="year">0</strong></span>
+            <span class="pill"><span class="dot" style="background:var(--warn)"></span>Era: <strong id="era">Start</strong></span>
+          </div>
+          <div class="row">
+            <select id="cityPick" aria-label="Pick a city">
+              <option value="">Select a first city</option>
+            </select>
+            <button class="btn good" id="btnStart">Start</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="statGrid" id="statGrid"></div>
+
+        <div style="height:12px"></div>
+
+        <div class="card" style="background: rgba(0,0,0,.08); border-color: rgba(255,255,255,.10)">
+          <h2 style="border-bottom:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.02)">Your next choice</h2>
+          <div class="pad">
+            <div class="tiny" id="prompt">
+              Pick a city, then press Start. Each year you choose one action. Actions change your city stats.
+            </div>
+            <div class="choices" id="choices"></div>
+          </div>
+          <div class="footer">
+            <div class="tiny">
+              Tip: Press <span class="kbd">1</span>, <span class="kbd">2</span>, <span class="kbd">3</span>, <span class="kbd">4</span> to pick a choice.
+            </div>
+            <div class="row">
+              <button class="btn" id="btnFact">Quick fact</button>
+              <button class="btn primary" id="btnQuiz">Mini quiz</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card" style="background: rgba(0,0,0,.08); border-color: rgba(255,255,255,.10)">
+          <h2 style="border-bottom:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.02)">Story log</h2>
+          <div class="pad log" id="log"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>Knowledge Cabinet</h2>
+      <div class="pad">
+        <div class="grid2" id="cabinet"></div>
+        <div style="height:12px"></div>
+        <div class="card" style="background: rgba(0,0,0,.08); border-color: rgba(255,255,255,.10)">
+          <h2 style="border-bottom:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.02)">Win conditions</h2>
+          <div class="pad tiny">
+            You win when your city becomes a lasting city-state:
+            <ul>
+              <li>Food at least 70, People at least 70</li>
+              <li>Stability at least 60</li>
+              <li>And either Trade at least 70 or Knowledge at least 70</li>
+            </ul>
+            You lose if any stat reaches 0.
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modalBox">
+      <header>
+        <div>
+          <h3 id="modalTitle">Title</h3>
+          <div class="tiny" id="modalSub"></div>
+        </div>
+        <button class="btn" id="modalClose">Close</button>
+      </header>
+      <div class="modalBody" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Core content: simplified but accurate themes for early cities
+    const CITIES = [
+      {
+        id: "uruk",
+        name: "Uruk (Sumer)",
+        river: "Euphrates",
+        hook: "A giant city with canals, temples, and early writing for keeping records.",
+        strengths: { food: 55, people: 55, trade: 50, stability: 45, knowledge: 55 },
+        notes: [
+          "Irrigation canals helped grow more food, feeding more people.",
+          "Early writing began as accounting: who owed grain, sheep, or labor."
+        ]
+      },
+      {
+        id: "ur",
+        name: "Ur (Sumer)",
+        river: "Euphrates",
+        hook: "A trading city with long-distance connections and impressive temples.",
+        strengths: { food: 50, people: 50, trade: 60, stability: 50, knowledge: 50 },
+        notes: [
+          "Trade linked cities to materials they lacked, like timber, stone, and metals.",
+          "Wealth funded skilled work: crafts, administration, and building."
+        ]
+      },
+      {
+        id: "mohenjo",
+        name: "Mohenjo-daro (Indus Valley)",
+        river: "Indus",
+        hook: "Famous for careful planning: straight streets, drains, and public buildings.",
+        strengths: { food: 55, people: 50, trade: 55, stability: 60, knowledge: 45 },
+        notes: [
+          "Urban planning reduces disease and fire risk and improves daily life.",
+          "Standardized weights and measures help trade and fairness."
+        ]
+      },
+      {
+        id: "memphis",
+        name: "Memphis (Ancient Egypt)",
+        river: "Nile",
+        hook: "A river-fed powerhouse, supported by predictable floods and strong administration.",
+        strengths: { food: 65, people: 55, trade: 50, stability: 60, knowledge: 45 },
+        notes: [
+          "The Nile flood cycle boosted farming, but needed coordination and storage.",
+          "Central authority can organize big projects but needs legitimacy."
+        ]
+      }
+    ];
+
+    const STAT_KEYS = [
+      { key: "food", label: "Food" },
+      { key: "people", label: "People" },
+      { key: "trade", label: "Trade" },
+      { key: "stability", label: "Stability" },
+      { key: "knowledge", label: "Knowledge" },
+    ];
+
+    // Knowledge Cabinet cards are unlockable
+    const CABI
+

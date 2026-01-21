@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesopotamia Explorer</title>
+    <style>
+        :root {
+            --primary: #8B4513;
+            --accent: #DAA520;
+            --bg: #F5DEB3;
+            --card-bg: #FFF8DC;
+            --river: #4682B4;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #DEB887 100%);
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 { 
+            margin: 0; 
+            font-size: 2.2rem; 
+            border-bottom: 4px solid var(--accent); 
+            display: inline-block; 
+            padding-bottom: 5px; 
+            color: var(--primary);
+        }
+        p { 
+            font-style: italic; 
+            color: #8B7355; 
+            font-size: 1.1rem;
+        }
+
+        /* --- CLUE TERMINAL --- */
+        #clue-terminal {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: #90EE90;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            position: relative;
+            border: 4px solid #654321;
+        }
+        #clue-terminal::before {
+            content: "MESOPOTAMIA_ARCHIVE_V.3000BCE";
+            position: absolute;
+            top: -12px; left: 20px;
+            background: #654321;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            color: #DAA520;
+        }
+        #clue-text { 
+            font-size: 1.2rem; 
+            line-height: 1.5; 
+            font-weight: bold; 
+        }
+
+        /* --- ITEM GRID --- */
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .item-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            text-align: center;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+            border-color: #8B7355;
+        }
+
+        .item-name {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #654321;
+        }
+
+        .item-emoji {
+            font-size: 4rem;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .item-card:hover .item-emoji {
+            transform: scale(1.1);
+        }
+
+        /* --- STATES --- */
+        .item-card.correct {
+            border-color: #27ae60;
+            background-color: #eafaf1;
+            animation: celebrate 0.5s;
+        }
+        .item-card.wrong {
+            border-color: #c0392b;
+            animation: shake 0.4s;
+        }
+        .item-card.dimmed {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15) rotate(5deg); }
+        }
+
+        /* --- MODAL FOR FACTS --- */
+        #fact-modal {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            z-index: 1000;
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.3s;
+        }
+        #fact-modal.visible { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+
+        .clay-tablet {
+            background: linear-gradient(135deg, #D2B48C, #C19A6B);
+            width: 90%; 
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 5px;
+            position: relative;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.3);
+            color: #3E2723;
+            border: 8px solid #8B6F47;
+        }
+        .clay-tablet::before {
+            content: "CUNEIFORM RECORD";
+            position: absolute; 
+            top: 10px; 
+            right: 20px;
+            color: #654321; 
+            border: 2px solid #654321;
+            padding: 2px 8px; 
+            font-weight: bold; 
+            transform: rotate(-10deg);
+            font-family: 'Courier New', monospace; 
+            opacity: 0.7;
+            font-size: 0.7rem;
+        }
+        
+        .fact-title { 
+            font-size: 1.8rem; 
+            border-bottom: 2px solid #8B4513; 
+            margin-bottom: 10px; 
+            color: #654321;
+        }
+        .fact-content { 
+            font-size: 1.1rem; 
+            line-height: 1.6; 
+        }
+        
+        button.next-btn {
+            background: #8B4513; 
+            color: white; 
+            border: none;
+            padding: 10px 25px; 
+            font-size: 1.1rem; 
+            margin-top: 20px;
+            cursor: pointer; 
+            border-radius: 5px; 
+            float: right;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        button.next-btn:hover { 
+            background: #A0522D; 
+        }
+
+        /* Score Badge */
+        #score-badge {
+            position: fixed; 
+            top: 20px; 
+            right: 20px;
+            background: var(--primary); 
+            color: white;
+            padding: 10px 20px; 
+            border-radius: 50px;
+            font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="score-badge">Discoveries: <span id="score">0</span>/8</div>
+
+    <header>
+        <h1>🏛️ Mesopotamia Explorer 🏛️</h1>
+        <p>Read the clues. Discover the ancient wonders!</p>
+    </header>
+
+    <div id="clue-terminal">
+        <span id="cursor">> </span><span id="clue-text">Initializing Ancient Archive...</span>
+    </div>
+
+    <div id="gallery">
+    </div>
+
+    <div id="fact-modal">
+        <div class="clay-tablet">
+            <h2 class="fact-title" id="modal-title">Name</h2>
+            <div class="fact-content" id="modal-text">Fact goes here.</div>
+            <button class="next-btn" onclick="nextRound()">Next Discovery</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & ASSETS ---
+        const mesopotamiaItems = [
+            {
+                id: 'rivers',
+                name: 'Tigris & Euphrates',
+                emoji: '🌊',
+                clue: "I am two great rivers that flow through the land. Mesopotamia means 'land between' me!",
+                fact: "The Tigris and Euphrates rivers made the land very fertile! People could grow crops because of the rich soil near these rivers. That's why Mesopotamia was called the 'Fertile Crescent'!"
+            },
+            {
+                id: 'cuneiform',
+                name: 'Cuneiform Writing',
+                emoji: '📝',
+                clue: "I was the first writing system ever created! People wrote me on clay tablets using a stick called a stylus.",
+                fact: "Cuneiform was invented around 3000 BCE! People pressed wedge-shaped marks into soft clay. It was one of the earliest ways to write things down. Over 500,000 cuneiform tablets have been found!"
+            },
+            {
+                id: 'ziggurat',
+                name: 'Ziggurat',
+                emoji: '🏛️',
+                clue: "I am a huge temple tower that looks like a staircase to the sky. People climbed me to worship the gods!",
+                fact: "Ziggurats were massive temple towers built from mud bricks! They were like mountains with shrines on top. The most famous was the Ziggurat of Ur, which was built around 2100 BCE!"
+            },
+            {
+                id: 'hammurabi',
+                name: "Hammurabi's Code",
+                emoji: '⚖️',
+                clue: "I was the first set of written laws! A famous king named Hammurabi created me to make things fair.",
+                fact: "Hammurabi was a Babylonian king who created the first written laws around 1750 BCE! His code had 282 laws written on a stone pillar. The most famous rule was 'an eye for an eye'!"
+            },
+            {
+                id: 'wheel',
+                name: 'The Wheel',
+                emoji: '🛞',
+                clue: "I was one of the greatest inventions! People used me to move heavy things and travel faster.",
+                fact: "Mesopotamians invented the wheel around 3500 BCE! This amazing invention changed everything - people could now move heavy loads, build carts, and travel much faster. It's still used today!"
+            },
+            {
+                id: 'cities',
+                name: 'First Cities',
+                emoji: '🏙️',
+                clue: "I was one of the first places where many people lived together! Cities like Ur and Babylon were very important.",
+                fact: "Mesopotamia had the first cities in the world! Ur, Uruk, and Babylon were huge cities with thousands of people. They had markets, temples, and houses made of mud bricks!"
+            },
+            {
+                id: 'farming',
+                name: 'Irrigation',
+                emoji: '🌾',
+                clue: "I helped people bring water to their crops! Farmers used me to grow food in the dry land.",
+                fact: "Mesopotamians invented irrigation - a way to bring water from rivers to their fields! They dug canals to water their crops. This let them grow barley, wheat, and other foods even when it was dry!"
+            },
+            {
+                id: 'mudbricks',
+                name: 'Mud Bricks',
+                emoji: '🧱',
+                clue: "I was used to build houses and buildings! People made me from mud and dried me in the sun.",
+                fact: "Since there wasn't much stone or wood, Mesopotamians made mud bricks! They mixed mud with straw, shaped it into bricks, and dried them in the sun. These bricks were used to build houses, walls, and even ziggurats!"
+            }
+        ];
+
+        let currentRound = 0;
+        let score = 0;
+        let gameActive = true;
+        let shuffledItems = [];
+        let targetItem = null;
+        
+        const synth = window.speechSynthesis;
+
+        function initGame() {
+            score = 0;
+            currentRound = 0;
+            document.getElementById('score').innerText = 0;
+            
+            // Create the card grid
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            
+            // Shuffle items for random order
+            shuffledItems = [...mesopotamiaItems].sort(() => Math.random() - 0.5);
+            
+            // Render all items to the grid
+            mesopotamiaItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.id = `card-${item.id}`;
+                card.onclick = () => checkAnswer(item.id);
+                
+                card.innerHTML = `
+                    <div class="item-emoji">${item.emoji}</div>
+                    <div class="item-name">${item.name}</div>
+                `;
+                gallery.appendChild(card);
+            });
+
+            startRound();
+        }
+
+        function startRound() {
+            if (currentRound >= shuffledItems.length) {
+                endGame();
+                return;
+            }
+
+            targetItem = shuffledItems[currentRound];
+            gameActive = true;
+
+            // Typewriter effect for clue
+            const terminal = document.getElementById('clue-text');
+            terminal.innerText = '';
+            let i = 0;
+            const text = targetItem.clue;
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    terminal.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 30);
+                } else {
+                    // Send TTS request to parent
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'html-game-tts',
+                            text: text,
+                            rate: 0.9,
+                            pitch: 1.1
+                        }, '*');
+                    } else {
+                        speak(text);
+                    }
+                }
+            }
+            typeWriter();
+        }
+
+        function checkAnswer(selectedId) {
+            if (!gameActive) return;
+
+            const selectedCard = document.getElementById(`card-${selectedId}`);
+            
+            if (selectedId === targetItem.id) {
+                // Correct
+                gameActive = false;
+                selectedCard.classList.add('correct');
+                score++;
+                document.getElementById('score').innerText = score;
+                
+                const successMsg = "Discovery Complete! Opening Archive.";
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'html-game-tts',
+                        text: successMsg,
+                        rate: 0.9,
+                        pitch: 1.1
+                    }, '*');
+                } else {
+                    speak(successMsg);
+                }
+                
+                setTimeout(() => {
+                    showFact(targetItem);
+                }, 1000);
+            } else {
+                // Wrong
+                selectedCard.classList.add('wrong');
+                const failMsg = "Not quite. Try again!";
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'html-game-tts',
+                        text: failMsg,
+                        rate: 0.9,
+                        pitch: 1.1
+                    }, '*');
+                } else {
+                    speak(failMsg);
+                }
+                setTimeout(() => selectedCard.classList.remove('wrong'), 500);
+            }
+        }
+
+        function showFact(item) {
+            document.getElementById('modal-title').innerText = item.name;
+            document.getElementById('modal-text').innerText = item.fact;
+            document.getElementById('fact-modal').classList.add('visible');
+            
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: item.fact,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            } else {
+                speak(item.fact);
+            }
+        }
+
+        function nextRound() {
+            document.getElementById('fact-modal').classList.remove('visible');
+            
+            // Mark the finished card as dimmed
+            document.getElementById(`card-${targetItem.id}`).classList.add('dimmed');
+            
+            currentRound++;
+            startRound();
+        }
+
+        function endGame() {
+            document.getElementById('clue-text').innerText = "MISSION COMPLETE. ALL ANCIENT WONDERS DISCOVERED!";
+            
+            const completionMsg = "Amazing! You've discovered all the wonders of Ancient Mesopotamia! You are now a Mesopotamia expert!";
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: completionMsg,
+                    rate: 0.9,
+                    pitch: 1.1
+                }, '*');
+                
+                // Send completion message to parent
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'ancient-mesopotamia'
+                    }, '*');
+                }, 2000);
+            } else {
+                speak(completionMsg);
+            }
+        }
+
+        function speak(text) {
+            if (synth.speaking) synth.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.rate = 0.9;
+            u.pitch = 1.1;
+            synth.speak(u);
+        }
+
+        window.onload = initGame;
+
+    </script>
+</body>
+</html>

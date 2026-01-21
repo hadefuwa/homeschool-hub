@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dino Sorting Challenge</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: #E0F7FA;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            overflow: hidden; /* Prevent scrolling while dragging */
+            touch-action: none; /* Crucial for touch dragging */
+        }
+
+        h1 {
+            color: #00695C;
+            text-shadow: 2px 2px #4DB6AC;
+            margin: 5px 0;
+            font-size: 1.8rem;
+            pointer-events: none;
+        }
+
+        /* --- SCOREBOARD --- */
+        #scoreboard {
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+
+        /* --- ZONES --- */
+        .zones-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 95%;
+            max-width: 800px;
+            height: 160px; /* Fixed height target */
+            margin-bottom: 20px;
+            z-index: 10; /* Behind draggables */
+        }
+
+        .zone {
+            flex: 1;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10px;
+            border: 4px dashed rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.3s;
+            position: relative;
+        }
+
+        .zone.highlight {
+            transform: scale(1.05);
+            border-style: solid;
+            border-color: yellow;
+        }
+
+        /* BIG CAVE */
+        .cave {
+            background-color: #5D4037; 
+            color: #D7CCC8;
+        }
+        
+        /* SMALL NEST */
+        .nest {
+            background-color: #AED581; 
+            color: #33691E;
+        }
+
+        .zone-label {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            pointer-events: none;
+        }
+
+        /* Counter for items inside */
+        .count-badge {
+            background: rgba(0,0,0,0.2);
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* --- PLAY AREA --- */
+        #play-area {
+            flex: 1;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            background-color: rgba(255,255,255,0.4);
+            border-radius: 30px 30px 0 0;
+            margin-top: 10px;
+        }
+
+        /* --- DINOSAURS --- */
+        .dino {
+            position: absolute;
+            cursor: grab;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+            transition: transform 0.1s;
+            touch-action: none;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dino:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+            z-index: 1000;
+        }
+
+        .dino.size-big { font-size: 5rem; }
+        .dino.size-small { font-size: 2.5rem; }
+
+        /* Animation for wrong answer */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+        .shake { animation: shake 0.4s ease; }
+
+        /* Animation for success (poof away) */
+        @keyframes popOut {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .poof { animation: popOut 0.5s ease forwards; pointer-events: none; }
+
+        /* --- CERTIFICATE OVERLAY --- */
+        #certificate {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            padding: 40px;
+            border-radius: 30px;
+            border: 8px solid #FFD700;
+            box-shadow: 0 0 100px rgba(0,0,0,0.5);
+            text-align: center;
+            z-index: 2000;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 85%;
+            max-width: 500px;
+        }
+
+        #certificate.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .cert-title { font-size: 2.5rem; color: #00695C; margin: 0; }
+        .cert-badge { font-size: 5rem; margin: 10px 0; }
+        .cert-text { font-size: 1.2rem; color: #555; }
+        .star-rating { font-size: 2rem; color: #FFD700; margin: 10px 0; }
+
+        button.reset-btn {
+            background-color: #009688;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #00695C;
+        }
+        button.reset-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        /* Confetti */
+        #confetti {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1500;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🦕 Drag to the Home 🦖</h1>
+    
+    <div id="scoreboard">Dinos Left: <span id="count-display">0</span></div>
+
+    <div class="zones-container">
+        <div class="zone cave" id="drop-big">
+            <div class="zone-label">⛰️ BIG CAVE</div>
+            <div class="count-badge" id="badge-big">0</div>
+        </div>
+        <div class="zone nest" id="drop-small">
+            <div class="zone-label">🪺 SMALL NEST</div>
+            <div class="count-badge" id="badge-small">0</div>
+        </div>
+    </div>
+
+    <div id="play-area"></div>
+
+    <div id="certificate">
+        <h2 class="cert-title">DINO EXPERT!</h2>
+        <div class="cert-badge">🏅</div>
+        <p class="cert-text">This certifies that you know your<br>BIG and SMALL dinosaurs!</p>
+        <div class="star-rating" id="final-stars">⭐⭐⭐</div>
+        <button class="reset-btn" onclick="initGame()">Play Again</button>
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+    <script>
+        // --- CONFIG ---
+        const totalDinos = 8;
+        const dinoIcons = ['🦖','🦕','🐊','🐢','🐉','🦎'];
+        
+        // --- STATE ---
+        let dinos = [];
+        let mistakes = 0;
+        let sortedCount = 0;
+        let zIndexCounter = 100;
+        const synth = window.speechSynthesis;
+
+        // --- INIT ---
+        function initGame() {
+            const playArea = document.getElementById('play-area');
+            playArea.innerHTML = '';
+            document.getElementById('certificate').classList.remove('show');
+            document.getElementById('badge-big').innerText = '0';
+            document.getElementById('badge-small').innerText = '0';
+            document.getElementById('count-display').innerText = totalDinos;
+            stopConfetti();
+
+            dinos = [];
+            mistakes = 0;
+            sortedCount = 0;
+
+            // Generate Dinos
+            for (let i = 0; i < totalDinos; i++) {
+                createDino(i);
+            }
+        }
+
+        function createDino(index) {
+            const playArea = document.getElementById('play-area');
+            const el = document.createElement('div');
+            
+            // Random properties
+            const isBig = Math.random() > 0.5;
+            const icon = dinoIcons[Math.floor(Math.random() * dinoIcons.length)];
+            
+            el.className = `dino ${isBig ? 'size-big' : 'size-small'}`;
+            el.innerText = icon;
+            el.id = `dino-${index}`;
+            el.dataset.size = isBig ? 'big' : 'small';
+
+            // Random Position within play area
+            // We use percentages to keep it responsive
+            const top = 10 + Math.random() * 60; // 10% to 70% down
+            const left = 10 + Math.random() * 80; // 10% to 90% across
+            
+            el.style.top = top + '%';
+            el.style.left = left + '%';
+
+            // Attach Drag Logic
+            makeDraggable(el);
+            
+            playArea.appendChild(el);
+        }
+
+        // --- DRAG AND DROP LOGIC (Touch & Mouse) ---
+        function makeDraggable(el) {
+            let startX, startY, initialLeft, initialTop;
+            
+            const startDrag = (e) => {
+                e.preventDefault(); // Prevent scrolling
+                // Get pointer position (touch or mouse)
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                startX = clientX;
+                startY = clientY;
+
+                // Current position (parsed from inline style or computed)
+                initialLeft = parseFloat(el.style.left); // value in %
+                initialTop = parseFloat(el.style.top);   // value in %
+                
+                // Convert % to pixels for dragging calculation
+                const parentW = el.parentElement.offsetWidth;
+                const parentH = el.parentElement.offsetHeight;
+                
+                // Bring to front
+                zIndexCounter++;
+                el.style.zIndex = zIndexCounter;
+
+                // Add listeners for move/up
+                document.addEventListener('mousemove', moveDrag);
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchmove', moveDrag, {passive: false});
+                document.addEventListener('touchend', endDrag);
+
+                // Helper to move
+                function moveDrag(e) {
+                    e.preventDefault();
+                    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    const deltaX = cx - startX;
+                    const deltaY = cy - startY;
+
+                    el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                }
+
+                // Helper to end
+                function endDrag(e) {
+                    document.removeEventListener('mousemove', moveDrag);
+                    document.removeEventListener('mouseup', endDrag);
+                    document.removeEventListener('touchmove', moveDrag);
+                    document.removeEventListener('touchend', endDrag);
+
+                    checkDrop(el, e);
+                }
+            };
+
+            el.addEventListener('mousedown', startDrag);
+            el.addEventListener('touchstart', startDrag, {passive: false});
+        }
+
+        function checkDrop(el, e) {
+            // Get bounding boxes
+            const dinoRect = el.getBoundingClientRect();
+            const bigZone = document.getElementById('drop-big').getBoundingClientRect();
+            const smallZone = document.getElementById('drop-small').getBoundingClientRect();
+            
+            // Calculate Center of Dino
+            const dinoCenterX = dinoRect.left + dinoRect.width / 2;
+            const dinoCenterY = dinoRect.top + dinoRect.height / 2;
+
+            const isBigDino = el.dataset.size === 'big';
+            let targetHit = null;
+
+            // Check collision with zones (is center of dino inside zone?)
+            if (isInside(dinoCenterX, dinoCenterY, bigZone)) targetHit = 'big';
+            else if (isInside(dinoCenterX, dinoCenterY, smallZone)) targetHit = 'small';
+
+            // Validate
+            if (targetHit) {
+                if (targetHit === el.dataset.size) {
+                    // SUCCESS
+                    handleSuccess(el, targetHit);
+                } else {
+                    // WRONG HOME
+                    handleFailure(el, "Wrong home!");
+                }
+            } else {
+                // DROPPED IN EMPTY SPACE
+                // Just reset transform to snap back to original % position visually
+                // (or leave it there? Snap back looks cleaner)
+                el.style.transform = 'translate(0, 0)';
+            }
+        }
+
+        function isInside(x, y, rect) {
+            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+        }
+
+        function handleSuccess(el, type) {
+            sortedCount++;
+            
+            // Audio
+            if(type === 'big') speak("Big!");
+            else speak("Small!");
+
+            // Update Badge
+            const badge = document.getElementById(`badge-${type}`);
+            badge.innerText = parseInt(badge.innerText) + 1;
+
+            // Visuals
+            el.classList.add('poof'); // Disappear animation
+            
+            // Update Remaining
+            document.getElementById('count-display').innerText = totalDinos - sortedCount;
+
+            // Check Win
+            if (sortedCount === totalDinos) {
+                setTimeout(winGame, 800);
+            }
+        }
+
+        function handleFailure(el, msg) {
+            mistakes++;
+            speak("Uh oh! Try again.");
+            
+            // Visual Shake
+            el.style.transform = 'translate(0,0)'; // Snap back immediately
+            el.classList.add('shake');
+            
+            // Turn background red temporarily
+            el.style.filter = "sepia(1) hue-rotate(-50deg) saturate(5)";
+
+            setTimeout(() => {
+                el.classList.remove('shake');
+                el.style.filter = "drop-shadow(0 5px 5px rgba(0,0,0,0.2))";
+            }, 500);
+        }
+
+        // --- GAME OVER ---
+        function winGame() {
+            speak("You are a Dinosaur Expert!");
+            
+            // Calculate Stars
+            let stars = "⭐⭐⭐";
+            if (mistakes > 2) stars = "⭐⭐";
+            if (mistakes > 5) stars = "⭐";
+            
+            document.getElementById('final-stars').innerText = stars;
+            document.getElementById('certificate').classList.add('show');
+            startConfetti();
+        }
+
+        // --- AUDIO ---
+        function speak(text) {
+            if (synth.speaking) synth.cancel();
+            const utterThis = new SpeechSynthesisUtterance(text);
+            utterThis.pitch = 1.2;
+            utterThis.rate = 1.0;
+            synth.speak(utterThis);
+        }
+
+        // --- CONFETTI (Reused) ---
+        let confettiInterval;
+        function startConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const pieces = [];
+            const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#A66CFF'];
+
+            for(let i=0; i<100; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 10 + 5,
+                    speed: Math.random() * 5 + 2
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                    p.y += p.speed;
+                    if(p.y > canvas.height) p.y = -20;
+                });
+            }
+            confettiInterval = setInterval(draw, 20);
+        }
+
+        function stopConfetti() {
+            clearInterval(confettiInterval);
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Start
+        window.onload = initGame;
+    </script>
+</body>
+</html>

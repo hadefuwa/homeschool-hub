@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Rome Daily Life</title>
+    <style>
+        :root {
+            --primary: #8B0000;
+            --accent: #FFD700;
+            --bg: #FFF8DC;
+            --card-bg: #FFFFFF;
+            --marble: #F5F5DC;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #F0E68C 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            color: var(--primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Stage Indicator */
+        #stage-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stage-badge {
+            background: linear-gradient(135deg, var(--primary), #DC143C);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Game Area */
+        #game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--marble));
+            border: 4px solid var(--primary);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .category-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #FFEAA7, #FDCB6E);
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .category-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .category-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Feature Items */
+        .feature-item {
+            background: white;
+            border: 3px solid #8B0000;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .feature-item.selected {
+            background: #FFEAA7;
+            border-color: var(--accent);
+        }
+
+        .feature-item.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+
+        .feature-item.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Question Cards */
+        .question-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--marble));
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: var(--primary);
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .option-btn.selected {
+            background: #FFEAA7;
+            border-color: var(--accent);
+        }
+
+        .option-btn.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            animation: celebrate 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Bath Visual */
+        .bath-visual {
+            text-align: center;
+            font-size: 6rem;
+            margin: 30px 0;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        /* Colosseum Visual */
+        .colosseum-visual {
+            text-align: center;
+            font-size: 5rem;
+            margin: 30px 0;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            border: 3px solid #4CAF50;
+            color: #2E7D32;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            border: 3px solid #f44336;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #DC143C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏺 Ancient Rome Daily Life 🏺</h1>
+            <p class="subtitle">Explore how people lived in ancient Rome!</p>
+        </header>
+
+        <div id="stage-indicator">
+            <div class="stage-badge" id="stage-badge">Stage 1 of 4</div>
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p id="completion-message"></p>
+            <button class="btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data
+        const categories = {
+            homes: {
+                name: 'Roman Homes',
+                emoji: '🏠',
+                features: [
+                    { text: 'Rich people: Large houses (villas)', correct: true },
+                    { text: 'Poor people: Small apartments', correct: true },
+                    { text: 'Houses had courtyards', correct: true },
+                    { text: 'Beautiful decorations', correct: true },
+                    { text: 'All people lived in villas', correct: false },
+                    { text: 'Houses had electricity', correct: false }
+                ]
+            },
+            baths: {
+                name: 'Roman Baths',
+                emoji: '🛁',
+                features: [
+                    { text: 'Romans loved baths', correct: true },
+                    { text: 'Went to public bathhouses', correct: true },
+                    { text: 'Relaxed and talked', correct: true },
+                    { text: 'Baths were social places', correct: true },
+                    { text: 'Only rich people used baths', correct: false },
+                    { text: 'Baths were only for cleaning', correct: false }
+                ]
+            },
+            food: {
+                name: 'Roman Food',
+                emoji: '🍞',
+                features: [
+                    { text: 'Ate bread and olives', correct: true },
+                    { text: 'Ate fish and meat', correct: true },
+                    { text: 'Rich people ate fancy meals', correct: true },
+                    { text: 'Different foods for different people', correct: true },
+                    { text: 'Everyone ate the same food', correct: false },
+                    { text: 'Only ate vegetables', correct: false }
+                ]
+            },
+            entertainment: {
+                name: 'Roman Entertainment',
+                emoji: '⚔️',
+                features: [
+                    { text: 'Romans loved entertainment', correct: true },
+                    { text: 'Watched gladiator fights', correct: true },
+                    { text: 'Watched chariot races', correct: true },
+                    { text: 'Went to the theater', correct: true },
+                    { text: 'Only watched plays', correct: false },
+                    { text: 'Did not like entertainment', correct: false }
+                ]
+            },
+            writing: {
+                name: 'Roman Writing',
+                emoji: '📜',
+                features: [
+                    { text: 'Wrote in Latin', correct: true },
+                    { text: 'Latin was their language', correct: true },
+                    { text: 'Wrote on scrolls', correct: true },
+                    { text: 'Many languages come from Latin', correct: true },
+                    { text: 'Wrote in English', correct: false },
+                    { text: 'Did not write anything', correct: false }
+                ]
+            }
+        };
+
+        const questions = [
+            {
+                question: "What did rich Romans live in?",
+                options: ["Small apartments", "Large houses called villas", "Caves", "Tents"],
+                correct: 1,
+                explanation: "Rich Romans lived in large houses called villas! Poor people lived in small apartments. Houses had courtyards and beautiful decorations!"
+            },
+            {
+                question: "Where did Romans go to relax and talk?",
+                options: ["The Colosseum", "Public bathhouses", "The market", "The temple"],
+                correct: 1,
+                explanation: "Romans loved baths and went to public bathhouses! They relaxed and talked there - baths were social places!"
+            },
+            {
+                question: "What did Romans watch for entertainment?",
+                options: ["Only plays", "Gladiator fights and chariot races", "Only sports", "Nothing"],
+                correct: 1,
+                explanation: "Romans loved entertainment! They watched gladiator fights, chariot races, and went to the theater!"
+            },
+            {
+                question: "What language did Romans write in?",
+                options: ["Greek", "English", "Latin", "French"],
+                correct: 2,
+                explanation: "Romans wrote in Latin! Latin was their language, and they wrote on scrolls. Many languages today come from Latin!"
+            },
+            {
+                question: "What did Romans eat?",
+                options: ["Only bread", "Bread, olives, fish, and meat", "Only vegetables", "Only meat"],
+                correct: 1,
+                explanation: "Romans ate different foods including bread, olives, fish, and meat. Rich people ate fancy meals!"
+            },
+            {
+                question: "What were Roman baths used for?",
+                options: ["Only cleaning", "Relaxing, talking, and socializing", "Only swimming", "Only exercise"],
+                correct: 1,
+                explanation: "Roman baths were social places! Romans went there to relax, talk, and socialize, not just to clean themselves!"
+            }
+        ];
+
+        // Game State
+        let currentStage = 1;
+        let score = 0;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let selectedCategory = null;
+        let selectedFeatures = new Set();
+
+        // Initialize Game
+        function initGame() {
+            currentStage = 1;
+            score = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+            updateScore();
+            loadStage(1);
+        }
+
+        function loadStage(stage) {
+            currentStage = stage;
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+
+            updateStageIndicator();
+
+            switch(stage) {
+                case 1:
+                    loadStage1();
+                    break;
+                case 2:
+                    loadStage2();
+                    break;
+                case 3:
+                    loadStage3();
+                    break;
+                case 4:
+                    loadStage4();
+                    break;
+            }
+        }
+
+        function loadStage1() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 1: Match Features to Categories</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Select a category, then click on the features that belong to it!</p>';
+            
+            html += '<div class="category-grid">';
+            Object.keys(categories).forEach(key => {
+                const cat = categories[key];
+                html += `
+                    <div class="category-card" data-category="${key}" onclick="selectCategory('${key}')">
+                        <div class="category-emoji">${cat.emoji}</div>
+                        <div class="category-name">${cat.name}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="features-section" style="display: none;">';
+            html += '<h3 style="text-align: center; margin: 30px 0 20px 0; font-size: 1.4rem;">Click on the features that belong to this category:</h3>';
+            html += '<div id="features-container"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage1()">Check Answers</button>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            
+            gameArea.innerHTML = html;
+            selectedFeatures.clear();
+        }
+
+        function selectCategory(categoryKey) {
+            selectedCategory = categoryKey;
+            const cards = document.querySelectorAll('.category-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            document.querySelector(`[data-category="${categoryKey}"]`).classList.add('selected');
+            
+            const featuresSection = document.getElementById('features-section');
+            const featuresContainer = document.getElementById('features-container');
+            
+            // Get all features and shuffle
+            const allFeatures = [];
+            Object.keys(categories).forEach(key => {
+                categories[key].features.forEach(feature => {
+                    allFeatures.push({ text: feature.text, correct: key === categoryKey && feature.correct, category: key });
+                });
+            });
+            
+            const shuffled = allFeatures.sort(() => Math.random() - 0.5);
+            
+            featuresContainer.innerHTML = '';
+            shuffled.forEach((feature, index) => {
+                const featureCard = document.createElement('div');
+                featureCard.className = 'feature-item';
+                featureCard.textContent = feature.text;
+                featureCard.dataset.index = index;
+                featureCard.dataset.correct = feature.correct;
+                featureCard.onclick = () => toggleFeature(index);
+                featuresContainer.appendChild(featureCard);
+            });
+            
+            featuresSection.style.display = 'block';
+        }
+
+        function toggleFeature(index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedFeatures.delete(index);
+            } else {
+                card.classList.add('selected');
+                selectedFeatures.add(index);
+            }
+        }
+
+        function checkStage1() {
+            const cards = document.querySelectorAll('.feature-item');
+            let correct = 0;
+            let selected = 0;
+            let totalCorrect = categories[selectedCategory].features.filter(f => f.correct).length;
+            
+            cards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.classList.add('correct');
+                } else if (isCorrect && !isSelected) {
+                    card.classList.add('correct');
+                } else if (!isCorrect && isSelected) {
+                    card.classList.add('wrong');
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && selectedFeatures.size === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You found all ${totalCorrect} correct features for ${categories[selectedCategory].name}!`;
+                feedback.className = 'feedback show correct';
+                score += 30;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} correct features. Keep trying!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += cards.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 4) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function loadStage2() {
+            const gameArea = document.getElementById('game-area');
+            const question = questions[Math.floor(Math.random() * questions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 2: Knowledge Challenge</h2>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage2" onclick="nextStage2()" style="display: none;">Continue</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function selectOption(selectedIndex, correctIndex, explanation) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selectedIndex === correctIndex) {
+                buttons[selectedIndex].classList.add('correct');
+                feedback.textContent = '✓ Correct! ' + explanation;
+                feedback.className = 'feedback show correct';
+                score += 20;
+                correctAnswers++;
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+                feedback.textContent = '✗ Not quite. ' + explanation;
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions++;
+            updateScore();
+            
+            document.getElementById('next-stage2').style.display = 'inline-block';
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function nextStage2() {
+            if (currentStage < 4) {
+                loadStage(currentStage + 1);
+            } else {
+                endGame();
+            }
+        }
+
+        function loadStage3() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 3: Roman Entertainment</h2>';
+            html += '<div class="colosseum-visual">🏛️</div>';
+            html += '<div class="question-card">';
+            html += '<div class="question-text">What did Romans watch for entertainment at the Colosseum and other places?</div>';
+            html += '<div class="options-grid">';
+            html += '<button class="option-btn" onclick="selectEntertainmentAnswer(0)">Only plays</button>';
+            html += '<button class="option-btn" onclick="selectEntertainmentAnswer(1)">Gladiator fights, chariot races, and theater</button>';
+            html += '<button class="option-btn" onclick="selectEntertainmentAnswer(2)">Only sports</button>';
+            html += '<button class="option-btn" onclick="selectEntertainmentAnswer(3)">Nothing</button>';
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage3" onclick="nextStage3()" style="display: none;">Continue</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function selectEntertainmentAnswer(index) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (index === 1) {
+                buttons[index].classList.add('correct');
+                feedback.textContent = '✓ Correct! Romans loved entertainment! They watched gladiator fights, chariot races, and went to the theater!';
+                feedback.className = 'feedback show correct';
+                score += 25;
+                correctAnswers++;
+            } else {
+                buttons[index].classList.add('wrong');
+                buttons[1].classList.add('correct');
+                feedback.textContent = '✗ Not quite. Romans watched gladiator fights, chariot races, and went to the theater for entertainment!';
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions++;
+            updateScore();
+            
+            document.getElementById('next-stage3').style.display = 'inline-block';
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.1
+                }, '*');
+            }
+        }
+
+        function nextStage3() {
+            if (currentStage < 4) {
+                loadStage(currentStage + 1);
+            } else {
+                endGame();
+            }
+        }
+
+        function loadStage4() {
+            const gameArea = document.getElementById('game-area');
+            const question = questions[Math.floor(Math.random() * questions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 4: Final Challenge</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #666;">One more question to test your knowledge!</p>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage4" onclick="endGame()" style="display: none;">Finish Game</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function updateStageIndicator() {
+            document.getElementById('stage-badge').textContent = `Stage ${currentStage} of 4`;
+            const progress = (currentStage / 4) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-fill').textContent = Math.round(progress) + '%';
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function endGame() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = `Outstanding! You scored ${score} points with ${percentage}% correct! You're a true expert on Ancient Rome Daily Life! 🏆`;
+            } else if (percentage >= 70) {
+                message = `Great job! You scored ${score} points with ${percentage}% correct! You really understand how people lived in ancient Rome! 🌟`;
+            } else if (percentage >= 50) {
+                message = `Good effort! You scored ${score} points with ${percentage}% correct! Keep learning about ancient Roman life! 📚`;
+            } else {
+                message = `You scored ${score} points with ${percentage}% correct. Review the lesson and try again! 💪`;
+            }
+            
+            document.getElementById('completion-message').textContent = message;
+            document.getElementById('completion-modal').classList.add('show');
+            
+            // Send completion message
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: message,
+                    rate: 0.9,
+                    pitch: 1.1
+                }, '*');
+                
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'ancient-rome-daily-life'
+                    }, '*');
+                }, 3000);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('completion-modal').classList.remove('show');
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>

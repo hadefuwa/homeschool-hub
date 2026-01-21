@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: file: blockly: htmlgame: https://www.gstatic.com https://fonts.gstatic.com https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.jsdelivr.net https://www.youtube.com https://s.ytimg.com https://static.doubleclick.net https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; connect-src 'self' https://www.gstatic.com https://fonts.gstatic.com https://cdn.jsdelivr.net https://www.youtube.com https://*.googlevideo.com https://*.doubleclick.net https://*.googleadservices.com https://*.google.com https://*.googleapis.com; img-src 'self' data: blob: file: https:; font-src 'self' data: file: https://fonts.gstatic.com; frame-src 'self' blockly: htmlgame: https: file: data: blob: https://blockly.games https://www.youtube.com; worker-src 'self' blob:; child-src 'self' blob:;">
+    <title>Homeschool Hub</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Suppress harmless audio autoplay errors from Blockly Games
+      // These errors occur when browsers block autoplay or when play() is interrupted by pause()
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason) {
+          const message = event.reason.message || '';
+          const name = event.reason.name || '';
+
+          // Suppress DOMException errors related to play() - these are expected
+          // when browsers block autoplay or when play() is interrupted by pause()
+          if (name === 'DOMException' && (
+              message.includes('play()') ||
+              message.includes('play() request') ||
+              message.includes('pause()') ||
+              message.includes('interrupted')
+          )) {
+            event.preventDefault();
+            return;
+          }
+        }
+      });
+
+      // Also suppress general errors from Blockly Games iframes
+      window.addEventListener('error', function(event) {
+        if (event.message && (
+            event.message.includes('play()') ||
+            event.message.includes('play() request') ||
+            event.message.includes('pause()') ||
+            event.message.includes('interrupted') ||
+            event.message.includes('dragEvent is not defined')
+        )) {
+          event.preventDefault();
+          return;
+        }
+      }, true);
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+

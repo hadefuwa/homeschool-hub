@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dino Sorting Challenge</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'EmojiOne Color', 'Android Emoji', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            overflow: hidden; /* Prevent scrolling while dragging */
+            touch-action: none; /* Crucial for touch dragging */
+        }
+
+        h1 {
+            color: #00695C;
+            text-shadow: 3px 3px #4DB6AC;
+            margin: 5px 0;
+            font-size: 2rem;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+        }
+
+        #intro-screen.hidden {
+            display: none;
+        }
+
+        .intro-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .intro-content h2 {
+            color: #00695C;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .intro-content p {
+            font-size: 1.3rem;
+            color: #333;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        .example-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 25px 0;
+        }
+
+        .example-item {
+            text-align: center;
+        }
+
+        .example-dino {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .example-label {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .label-big {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .label-small {
+            background: #4ECDC4;
+            color: white;
+        }
+
+        #start-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        #start-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- SCOREBOARD --- */
+        #scoreboard {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            pointer-events: none;
+            font-size: 1.3rem;
+        }
+
+        /* --- ZONES --- */
+        .zones-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 95%;
+            max-width: 800px;
+            height: 200px; /* Increased height for better visibility */
+            margin-bottom: 20px;
+            z-index: 10; /* Behind draggables */
+        }
+
+        .zone {
+            flex: 1;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 15px;
+            border: 6px dashed rgba(0,0,0,0.3);
+            transition: transform 0.2s, background-color 0.3s, border 0.3s;
+            position: relative;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .zone.highlight {
+            transform: scale(1.08);
+            border-style: solid;
+            border-color: #FFD700;
+            border-width: 8px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        /* BIG CAVE - Red/Brown tones */
+        .cave {
+            background: linear-gradient(135deg, #8B4513 0%, #5D4037 100%);
+            color: white;
+        }
+        
+        /* SMALL NEST - Green tones */
+        .nest {
+            background: linear-gradient(135deg, #AED581 0%, #7CB342 100%);
+            color: white;
+        }
+
+        .zone-label {
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'EmojiOne Color', 'Android Emoji', 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            pointer-events: none;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .zone-size-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            padding: 5px 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.9);
+            pointer-events: none;
+        }
+
+        .cave .zone-size-text {
+            color: #D32F2F;
+        }
+
+        .nest .zone-size-text {
+            color: #00897B;
+        }
+
+        /* Counter for items inside */
+        .count-badge {
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            margin-top: 5px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* --- PLAY AREA --- */
+        #play-area {
+            flex: 1;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(144,238,144,0.2) 100%);
+            border-radius: 30px 30px 0 0;
+            margin-top: 10px;
+            min-height: 300px;
+        }
+
+        /* --- DINOSAURS --- */
+        .dino {
+            position: absolute;
+            cursor: grab;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.3));
+            transition: transform 0.1s;
+            touch-action: none;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .dino:active {
+            cursor: grabbing;
+            transform: scale(1.15);
+            z-index: 1000;
+        }
+
+        .dino-emoji {
+            display: block;
+        }
+
+        .dino-label {
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .dino.size-big .dino-emoji { font-size: 5.5rem; }
+        .dino.size-small .dino-emoji { font-size: 2.8rem; }
+
+        .dino.size-big .dino-label { 
+            background: #D32F2F;
+            font-size: 1.1rem;
+        }
+        .dino.size-small .dino-label { 
+            background: #00897B;
+            font-size: 0.9rem;
+        }
+
+        /* Animation for wrong answer */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-15px); }
+            50% { transform: translateX(15px); }
+            75% { transform: translateX(-15px); }
+            100% { transform: translateX(0); }
+        }
+        .shake { animation: shake 0.5s ease; }
+
+        /* Animation for success (poof away) */
+        @keyframes popOut {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.8) rotate(180deg); opacity: 0.7; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+        .poof { animation: popOut 0.6s ease forwards; pointer-events: none; }
+
+        /* Pulse animation for zones */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse { animation: pulse 0.5s ease; }
+
+        /* Confetti */
+        #confetti {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1500;
+        }
+
+        /* Encouragement message */
+        #encouragement {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(76, 175, 80, 0.95);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            z-index: 1100;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        #encouragement.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            70% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen">
+        <div class="intro-content">
+            <h2>🦕 Dinosaur Sorting! 🦖</h2>
+            <p>Help the dinosaurs find their homes!</p>
+            
+            <div class="example-row">
+                <div class="example-item">
+                    <div class="example-dino">🦖</div>
+                    <div class="example-label label-big">BIG</div>
+                    <p style="margin: 10px 0 0 0;">goes to the Cave ⛰️</p>
+                </div>
+                <div class="example-item">
+                    <div class="example-dino">🦎</div>
+                    <div class="example-label label-small">SMALL</div>
+                    <p style="margin: 10px 0 0 0;">goes to the Nest 🪺</p>
+                </div>
+            </div>
+            
+            <p><strong>Drag each dinosaur to its correct home!</strong></p>
+            
+            <button id="start-btn">Let's Play! 🎮</button>
+        </div>
+    </div>
+
+    <h1>🦕 Drag Dinosaurs to Their Homes! 🦖</h1>
+    
+    <div id="scoreboard">Dinosaurs Left: <span id="count-display">0</span></div>
+
+    <div class="zones-container">
+        <div class="zone cave" id="drop-big">
+            <div class="zone-size-text">BIG</div>
+            <div class="zone-label">⛰️ CAVE</div>
+            <div class="count-badge" id="badge-big">0 sorted</div>
+        </div>
+        <div class="zone nest" id="drop-small">
+            <div class="zone-size-text">SMALL</div>
+            <div class="zone-label">🪺 NEST</div>
+            <div class="count-badge" id="badge-small">0 sorted</div>
+        </div>
+    </div>
+
+    <div id="play-area"></div>
+
+    <div id="encouragement"></div>
+    <canvas id="confetti"></canvas>
+
+    <script>
+        // --- CONFIG ---
+        const totalDinos = 6; // Reduced for easier gameplay
+        const dinoIcons = ['🦖','🦕','🐊','🐢','🦎','🐉'];
+        
+        // --- STATE ---
+        let dinos = [];
+        let mistakes = 0;
+        let sortedCount = 0;
+        let zIndexCounter = 100;
+        let gameStarted = false;
+        
+        // Encouragement messages
+        const encouragementMessages = [
+            "Great job! 🌟",
+            "You're doing amazing! ⭐",
+            "Fantastic! 🎉",
+            "Perfect! 👏",
+            "Keep going! 💪",
+            "Super! 🦸"
+        ];
+        
+        // Helper function to use new TTS via parent window
+        function speak(text, options = {}) {
+            // Try to use parent window TTS (new system)
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: text,
+                    volume: options.volume || 1.0,
+                    rate: options.rate || 0.9,
+                    pitch: options.pitch || 1.2
+                }, '*');
+            } else {
+                // Fallback to Web Speech API if no parent
+                const synth = window.speechSynthesis;
+                if (synth.speaking) synth.cancel();
+                const utterThis = new SpeechSynthesisUtterance(text);
+                utterThis.pitch = options.pitch || 1.2;
+                utterThis.rate = options.rate || 0.9;
+                synth.speak(utterThis);
+            }
+        }
+
+        // Show encouragement message
+        function showEncouragement(message) {
+            const el = document.getElementById('encouragement');
+            el.textContent = message;
+            el.classList.add('show');
+            setTimeout(() => {
+                el.classList.remove('show');
+            }, 1500);
+        }
+
+        // --- INTRO SCREEN ---
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('intro-screen').classList.add('hidden');
+            speak("Let's sort the dinosaurs! Drag the BIG dinosaurs to the CAVE, and the SMALL dinosaurs to the NEST!");
+            gameStarted = true;
+            initGame();
+        });
+
+        // --- INIT ---
+        function initGame() {
+            const playArea = document.getElementById('play-area');
+            playArea.innerHTML = '';
+            document.getElementById('badge-big').innerText = '0 sorted';
+            document.getElementById('badge-small').innerText = '0 sorted';
+            document.getElementById('count-display').innerText = totalDinos;
+            stopConfetti();
+
+            dinos = [];
+            mistakes = 0;
+            sortedCount = 0;
+
+            // Generate Dinos
+            for (let i = 0; i < totalDinos; i++) {
+                createDino(i);
+            }
+        }
+
+        function createDino(index) {
+            const playArea = document.getElementById('play-area');
+            const el = document.createElement('div');
+            
+            // Random properties
+            const isBig = Math.random() > 0.5;
+            const icon = dinoIcons[Math.floor(Math.random() * dinoIcons.length)];
+            
+            el.className = `dino ${isBig ? 'size-big' : 'size-small'}`;
+            el.innerHTML = `
+                <span class="dino-emoji">${icon}</span>
+                <span class="dino-label">${isBig ? 'BIG' : 'SMALL'}</span>
+            `;
+            el.id = `dino-${index}`;
+            el.dataset.size = isBig ? 'big' : 'small';
+
+            // Random Position within play area
+            // We use percentages to keep it responsive
+            const top = 10 + Math.random() * 60; // 10% to 70% down
+            const left = 10 + Math.random() * 80; // 10% to 90% across
+            
+            el.style.top = top + '%';
+            el.style.left = left + '%';
+
+            // Attach Drag Logic
+            makeDraggable(el);
+            
+            playArea.appendChild(el);
+        }
+
+        // --- DRAG AND DROP LOGIC (Touch & Mouse) ---
+        function makeDraggable(el) {
+            let startX, startY, initialLeft, initialTop;
+            
+            const startDrag = (e) => {
+                e.preventDefault(); // Prevent scrolling
+                // Get pointer position (touch or mouse)
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                startX = clientX;
+                startY = clientY;
+
+                // Current position (parsed from inline style or computed)
+                initialLeft = parseFloat(el.style.left); // value in %
+                initialTop = parseFloat(el.style.top);   // value in %
+                
+                // Convert % to pixels for dragging calculation
+                const parentW = el.parentElement.offsetWidth;
+                const parentH = el.parentElement.offsetHeight;
+                
+                // Bring to front
+                zIndexCounter++;
+                el.style.zIndex = zIndexCounter;
+
+                // Add listeners for move/up
+                document.addEventListener('mousemove', moveDrag);
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchmove', moveDrag, {passive: false});
+                document.addEventListener('touchend', endDrag);
+
+                // Helper to move
+                function moveDrag(e) {
+                    e.preventDefault();
+                    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    const deltaX = cx - startX;
+                    const deltaY = cy - startY;
+
+                    el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                }
+
+                // Helper to end
+                function endDrag(e) {
+                    document.removeEventListener('mousemove', moveDrag);
+                    document.removeEventListener('mouseup', endDrag);
+                    document.removeEventListener('touchmove', moveDrag);
+                    document.removeEventListener('touchend', endDrag);
+
+                    checkDrop(el, e);
+                }
+            };
+
+            el.addEventListener('mousedown', startDrag);
+            el.addEventListener('touchstart', startDrag, {passive: false});
+        }
+
+        function checkDrop(el, e) {
+            // Get bounding boxes
+            const dinoRect = el.getBoundingClientRect();
+            const bigZone = document.getElementById('drop-big').getBoundingClientRect();
+            const smallZone = document.getElementById('drop-small').getBoundingClientRect();
+            
+            // Calculate Center of Dino
+            const dinoCenterX = dinoRect.left + dinoRect.width / 2;
+            const dinoCenterY = dinoRect.top + dinoRect.height / 2;
+
+            const isBigDino = el.dataset.size === 'big';
+            let targetHit = null;
+
+            // Check collision with zones (is center of dino inside zone?)
+            if (isInside(dinoCenterX, dinoCenterY, bigZone)) targetHit = 'big';
+            else if (isInside(dinoCenterX, dinoCenterY, smallZone)) targetHit = 'small';
+
+            // Validate
+            if (targetHit) {
+                if (targetHit === el.dataset.size) {
+                    // SUCCESS
+                    handleSuccess(el, targetHit);
+                } else {
+                    // WRONG HOME
+                    handleFailure(el, `That's the ${targetHit} zone! This dinosaur is ${el.dataset.size}.`);
+                }
+            } else {
+                // DROPPED IN EMPTY SPACE
+                // Just reset transform to snap back to original % position visually
+                el.style.transform = 'translate(0, 0)';
+            }
+        }
+
+        function isInside(x, y, rect) {
+            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+        }
+
+        function handleSuccess(el, type) {
+            sortedCount++;
+            
+            // Pulse the zone
+            const zone = document.getElementById(`drop-${type}`);
+            zone.classList.add('pulse');
+            setTimeout(() => zone.classList.remove('pulse'), 500);
+            
+            // Audio with full sentence
+            const sizeName = type === 'big' ? 'Big' : 'Small';
+            const homeName = type === 'big' ? 'cave' : 'nest';
+            speak(`Correct! ${sizeName} dinosaur goes in the ${homeName}!`);
+            
+            // Show encouragement
+            const message = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
+            showEncouragement(message);
+
+            // Update Badge
+            const badge = document.getElementById(`badge-${type}`);
+            const count = parseInt(badge.innerText) + 1;
+            badge.innerText = `${count} sorted`;
+
+            // Visuals
+            el.classList.add('poof'); // Disappear animation
+            
+            // Update Remaining
+            document.getElementById('count-display').innerText = totalDinos - sortedCount;
+
+            // Check Win
+            if (sortedCount === totalDinos) {
+                setTimeout(winGame, 1000);
+            }
+        }
+
+        function handleFailure(el, msg) {
+            mistakes++;
+            speak("Oops! Try again. Look at the dinosaur label!");
+            
+            // Visual Shake
+            el.style.transform = 'translate(0,0)'; // Snap back immediately
+            el.classList.add('shake');
+            
+            // Flash red
+            el.style.filter = "sepia(1) hue-rotate(-50deg) saturate(5) brightness(0.8)";
+
+            setTimeout(() => {
+                el.classList.remove('shake');
+                el.style.filter = "drop-shadow(0 5px 8px rgba(0,0,0,0.3))";
+            }, 600);
+        }
+
+        // --- GAME OVER ---
+        function winGame() {
+            speak("Fantastic! You sorted all the dinosaurs! You understand big and small perfectly!");
+            startConfetti();
+            showEncouragement("🎉 YOU WIN! 🎉");
+            
+            // Notify parent window that game is complete
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-complete',
+                    game: 'dinosaur-sorting'
+                }, '*');
+            }
+        }
+
+        // --- CONFETTI ---
+        let confettiInterval;
+        function startConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const pieces = [];
+            const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#A66CFF'];
+
+            for(let i=0; i<100; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 10 + 5,
+                    speed: Math.random() * 5 + 2
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                    p.y += p.speed;
+                    if(p.y > canvas.height) p.y = -20;
+                });
+            }
+            confettiInterval = setInterval(draw, 20);
+        }
+
+        function stopConfetti() {
+            clearInterval(confettiInterval);
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Start
+        window.onload = () => {
+            // Don't auto-start, wait for intro screen button
+        };
+    </script>
+</body>
+</html>

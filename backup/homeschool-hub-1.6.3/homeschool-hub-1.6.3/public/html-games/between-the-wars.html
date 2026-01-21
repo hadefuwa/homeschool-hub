@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Between the Wars - 1920s and 1930s Challenge</title>
+    <style>
+        :root {
+            --primary: #8B4513;
+            --accent: #FF6B35;
+            --bg: #FFF5E6;
+            --card-bg: #FFFFFF;
+            --depression: #4A4A4A;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #FFE5CC 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin: 10px 0;
+            color: var(--primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Stage Indicator */
+        #stage-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stage-badge {
+            background: linear-gradient(135deg, var(--primary), #A0522D);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            background: #27AE60;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Game Area */
+        #game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, var(--card-bg), #F5F5F5);
+            border: 4px solid var(--primary);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .category-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #FFE5CC, #FFCC99);
+            box-shadow: 0 0 20px rgba(255,107,53,0.5);
+        }
+
+        .category-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .category-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Feature Items */
+        .feature-item {
+            background: white;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .feature-item.selected {
+            background: #FFE5CC;
+            border-color: var(--accent);
+        }
+
+        .feature-item.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+
+        .feature-item.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Question Cards */
+        .question-card {
+            background: linear-gradient(135deg, var(--card-bg), #F5F5F5);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: var(--primary);
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .option-btn.selected {
+            background: #FFE5CC;
+            border-color: var(--accent);
+        }
+
+        .option-btn.correct {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            animation: celebrate 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Timeline Visual */
+        .timeline-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .timeline-event {
+            background: linear-gradient(135deg, #FFE5CC, #FFCC99);
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-width: 180px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .timeline-event:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .timeline-event.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #FFCC99, #FF9966);
+        }
+
+        .timeline-year {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .timeline-event-name {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Dictator Matching */
+        .dictator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .dictator-card {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .dictator-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .dictator-card.selected {
+            border-color: var(--accent);
+            background: #FFE5CC;
+        }
+
+        .country-zone {
+            background: #F5F5F5;
+            border: 3px dashed var(--primary);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            min-height: 150px;
+        }
+
+        .country-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Effects Grid */
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .effect-card {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .effect-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .effect-card.selected {
+            border-color: var(--accent);
+            background: #FFE5CC;
+        }
+
+        .effect-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .effect-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            border: 3px solid #4CAF50;
+            color: #2E7D32;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            border: 3px solid #f44336;
+            color: #c62828;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #A0522D;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27AE60, #2ECC71);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📅 Between the Wars - 1920s and 1930s Challenge 📅</h1>
+            <p class="subtitle">From the Roaring Twenties to the Great Depression - a time of extreme contrast</p>
+        </header>
+
+        <div id="stage-indicator">
+            <div class="stage-badge" id="stage-badge">Stage 1 of 6</div>
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p id="completion-message"></p>
+            <button class="btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Data - Advanced for Year 6
+        const categories = {
+            twenties: {
+                name: 'The Roaring Twenties',
+                emoji: '🎉',
+                features: [
+                    { text: 'Economic boom and prosperity in many countries', correct: true },
+                    { text: 'New technologies: radio, cinema, mass-produced cars (Model T)', correct: true },
+                    { text: 'Women won voting rights (19th Amendment in US, 1928 in Britain)', correct: true },
+                    { text: 'Flappers - young women challenging social norms', correct: true },
+                    { text: 'Jazz music became wildly popular', correct: true },
+                    { text: 'Everyone was happy and wealthy', correct: false },
+                    { text: 'No new technology was invented', correct: false }
+                ]
+            },
+            depression: {
+                name: 'The Great Depression',
+                emoji: '📉',
+                features: [
+                    { text: 'Wall Street Crash - October 29, 1929 (Black Tuesday)', correct: true },
+                    { text: '25% unemployment in the US at worst', correct: true },
+                    { text: 'Banks failed, businesses closed worldwide', correct: true },
+                    { text: 'Dust Bowl - severe droughts ruined farms in US Great Plains', correct: true },
+                    { text: 'Breadlines and soup kitchens for the hungry', correct: true },
+                    { text: 'Only affected the United States', correct: false },
+                    { text: 'Everyone kept their jobs and homes', correct: false }
+                ]
+            },
+            hyperinflation: {
+                name: 'Hyperinflation in Germany',
+                emoji: '💸',
+                features: [
+                    { text: 'German economy collapsed in 1923', correct: true },
+                    { text: 'Money became worthless - wheelbarrows of cash for bread', correct: true },
+                    { text: 'Caused by war reparations from Treaty of Versailles', correct: true },
+                    { text: 'People lost all their savings', correct: true },
+                    { text: 'Helped create conditions for Hitler\'s rise', correct: true },
+                    { text: 'Only affected Germany briefly', correct: false },
+                    { text: 'No one was affected', correct: false }
+                ]
+            },
+            dictators: {
+                name: 'Rise of Dictators',
+                emoji: '👑',
+                features: [
+                    { text: 'Hitler in Germany (Nazi Party)', correct: true },
+                    { text: 'Mussolini in Italy (Fascist Party)', correct: true },
+                    { text: 'Stalin in Soviet Union (Communist)', correct: true },
+                    { text: 'Totalitarianism - absolute control over every part of life', correct: true },
+                    { text: 'People lost faith in democracy due to economic suffering', correct: true },
+                    { text: 'All countries stayed democratic', correct: false },
+                    { text: 'Dictators were elected fairly', correct: false }
+                ]
+            },
+            league: {
+                name: 'League of Nations',
+                emoji: '🌍',
+                features: [
+                    { text: 'Created after WWI to keep peace', correct: true },
+                    { text: 'USA never joined (isolationism)', correct: true },
+                    { text: 'Lacked its own army to enforce decisions', correct: true },
+                    { text: 'Struggled to prevent conflicts', correct: true },
+                    { text: 'Failed to stop aggression leading to WWII', correct: true },
+                    { text: 'Was very successful', correct: false },
+                    { text: 'Had strong military power', correct: false }
+                ]
+            },
+            effects: {
+                name: 'Effects and Consequences',
+                emoji: '⚔️',
+                features: [
+                    { text: 'Created conditions that led to World War II', correct: true },
+                    { text: 'Economic suffering made people desperate', correct: true },
+                    { text: 'Extremist ideas (fascism, communism) gained followers', correct: true },
+                    { text: 'Democracies weakened in many countries', correct: true },
+                    { text: 'New Deal in US (1933) - government programs to help', correct: true },
+                    { text: 'Nothing changed', correct: false },
+                    { text: 'Everyone was happy', correct: false }
+                ]
+            }
+        };
+
+        const advancedQuestions = [
+            {
+                question: "What was the 'Roaring Twenties'?",
+                options: ["A quiet period", "A time of economic boom, new technologies, and social change in the 1920s", "A war", "A type of music"],
+                correct: 1,
+                explanation: "The Roaring Twenties was a time of economic boom, new technologies (radio, cinema, cars), and social change! Women won voting rights, jazz music became popular, and many people had more money to spend!"
+            },
+            {
+                question: "What was 'Black Tuesday'?",
+                options: ["A holiday", "October 29, 1929 - the day the US stock market crashed, starting the Great Depression", "A celebration", "A type of dance"],
+                correct: 1,
+                explanation: "Black Tuesday (October 29, 1929) was the day the US stock market crashed! This started the Great Depression, which affected the whole world!"
+            },
+            {
+                question: "What was hyperinflation in Germany?",
+                options: ["A type of celebration", "When money became worthless in 1923 - people needed wheelbarrows of cash to buy bread", "A new currency", "A type of government"],
+                correct: 1,
+                explanation: "Hyperinflation in Germany (1923) happened when money became completely worthless! People needed wheelbarrows full of cash just to buy a loaf of bread! This was caused by war reparations from the Treaty of Versailles!"
+            },
+            {
+                question: "What was the Dust Bowl?",
+                options: ["A type of dance", "Severe droughts and dust storms that ruined farms in the US Great Plains during the 1930s", "A celebration", "A type of music"],
+                correct: 1,
+                explanation: "The Dust Bowl was a period of severe droughts and massive dust storms in the US Great Plains during the 1930s! It ruined farms and forced many farmers to leave their land and move to other states!"
+            },
+            {
+                question: "Why did dictators rise to power in the 1930s?",
+                options: ["People were happy", "Economic suffering made people lose faith in democracy and turn to extremist leaders", "Democracy was too strong", "No one wanted democracy"],
+                correct: 1,
+                explanation: "Economic suffering from the Great Depression made many people lose faith in democracy! They turned to extremist leaders like Hitler, Mussolini, and Stalin who promised quick solutions to their problems!"
+            },
+            {
+                question: "What was the League of Nations?",
+                options: ["A sports league", "An international organization created after WWI to keep peace, but it struggled because USA never joined and it had no army", "A type of government", "A military alliance"],
+                correct: 1,
+                explanation: "The League of Nations was created after WWI to keep peace! However, it struggled because the USA never joined (isolationism) and it lacked its own army to enforce decisions. It failed to prevent conflicts that led to WWII!"
+            },
+            {
+                question: "What was the New Deal?",
+                options: ["A card game", "Government programs started in 1933 in the US to help people during the Great Depression", "A type of dance", "A celebration"],
+                correct: 1,
+                explanation: "The New Deal was a series of government programs started in 1933 in the US! It created jobs, built roads and bridges, and helped people during the Great Depression!"
+            },
+            {
+                question: "How did the period between the wars lead to World War II?",
+                options: ["It didn't", "Economic suffering, rise of dictators, and failure of the League of Nations created conditions that led to WWII", "Everyone was happy", "Nothing changed"],
+                correct: 1,
+                explanation: "The economic suffering of the Great Depression, the rise of dictators who promised quick solutions, and the failure of the League of Nations to keep peace all created conditions that led directly to World War II!"
+            },
+            {
+                question: "What percentage of Americans were unemployed during the worst of the Great Depression?",
+                options: ["5%", "10%", "25% (one in four)", "50%"],
+                correct: 2,
+                explanation: "At the worst point of the Great Depression, about 25% of Americans (one in four) were unemployed! This was devastating - many people lost their homes, savings, and farms!"
+            },
+            {
+                question: "What were 'flappers'?",
+                options: ["A type of bird", "Young women in the 1920s who challenged social norms with shorter hair, shorter dresses, and a new sense of independence", "A type of dance", "A type of music"],
+                correct: 1,
+                explanation: "Flappers were young women in the 1920s who challenged traditional social norms! They had shorter hair, shorter dresses, and showed a new sense of independence and freedom!"
+            }
+        ];
+
+        const timelineEvents = [
+            { year: '1918', event: 'World War I ends', order: 1 },
+            { year: '1920', event: '19th Amendment - US women get voting rights', order: 2 },
+            { year: '1923', event: 'Hyperinflation in Germany', order: 3 },
+            { year: '1928', event: 'Equal voting rights for women in Britain', order: 4 },
+            { year: '1929', event: 'Wall Street Crash - Great Depression begins', order: 5 },
+            { year: '1933', event: 'New Deal starts in US; Hitler becomes Chancellor of Germany', order: 6 },
+            { year: '1939', event: 'World War II begins', order: 7 }
+        ];
+
+        const dictators = {
+            germany: ['Adolf Hitler', 'Nazi Party', 'Totalitarianism'],
+            italy: ['Benito Mussolini', 'Fascist Party', 'Totalitarianism'],
+            soviet: ['Joseph Stalin', 'Communist Party', 'Totalitarianism']
+        };
+
+        const effects = [
+            { effect: 'Created conditions leading to World War II', correct: true, emoji: '⚔️' },
+            { effect: 'Economic suffering made people desperate', correct: true, emoji: '💔' },
+            { effect: 'Extremist ideas (fascism, communism) gained followers', correct: true, emoji: '👑' },
+            { effect: 'Democracies weakened in many countries', correct: true, emoji: '🏛️' },
+            { effect: 'New Deal programs helped some people', correct: true, emoji: '📜' },
+            { effect: 'Nothing changed after this period', correct: false, emoji: '❌' },
+            { effect: 'Everyone was happy and prosperous', correct: false, emoji: '😊' },
+            { effect: 'All democracies stayed strong', correct: false, emoji: '✅' }
+        ];
+
+        // Game State
+        let currentStage = 1;
+        let score = 0;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let selectedCategory = null;
+        let selectedFeatures = new Set();
+        let selectedTimelineOrder = [];
+        let selectedDictators = { germany: [], italy: [], soviet: [] };
+        let selectedEffects = new Set();
+
+        // Initialize Game
+        function initGame() {
+            currentStage = 1;
+            score = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+            updateScore();
+            loadStage(1);
+        }
+
+        function loadStage(stage) {
+            currentStage = stage;
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+
+            updateStageIndicator();
+
+            switch(stage) {
+                case 1:
+                    loadStage1();
+                    break;
+                case 2:
+                    loadStage2();
+                    break;
+                case 3:
+                    loadStage3();
+                    break;
+                case 4:
+                    loadStage4();
+                    break;
+                case 5:
+                    loadStage5();
+                    break;
+                case 6:
+                    loadStage6();
+                    break;
+            }
+        }
+
+        function loadStage1() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 1: Match Features to Categories</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Select a category, then click on ALL the features that belong to it!</p>';
+            
+            html += '<div class="category-grid">';
+            Object.keys(categories).forEach(key => {
+                const cat = categories[key];
+                html += `
+                    <div class="category-card" data-category="${key}" onclick="selectCategory('${key}')">
+                        <div class="category-emoji">${cat.emoji}</div>
+                        <div class="category-name">${cat.name}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="features-section" style="display: none;">';
+            html += '<h3 style="text-align: center; margin: 30px 0 20px 0; font-size: 1.4rem;">Click on ALL the features that belong to this category:</h3>';
+            html += '<div id="features-container"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage1()">Check Answers</button>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            
+            gameArea.innerHTML = html;
+            selectedFeatures.clear();
+        }
+
+        function selectCategory(categoryKey) {
+            selectedCategory = categoryKey;
+            const cards = document.querySelectorAll('.category-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            document.querySelector(`[data-category="${categoryKey}"]`).classList.add('selected');
+            
+            const featuresSection = document.getElementById('features-section');
+            const featuresContainer = document.getElementById('features-container');
+            
+            // Get all features and shuffle
+            const allFeatures = [];
+            Object.keys(categories).forEach(key => {
+                categories[key].features.forEach(feature => {
+                    allFeatures.push({ text: feature.text, correct: key === categoryKey && feature.correct, category: key });
+                });
+            });
+            
+            const shuffled = allFeatures.sort(() => Math.random() - 0.5);
+            
+            featuresContainer.innerHTML = '';
+            shuffled.forEach((feature, index) => {
+                const featureCard = document.createElement('div');
+                featureCard.className = 'feature-item';
+                featureCard.textContent = feature.text;
+                featureCard.dataset.index = index;
+                featureCard.dataset.correct = feature.correct;
+                featureCard.onclick = () => toggleFeature(index);
+                featuresContainer.appendChild(featureCard);
+            });
+            
+            featuresSection.style.display = 'block';
+        }
+
+        function toggleFeature(index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedFeatures.delete(index);
+            } else {
+                card.classList.add('selected');
+                selectedFeatures.add(index);
+            }
+        }
+
+        function checkStage1() {
+            const cards = document.querySelectorAll('.feature-item');
+            let correct = 0;
+            let totalCorrect = categories[selectedCategory].features.filter(f => f.correct).length;
+            
+            cards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.classList.add('correct');
+                } else if (isCorrect && !isSelected) {
+                    card.classList.add('correct');
+                } else if (!isCorrect && isSelected) {
+                    card.classList.add('wrong');
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && selectedFeatures.size === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You found all ${totalCorrect} correct features for ${categories[selectedCategory].name}!`;
+                feedback.className = 'feedback show correct';
+                score += 35;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} correct features. Keep trying!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += cards.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 6) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function loadStage2() {
+            const gameArea = document.getElementById('game-area');
+            const question = advancedQuestions[Math.floor(Math.random() * advancedQuestions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 2: Advanced Knowledge Challenge</h2>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage2" onclick="nextStage2()" style="display: none;">Continue</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function selectOption(selectedIndex, correctIndex, explanation) {
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selectedIndex === correctIndex) {
+                buttons[selectedIndex].classList.add('correct');
+                feedback.textContent = '✓ Correct! ' + explanation;
+                feedback.className = 'feedback show correct';
+                score += 25;
+                correctAnswers++;
+            } else {
+                buttons[selectedIndex].classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+                feedback.textContent = '✗ Not quite. ' + explanation;
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions++;
+            updateScore();
+            
+            document.getElementById('next-stage2').style.display = 'inline-block';
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function nextStage2() {
+            if (currentStage < 6) {
+                loadStage(currentStage + 1);
+            } else {
+                endGame();
+            }
+        }
+
+        function loadStage3() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 3: Interwar Timeline</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Put these critical events in the correct chronological order!</p>';
+            
+            const shuffledEvents = [...timelineEvents].sort(() => Math.random() - 0.5);
+            
+            html += '<div class="timeline-container">';
+            shuffledEvents.forEach((event, index) => {
+                html += `
+                    <div class="timeline-event" data-year="${event.year}" data-order="${event.order}" onclick="selectTimelineEvent('${event.year}', ${event.order})">
+                        <div class="timeline-year">${event.year}</div>
+                        <div class="timeline-event-name">${event.event}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="selected-timeline" style="margin-top: 30px; min-height: 60px; padding: 15px; background: #F5E6D3; border-radius: 10px; border: 2px dashed var(--primary); text-align: center;"></div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage3()">Check Order</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedTimelineOrder = [];
+        }
+
+        function selectTimelineEvent(year, order) {
+            const event = document.querySelector(`[data-year="${year}"]`);
+            const existingIndex = selectedTimelineOrder.findIndex(e => e.year === year);
+            
+            if (existingIndex !== -1) {
+                selectedTimelineOrder.splice(existingIndex, 1);
+                event.classList.remove('selected');
+            } else {
+                selectedTimelineOrder.push({ year, order });
+                event.classList.add('selected');
+            }
+            
+            updateTimelineDisplay();
+        }
+
+        function updateTimelineDisplay() {
+            const display = document.getElementById('selected-timeline');
+            if (selectedTimelineOrder.length === 0) {
+                display.innerHTML = '<p style="color: #666; font-style: italic;">Click events in chronological order...</p>';
+            } else {
+                display.innerHTML = selectedTimelineOrder.map((e, i) => 
+                    `${i + 1}. ${e.year}`
+                ).join(' → ');
+            }
+        }
+
+        function checkStage3() {
+            const correctOrder = [1, 2, 3, 4, 5, 6, 7];
+            const selectedOrder = selectedTimelineOrder.map(e => e.order);
+            const isCorrect = JSON.stringify(selectedOrder) === JSON.stringify(correctOrder);
+            
+            const feedback = document.getElementById('feedback');
+            if (isCorrect && selectedTimelineOrder.length === 7) {
+                feedback.textContent = '✓ Perfect! The correct order is: 1918 (WWI ends) → 1920 (US women vote) → 1923 (German hyperinflation) → 1928 (British women vote) → 1929 (Wall Street Crash) → 1933 (New Deal & Hitler) → 1939 (WWII begins)!';
+                feedback.className = 'feedback show correct';
+                score += 40;
+                correctAnswers += 7;
+            } else {
+                feedback.textContent = 'Not quite. The correct order is: 1918 → 1920 → 1923 → 1928 → 1929 → 1933 → 1939. Try again!';
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions += 7;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 6) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function loadStage4() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 4: Match Dictators to Countries</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Click on dictator characteristics to match them to their countries!</p>';
+            
+            const allItems = [
+                { item: 'Adolf Hitler', country: 'germany' },
+                { item: 'Nazi Party', country: 'germany' },
+                { item: 'Benito Mussolini', country: 'italy' },
+                { item: 'Fascist Party', country: 'italy' },
+                { item: 'Joseph Stalin', country: 'soviet' },
+                { item: 'Communist Party', country: 'soviet' }
+            ].sort(() => Math.random() - 0.5);
+            
+            html += '<div class="dictator-grid">';
+            allItems.forEach((item, index) => {
+                html += `
+                    <div class="dictator-card" data-item="${item.item}" data-country="${item.country}" data-index="${index}" onclick="selectDictatorItem('${item.item}', '${item.country}', ${index})">
+                        ${item.item}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div class="country-zone">';
+            html += '<div class="country-title">Germany</div>';
+            html += '<div id="germany-zone" style="min-height: 100px; padding: 10px;"></div>';
+            html += '</div>';
+            
+            html += '<div class="country-zone">';
+            html += '<div class="country-title">Italy</div>';
+            html += '<div id="italy-zone" style="min-height: 100px; padding: 10px;"></div>';
+            html += '</div>';
+            
+            html += '<div class="country-zone">';
+            html += '<div class="country-title">Soviet Union</div>';
+            html += '<div id="soviet-zone" style="min-height: 100px; padding: 10px;"></div>';
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage4()">Check Matches</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedDictators = { germany: [], italy: [], soviet: [] };
+        }
+
+        function selectDictatorItem(item, country, index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            const zone = document.getElementById(`${country}-zone`);
+            
+            // Remove from current zone if already placed
+            if (card.parentElement === zone) {
+                zone.removeChild(card);
+                selectedDictators[country] = selectedDictators[country].filter(i => i !== item);
+            } else {
+                // Remove from any other zone first
+                ['germany', 'italy', 'soviet'].forEach(c => {
+                    const otherZone = document.getElementById(`${c}-zone`);
+                    if (card.parentElement === otherZone) {
+                        otherZone.removeChild(card);
+                        selectedDictators[c] = selectedDictators[c].filter(i => i !== item);
+                    }
+                });
+                
+                // Add to correct zone
+                zone.appendChild(card);
+                if (!selectedDictators[country].includes(item)) {
+                    selectedDictators[country].push(item);
+                }
+            }
+        }
+
+        function checkStage4() {
+            const germanyCorrect = dictators.germany.every(item => selectedDictators.germany.includes(item));
+            const italyCorrect = dictators.italy.every(item => selectedDictators.italy.includes(item));
+            const sovietCorrect = dictators.soviet.every(item => selectedDictators.soviet.includes(item));
+            const noWrong = selectedDictators.germany.every(item => dictators.germany.includes(item)) &&
+                           selectedDictators.italy.every(item => dictators.italy.includes(item)) &&
+                           selectedDictators.soviet.every(item => dictators.soviet.includes(item));
+            
+            const isCorrect = germanyCorrect && italyCorrect && sovietCorrect && noWrong &&
+                             selectedDictators.germany.length === dictators.germany.length &&
+                             selectedDictators.italy.length === dictators.italy.length &&
+                             selectedDictators.soviet.length === dictators.soviet.length;
+            
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.textContent = '✓ Perfect! You correctly matched: Germany (Hitler, Nazi Party), Italy (Mussolini, Fascist Party), and Soviet Union (Stalin, Communist Party)!';
+                feedback.className = 'feedback show correct';
+                score += 40;
+                correctAnswers += 6;
+            } else {
+                feedback.textContent = 'Not quite. Remember: Germany - Hitler & Nazi Party; Italy - Mussolini & Fascist Party; Soviet Union - Stalin & Communist Party. Try again!';
+                feedback.className = 'feedback show wrong';
+            }
+            
+            totalQuestions += 6;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 6) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function loadStage5() {
+            const gameArea = document.getElementById('game-area');
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 5: Effects of the Interwar Period</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Select ALL the real effects and consequences of this period!</p>';
+            
+            const shuffledEffects = effects.sort(() => Math.random() - 0.5);
+            
+            html += '<div class="effects-grid">';
+            shuffledEffects.forEach((effect, index) => {
+                html += `
+                    <div class="effect-card" data-index="${index}" data-correct="${effect.correct}" onclick="toggleEffect(${index}, ${effect.correct})">
+                        <div class="effect-emoji">${effect.emoji}</div>
+                        <div class="effect-text">${effect.effect}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" onclick="checkStage5()">Check Answers</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+            selectedEffects.clear();
+        }
+
+        function toggleEffect(index, isCorrect) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedEffects.delete(index);
+            } else {
+                card.classList.add('selected');
+                selectedEffects.add(index);
+            }
+        }
+
+        function checkStage5() {
+            const cards = document.querySelectorAll('.effect-card');
+            let correct = 0;
+            let totalCorrect = 5; // 5 correct effects
+            
+            cards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect && isSelected) {
+                    correct++;
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (isCorrect && !isSelected) {
+                    card.style.borderColor = '#4CAF50';
+                    card.style.background = '#e8f5e9';
+                } else if (!isCorrect && isSelected) {
+                    card.style.borderColor = '#f44336';
+                    card.style.background = '#ffebee';
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            if (correct === totalCorrect && selectedEffects.size === totalCorrect) {
+                feedback.textContent = `✓ Perfect! You found all ${totalCorrect} correct effects! The interwar period had devastating consequences: it created conditions leading to WWII, economic suffering made people desperate, extremist ideas gained followers, democracies weakened, and only programs like the New Deal helped some people!`;
+                feedback.className = 'feedback show correct';
+                score += 35;
+                correctAnswers += totalCorrect;
+            } else {
+                feedback.textContent = `You found ${correct} out of ${totalCorrect} correct effects. Remember: This period created conditions for WWII, caused economic suffering, helped extremists gain power, weakened democracies, and led to government programs like the New Deal!`;
+                feedback.className = 'feedback show wrong';
+                correctAnswers += correct;
+            }
+            
+            totalQuestions += cards.length;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentStage < 6) {
+                    loadStage(currentStage + 1);
+                } else {
+                    endGame();
+                }
+            }, 3000);
+            
+            // Send TTS
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: feedback.textContent,
+                    rate: 0.85,
+                    pitch: 1.0
+                }, '*');
+            }
+        }
+
+        function loadStage6() {
+            const gameArea = document.getElementById('game-area');
+            const question = advancedQuestions[Math.floor(Math.random() * advancedQuestions.length)];
+            
+            let html = '<h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem; color: var(--primary);">Stage 6: Final Challenge</h2>';
+            html += '<p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #666;">One final advanced question to test your deep understanding!</p>';
+            html += '<div class="question-card">';
+            html += `<div class="question-text">${question.question}</div>`;
+            html += '<div class="options-grid">';
+            
+            question.options.forEach((option, index) => {
+                html += `<button class="option-btn" data-index="${index}" onclick="selectOption(${index}, ${question.correct}, '${question.explanation.replace(/'/g, "\\'")}')">${option}</button>`;
+            });
+            
+            html += '</div></div>';
+            html += '<div id="feedback" class="feedback"></div>';
+            html += '<div class="btn-container">';
+            html += '<button class="btn" id="next-stage6" onclick="endGame()" style="display: none;">Finish Game</button>';
+            html += '</div>';
+            
+            gameArea.innerHTML = html;
+        }
+
+        function updateStageIndicator() {
+            document.getElementById('stage-badge').textContent = `Stage ${currentStage} of 6`;
+            const progress = (currentStage / 6) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-fill').textContent = Math.round(progress) + '%';
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function endGame() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = `Outstanding! You scored ${score} points with ${percentage}% correct! You're a true expert on the interwar period! 🏆`;
+            } else if (percentage >= 75) {
+                message = `Excellent! You scored ${score} points with ${percentage}% correct! You have a strong understanding of this complex period in history! 🌟`;
+            } else if (percentage >= 60) {
+                message = `Good work! You scored ${score} points with ${percentage}% correct! Keep studying to deepen your understanding! 📚`;
+            } else {
+                message = `You scored ${score} points with ${percentage}% correct. Review the lesson and try again! This is complex history - keep learning! 💪`;
+            }
+            
+            document.getElementById('completion-message').textContent = message;
+            document.getElementById('completion-modal').classList.add('show');
+            
+            // Send completion message
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'html-game-tts',
+                    text: message,
+                    rate: 0.9,
+                    pitch: 1.0
+                }, '*');
+                
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        type: 'html-game-complete',
+                        game: 'between-the-wars'
+                    }, '*');
+                }, 3000);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('completion-modal').classList.remove('show');
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>

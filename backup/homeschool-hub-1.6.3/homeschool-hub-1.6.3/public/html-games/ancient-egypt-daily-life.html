@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Egyptian Life Adventure</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB, #F4E4C1, #E6D8AD);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            touch-action: manipulation;
+            color: #5D4037;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #intro-screen.hidden {
+            display: none;
+        }
+
+        .intro-box {
+            background: linear-gradient(135deg, #DAA520, #FFD700, #DAA520);
+            border: 8px solid #8B4513;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            color: #5D4037;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .intro-box h1 {
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin: 0 0 20px 0;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+        }
+
+        .egypt-symbols {
+            font-size: 3.5rem;
+            margin: 20px 0;
+            line-height: 1.2;
+        }
+
+        .intro-box p {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        .intro-box .highlight {
+            color: #8B4513;
+            font-weight: bold;
+        }
+
+        #start-game-btn {
+            background: #FF6B35;
+            color: white;
+            border: 4px solid #C44000;
+            padding: 20px 50px;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 30px;
+            font-weight: bold;
+            box-shadow: 0 6px 0 #8B3A00;
+            transition: transform 0.2s;
+            font-family: inherit;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        #start-game-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #8B3A00;
+        }
+
+        /* --- HEADER --- */
+        h1 {
+            color: #8B4513;
+            text-shadow: 2px 2px 0 #FFD700;
+            margin: 10px 0;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .subtitle {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 3px solid #DAA520;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- SCOREBOARD --- */
+        #scoreboard {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            border: 4px solid #5D4037;
+            padding: 12px 25px;
+            border-radius: 20px;
+            color: white;
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        #score { color: #FFD700; }
+        #lives { color: #FF6B6B; }
+
+        /* --- INSTRUCTION BANNER --- */
+        #instruction {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-size: clamp(1rem, 2.8vw, 1.3rem);
+            font-weight: bold;
+            text-align: center;
+            max-width: 90%;
+            width: 100%;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #DAA520;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* --- GAME CONTAINER --- */
+        #game-container {
+            width: 100%;
+            max-width: 900px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        /* --- NILE RIVER (Categories) --- */
+        #categories-zone {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            min-height: 140px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .category-box {
+            flex: 1;
+            min-width: 120px;
+            max-width: 100%;
+            background: linear-gradient(to bottom, #87CEEB, #4A90E2);
+            border: 5px solid #2E5C8A;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .category-box.farming {
+            background: linear-gradient(to bottom, #8BC34A, #689F38);
+            border-color: #558B2F;
+        }
+
+        .category-box.writing {
+            background: linear-gradient(to bottom, #FFE082, #FFC107);
+            border-color: #F57F17;
+        }
+
+        .category-box.gods {
+            background: linear-gradient(to bottom, #BA68C8, #9C27B0);
+            border-color: #6A1B9A;
+        }
+
+        .category-title {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            width: 100%;
+        }
+
+        .category-emoji {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 8px;
+        }
+
+        .drop-slot {
+            width: 70px;
+            height: 70px;
+            border: 3px dashed rgba(255,255,255,0.5);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.8rem;
+            transition: all 0.3s;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .drop-slot.highlight {
+            border-color: #FFD700;
+            background: rgba(255,215,0,0.3);
+            transform: scale(1.1);
+        }
+
+        .drop-slot.filled {
+            border-style: solid;
+            border-color: white;
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* --- ITEM POOL --- */
+        #item-pool {
+            background: rgba(230, 216, 173, 0.7);
+            border: 4px solid #D2B48C;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            min-height: 200px;
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .item-card {
+            width: 90px;
+            min-width: 70px;
+            max-width: 90px;
+            height: 90px;
+            min-height: 70px;
+            background: white;
+            border: 4px solid #8B4513;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            cursor: grab;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+            position: relative;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        .item-card:active {
+            cursor: grabbing;
+        }
+
+        .item-card.dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .item-card.wrong-answer {
+            animation: shake 0.5s;
+            border-color: #f44336;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+
+        .item-card.correct-answer {
+            animation: celebrate 0.5s;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- FACT MODAL --- */
+        #fact-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #fact-modal.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .fact-box {
+            background: linear-gradient(135deg, #FFF8DC, #FFE4B5);
+            border: 8px solid #DAA520;
+            border-radius: 25px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            position: relative;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .fact-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .fact-title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #8B4513;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .fact-content {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            line-height: 1.6;
+            color: #5D4037;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        #next-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 4px 0 #2E7D32;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        #next-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #2E7D32;
+        }
+
+        /* --- GAME OVER SCREEN --- */
+        #game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #game-over-screen.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .game-over-box {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: 8px solid #8B4513;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            color: #5D4037;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .game-over-box h2 {
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin: 0 0 20px 0;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+        }
+
+        .final-score {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        #restart-btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 4px 0 #5D4037;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        #restart-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #5D4037;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- INTRO SCREEN -->
+    <div id="intro-screen">
+        <div class="intro-box">
+            <h1>🏺 Egyptian Life Adventure 🌾</h1>
+            <div class="egypt-symbols">☀️ 📜 🏛️ 🌾 🏺</div>
+            <p>Welcome to <span class="highlight">Ancient Egypt</span>!</p>
+            <p>Learn about how people lived along the <span class="highlight">Nile River</span> thousands of years ago!</p>
+            <p>🎯 <strong>Your Mission:</strong> Match Egyptian items to their correct categories - Farming, Writing, or Gods!</p>
+            <p>⚠️ Choose wisely - each category is special!</p>
+            <button id="start-game-btn">Begin Journey!</button>
+        </div>
+    </div>
+
+    <!-- MAIN GAME -->
+    <h1>🏺 Egyptian Life Adventure 🌾</h1>
+    <div class="subtitle">⏰ Ancient Egypt - Daily Life</div>
+
+    <div id="scoreboard">
+        <span style="word-wrap: break-word; overflow-wrap: break-word;">Score: <span id="score">0</span></span>
+        <span style="word-wrap: break-word; overflow-wrap: break-word;">❤️ Lives: <span id="lives">3</span></span>
+        <span style="word-wrap: break-word; overflow-wrap: break-word;">Round: <span id="round">1</span>/8</span>
+    </div>
+
+    <div id="instruction">Match items to their categories!</div>
+
+    <div id="game-container">
+        <div id="categories-zone">
+            <div class="category-box farming" data-category="farming">
+                <div class="category-emoji">🌾</div>
+                <div class="category-title">Farming</div>
+                <div class="drop-slot" data-slot="farming"></div>
+            </div>
+            <div class="category-box writing" data-category="writing">
+                <div class="category-emoji">📜</div>
+                <div class="category-title">Writing</div>
+                <div class="drop-slot" data-slot="writing"></div>
+            </div>
+            <div class="category-box gods" data-category="gods">
+                <div class="category-emoji">☀️</div>
+                <div class="category-title">Gods</div>
+                <div class="drop-slot" data-slot="gods"></div>
+            </div>
+        </div>
+
+        <div id="item-pool"></div>
+    </div>
+
+    <!-- FACT MODAL -->
+    <div id="fact-modal">
+        <div class="fact-box">
+            <div class="fact-icon" id="fact-icon"></div>
+            <h2 class="fact-title" id="fact-title"></h2>
+            <div class="fact-content" id="fact-content"></div>
+            <button id="next-btn">Next Round!</button>
+        </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="game-over-screen">
+        <div class="game-over-box">
+            <h2 id="game-over-title">Game Over!</h2>
+            <div class="final-score">
+                🏆 Final Score: <span id="final-score">0</span>
+            </div>
+            <p id="game-over-message">You learned so much about Ancient Egypt!</p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== TTS FUNCTION =====
+        function speak(text, options = {}) {
+            // Try to use parent window TTS if available (in iframe)
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'tts-speak',
+                    text: text,
+                    options: options
+                }, '*');
+            } else {
+                // Fallback to browser TTS if not in iframe
+                const synth = window.speechSynthesis;
+                if (synth.speaking) synth.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.pitch = options.pitch || 1.1;
+                u.rate = options.rate || 0.95;
+                u.volume = options.volume || 1.0;
+                synth.speak(u);
+            }
+        }
+
+        // ===== GAME DATA =====
+        const egyptianItems = [
+            // FARMING
+            {
+                emoji: '🌾',
+                name: 'Wheat',
+                category: 'farming',
+                fact: 'Egyptians grew wheat along the Nile River! The river flooded every year and made the soil perfect for growing crops.'
+            },
+            {
+                emoji: '🐂',
+                name: 'Oxen',
+                category: 'farming',
+                fact: 'Farmers used oxen to plow their fields! These strong animals helped pull heavy plows through the soil.'
+            },
+            {
+                emoji: '🏺',
+                name: 'Storage Jar',
+                category: 'farming',
+                fact: 'Egyptians stored grain in large clay jars! They kept food safe for months, especially during dry seasons.'
+            },
+            {
+                emoji: '🌊',
+                name: 'Nile River',
+                category: 'farming',
+                fact: 'The Nile River flooded every year! This brought fresh, rich soil that helped crops grow. Egypt depended on the Nile!'
+            },
+            {
+                emoji: '🍇',
+                name: 'Grapes',
+                category: 'farming',
+                fact: 'Egyptians grew grapes and made wine! Wine was a special drink enjoyed by wealthy Egyptians and used in ceremonies.'
+            },
+            {
+                emoji: '🥖',
+                name: 'Bread',
+                category: 'farming',
+                fact: 'Bread was the main food in Egypt! Farmers grew wheat, and bakers made fresh bread every day for families to eat.'
+            },
+
+            // WRITING
+            {
+                emoji: '📜',
+                name: 'Papyrus',
+                category: 'writing',
+                fact: 'Egyptians invented papyrus - the first paper! They made it from papyrus plants that grew along the Nile River.'
+            },
+            {
+                emoji: '🖊️',
+                name: 'Reed Pen',
+                category: 'writing',
+                fact: 'Egyptian scribes wrote with pens made from reeds! They dipped them in ink to write hieroglyphs on papyrus.'
+            },
+            {
+                emoji: '📝',
+                name: 'Hieroglyphs',
+                category: 'writing',
+                fact: 'Hieroglyphs are picture writing! Each symbol represented a word or sound. Only specially trained scribes could read and write them.'
+            },
+            {
+                emoji: '🏛️',
+                name: 'Temple Wall',
+                category: 'writing',
+                fact: 'Egyptians carved hieroglyphs on temple walls! These carvings told stories of pharaohs, gods, and important events.'
+            },
+            {
+                emoji: '🎨',
+                name: 'Scribe',
+                category: 'writing',
+                fact: 'Scribes were very important in Egypt! They learned to read and write hieroglyphs and kept records for the pharaoh.'
+            },
+            {
+                emoji: '📖',
+                name: 'Ancient Book',
+                category: 'writing',
+                fact: 'Egyptians wrote books on long papyrus scrolls! They contained stories, prayers, medical knowledge, and math problems.'
+            },
+
+            // GODS
+            {
+                emoji: '☀️',
+                name: 'Ra - Sun God',
+                category: 'gods',
+                fact: 'Ra was the powerful sun god! Egyptians believed he sailed across the sky in a boat during the day, bringing light and warmth.'
+            },
+            {
+                emoji: '🌙',
+                name: 'Osiris',
+                category: 'gods',
+                fact: 'Osiris was the god of the afterlife! Egyptians believed he judged people after they died and ruled the underworld.'
+            },
+            {
+                emoji: '👑',
+                name: 'Isis',
+                category: 'gods',
+                fact: 'Isis was a powerful goddess! She was the goddess of magic and healing, and wife of Osiris. Egyptians prayed to her for protection.'
+            },
+            {
+                emoji: '🐶',
+                name: 'Anubis',
+                category: 'gods',
+                fact: 'Anubis had the head of a jackal! He was the god of mummification and guided dead people to the afterlife.'
+            },
+            {
+                emoji: '🪶',
+                name: 'Maat - Truth',
+                category: 'gods',
+                fact: 'Maat was the goddess of truth and justice! When people died, their heart was weighed against her feather of truth.'
+            },
+            {
+                emoji: '🏛️',
+                name: 'Temple',
+                category: 'gods',
+                fact: 'Egyptians built huge temples for their gods! Priests performed ceremonies and people brought offerings to honor the gods.'
+            },
+        ];
+
+        // ===== GAME STATE =====
+        let score = 0;
+        let lives = 3;
+        let round = 1;
+        const maxRounds = 8;
+        let currentRoundItems = [];
+        let correctCount = 0;
+        let draggedElement = null;
+
+        // ===== DOM ELEMENTS =====
+        const introScreen = document.getElementById('intro-screen');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const scoreDisplay = document.getElementById('score');
+        const livesDisplay = document.getElementById('lives');
+        const roundDisplay = document.getElementById('round');
+        const instructionDisplay = document.getElementById('instruction');
+        const itemPool = document.getElementById('item-pool');
+        const dropSlots = document.querySelectorAll('.drop-slot');
+        const factModal = document.getElementById('fact-modal');
+        const factIcon = document.getElementById('fact-icon');
+        const factTitle = document.getElementById('fact-title');
+        const factContent = document.getElementById('fact-content');
+        const nextBtn = document.getElementById('next-btn');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const gameOverTitle = document.getElementById('game-over-title');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const gameOverMessage = document.getElementById('game-over-message');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // ===== EVENT LISTENERS =====
+        startGameBtn.addEventListener('click', startGame);
+        nextBtn.addEventListener('click', nextRound);
+        restartBtn.addEventListener('click', restartGame);
+
+        // ===== GAME FUNCTIONS =====
+        function startGame() {
+            introScreen.classList.add('hidden');
+            speak('Welcome to Egyptian Life Adventure! Match items to their correct categories.');
+            setupRound();
+        }
+        function setupRound() {
+            itemPool.innerHTML = '';
+            correctCount = 0;
+            
+            // Clear drop slots
+            dropSlots.forEach(slot => {
+                slot.innerHTML = '';
+                slot.classList.remove('filled');
+            });
+
+            // Announce round
+            speak(`Round ${round}. Match the Egyptian items to farming, writing, or gods.`);
+
+            // Select 3 items (one from each category) for this round
+            // Select 3 items (one from each category) for this round
+            const farmingItems = egyptianItems.filter(item => item.category === 'farming');
+            const writingItems = egyptianItems.filter(item => item.category === 'writing');
+            const godsItems = egyptianItems.filter(item => item.category === 'gods');
+
+            const selectedFarming = farmingItems[Math.floor(Math.random() * farmingItems.length)];
+            const selectedWriting = writingItems[Math.floor(Math.random() * writingItems.length)];
+            const selectedGods = godsItems[Math.floor(Math.random() * godsItems.length)];
+            
+            currentRoundItems = shuffleArray([selectedFarming, selectedWriting, selectedGods]);
+
+            // Create item cards
+            currentRoundItems.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = item.emoji;
+                card.draggable = true;
+                card.dataset.name = item.name;
+                card.dataset.category = item.category;
+                card.dataset.fact = item.fact;
+                card.dataset.emoji = item.emoji;
+
+                // Touch events
+                card.addEventListener('touchstart', handleTouchStart, {passive: false});
+                card.addEventListener('touchmove', handleTouchMove, {passive: false});
+                card.addEventListener('touchend', handleTouchEnd, {passive: false});
+
+                // Mouse events
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+
+                itemPool.appendChild(card);
+            });
+
+            updateDisplay();
+        }
+
+        // Drag and drop handlers
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        // Touch handlers
+        let touchStartX, touchStartY;
+        let touchClone;
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            
+            draggedElement = e.target;
+            draggedElement.style.opacity = '0.5';
+            
+            // Create clone for dragging
+            touchClone = draggedElement.cloneNode(true);
+            touchClone.style.position = 'fixed';
+            touchClone.style.zIndex = '1000';
+            touchClone.style.pointerEvents = 'none';
+            touchClone.style.width = draggedElement.offsetWidth + 'px';
+            touchClone.style.height = draggedElement.offsetHeight + 'px';
+            touchClone.style.left = (touch.clientX - draggedElement.offsetWidth / 2) + 'px';
+            touchClone.style.top = (touch.clientY - draggedElement.offsetHeight / 2) + 'px';
+            document.body.appendChild(touchClone);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!draggedElement) return;
+            
+            const touch = e.touches[0];
+            if (touchClone) {
+                touchClone.style.left = (touch.clientX - draggedElement.offsetWidth / 2) + 'px';
+                touchClone.style.top = (touch.clientY - draggedElement.offsetHeight / 2) + 'px';
+            }
+
+            // Highlight drop zones
+            dropSlots.forEach(slot => {
+                if (!slot.classList.contains('filled')) {
+                    const rect = slot.getBoundingClientRect();
+                    if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                        touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                        slot.classList.add('highlight');
+                    } else {
+                        slot.classList.remove('highlight');
+                    }
+                }
+            });
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            if (!draggedElement) return;
+
+            const touch = e.changedTouches[0];
+            let dropped = false;
+
+            // Check if dropped on a slot
+            dropSlots.forEach(slot => {
+                if (!slot.classList.contains('filled')) {
+                    const rect = slot.getBoundingClientRect();
+                    if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                        touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                        handleDrop(slot, draggedElement);
+                        dropped = true;
+                    }
+                    slot.classList.remove('highlight');
+                }
+            });
+
+            // Clean up
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+            if (draggedElement) {
+                draggedElement.style.opacity = '1';
+                draggedElement = null;
+            }
+        }
+
+        // Setup drop zones
+        dropSlots.forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!slot.classList.contains('filled')) {
+                    slot.classList.add('highlight');
+                }
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('highlight');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('highlight');
+                if (draggedElement && !slot.classList.contains('filled')) {
+                    handleDrop(slot, draggedElement);
+                }
+            });
+        });
+
+        function handleDrop(slot, card) {
+            const slotCategory = slot.dataset.slot;
+            if (isCorrect) {
+                // Correct answer!
+                playSound('correct');
+                speak('Correct!');
+                slot.innerHTML = card.dataset.emoji;
+                slot.classList.add('filled');
+                card.classList.add('correct-answer');
+                
+                setTimeout(() => {
+                    card.remove();
+                }, 500);
+
+                correctCount++;
+                score += 15;
+
+                // Check if round complete
+                if (correctCount >= 3) {
+                    setTimeout(() => {
+                        showFactModal(card.dataset.emoji, card.dataset.name, card.dataset.fact);
+                    }, 600);
+            } else {
+                // Wrong answer!
+                playSound('wrong');
+                speak('Try again!');
+                card.classList.add('wrong-answer');
+                lives--;
+                
+                if (lives <= 0) {
+                    setTimeout(gameOver, 1000);
+                } else {
+                    setTimeout(() => {
+                        card.classList.remove('wrong-answer');
+                    }, 500);
+                }
+            }       setTimeout(() => {
+                        card.classList.remove('wrong-answer');
+                    }, 500);
+                }
+        function showFactModal(emoji, name, fact) {
+            factIcon.textContent = emoji;
+            factTitle.textContent = name;
+            factContent.textContent = fact;
+            factModal.classList.add('visible');
+            playSound('complete');
+            
+            // Speak the fact
+            setTimeout(() => {
+                speak(`${name}. ${fact}`);
+            }, 500);
+        }   factIcon.textContent = emoji;
+            factTitle.textContent = name;
+            factContent.textContent = fact;
+            factModal.classList.add('visible');
+            playSound('complete');
+        }
+
+        function nextRound() {
+        function gameOver(completed = false) {
+            if (completed) {
+                gameOverTitle.textContent = '🎉 Magnificent! 🎉';
+                gameOverMessage.textContent = 'You\'re an Egyptian expert!';
+                speak(`Magnificent! You scored ${score} points. You are an Egyptian expert!`);
+            } else {
+                gameOverTitle.textContent = '⛔ Game Over ⛔';
+                gameOverMessage.textContent = 'Keep learning about Ancient Egypt!';
+                speak(`Game over. You scored ${score} points. Keep learning about Ancient Egypt!`);
+            }
+            
+            finalScoreDisplay.textContent = score;
+            gameOverScreen.classList.add('visible');
+        }   if (completed) {
+                gameOverTitle.textContent = '🎉 Magnificent! 🎉';
+                gameOverMessage.textContent = 'You\'re an Egyptian expert!';
+            } else {
+                gameOverTitle.textContent = '⛔ Game Over ⛔';
+                gameOverMessage.textContent = 'Keep learning about Ancient Egypt!';
+            }
+            
+            finalScoreDisplay.textContent = score;
+            gameOverScreen.classList.add('visible');
+        }
+
+        function restartGame() {
+            score = 0;
+            lives = 3;
+            round = 1;
+            gameOverScreen.classList.remove('visible');
+            setupRound();
+        }
+
+        function updateDisplay() {
+            scoreDisplay.textContent = score;
+            livesDisplay.textContent = lives;
+            roundDisplay.textContent = round;
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Sound effects
+        function playSound(type) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'correct') {
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                oscillator.frequency.value = 200;
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            } else if (type === 'complete') {
+                // Happy melody
+                const notes = [523, 659, 784, 1047];
+                notes.forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.2);
+                    osc.start(audioContext.currentTime + i * 0.1);
+                    osc.stop(audioContext.currentTime + i * 0.1 + 0.2);
+                });
+            }
+        }
+
+    </script>
+</body>
+</html>

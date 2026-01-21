@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Noah's Big Boat Game</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #4FC3F7 50%, #0288D1 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* --- THE SKY & HEADER --- */
+        header {
+            text-align: center;
+            padding-top: 10px;
+            color: white;
+            text-shadow: 2px 2px 0px #01579B;
+            z-index: 10;
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; }
+        
+        #instruction-panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: inline-block;
+        }
+
+        #instruction-text {
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        #target-icon {
+            font-size: 2rem;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* --- THE ARK (Drop Zone) --- */
+        #ark-container {
+            position: relative;
+            width: 320px;
+            height: 180px;
+            margin-top: 20px;
+            animation: floatBoat 3s ease-in-out infinite;
+            z-index: 5;
+        }
+
+        @keyframes floatBoat {
+            0% { transform: translateY(0px) rotate(1deg); }
+            50% { transform: translateY(10px) rotate(-1deg); }
+            100% { transform: translateY(0px) rotate(1deg); }
+        }
+
+        .ark-body {
+            width: 100%;
+            height: 100%;
+            background: #8D6E63; /* Wood Brown */
+            border-radius: 0 0 100px 100px;
+            border: 5px solid #5D4037;
+            position: relative;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .ark-house {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 60px;
+            background: #A1887F;
+            border: 4px solid #5D4037;
+            border-bottom: none;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .ark-roof {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; 
+            height: 0; 
+            border-left: 70px solid transparent;
+            border-right: 70px solid transparent;
+            border-bottom: 40px solid #5D4037;
+        }
+
+        .door {
+            width: 60px;
+            height: 80px;
+            background-color: #3E2723;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 30px 30px 0 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* The specific spots where animals land */
+        .drop-slots {
+            position: absolute;
+            top: -20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+        }
+
+        .slot {
+            width: 60px;
+            height: 60px;
+            border: 3px dashed rgba(255,255,255,0.5);
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            transition: all 0.3s;
+        }
+
+        .slot.filled {
+            border-style: solid;
+            border-color: #8BC34A; /* Green success */
+            background: rgba(255,255,255,0.8);
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- THE WATER --- */
+        .water {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- PLAY AREA (Animals) --- */
+        #animal-pen {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 30px 30px 0 0;
+            z-index: 20; /* Above water */
+        }
+
+        .animal-card {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            cursor: grab;
+            transition: transform 0.1s;
+            touch-action: none;
+        }
+
+        .animal-card:active {
+            cursor: grabbing;
+            transform: scale(1.2);
+            z-index: 1000 !important;
+        }
+
+        /* Shake animation for error */
+        .shake {
+            animation: shake 0.4s ease-in-out;
+            background-color: #ffcdd2 !important; /* Red tint */
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* --- PROGRESS BAR --- */
+        #progress-container {
+            width: 80%;
+            max-width: 400px;
+            height: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #FFD700;
+            transition: width 0.5s;
+        }
+
+        /* --- END SCREEN --- */
+        #end-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        #end-screen.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .rainbow {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        button.restart-btn {
+            background: #0288D1;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #01579B;
+        }
+
+        /* Confetti Canvas */
+        #confetti {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1999;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Noah's Ark 🌈</h1>
+        <div id="progress-container"><div id="progress-bar"></div></div>
+        
+        <div id="instruction-panel">
+            <span id="instruction-text">Find 2 Lions!</span>
+            <span id="target-icon">🦁🦁</span>
+        </div>
+    </header>
+
+    <div id="ark-container">
+        <div class="ark-roof"></div>
+        <div class="ark-house"></div>
+        <div class="ark-body">
+            <div class="door"></div>
+        </div>
+        
+        <div class="drop-slots">
+            <div class="slot" id="slot-1"></div>
+            <div class="slot" id="slot-2"></div>
+        </div>
+    </div>
+
+    <div id="animal-pen">
+        </div>
+
+    <div class="water"></div>
+
+    <div id="end-screen">
+        <div class="rainbow">🌈🕊️</div>
+        <h2 style="font-size: 2.5rem; color: #0288D1; margin:0;">Great Job!</h2>
+        <p style="font-size: 1.5rem; color: #555;">The Ark is full!</p>
+        <button class="restart-btn" onclick="initGame()">Play Again</button>
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+    <script>
+        const animals = [
+            { name: "Lion", icon: "🦁" },
+            { name: "Elephant", icon: "🐘" },
+            { name: "Zebra", icon: "🦓" },
+            { name: "Giraffe", icon: "🦒" },
+            { name: "Monkey", icon: "🐒" },
+            { name: "Hippo", icon: "🦛" }
+        ];
+
+        let round = 0;
+        const totalRounds = 5;
+        let currentTarget = null;
+        let matchedInRound = 0;
+        let activeDraggables = [];
+        const synth = window.speechSynthesis;
+
+        function initGame() {
+            document.getElementById('end-screen').classList.remove('visible');
+            stopConfetti();
+            round = 0;
+            startRound();
+        }
+
+        function startRound() {
+            // Check win
+            if (round >= totalRounds) {
+                winGame();
+                return;
+            }
+
+            matchedInRound = 0;
+            
+            // Update Progress
+            const pct = (round / totalRounds) * 100;
+            document.getElementById('progress-bar').style.width = pct + "%";
+
+            // Clear previous
+            const pen = document.getElementById('animal-pen');
+            pen.innerHTML = '';
+            document.getElementById('slot-1').innerHTML = '';
+            document.getElementById('slot-1').classList.remove('filled');
+            document.getElementById('slot-2').innerHTML = '';
+            document.getElementById('slot-2').classList.remove('filled');
+
+            // Pick Target Animal (ensure we cycle through or pick random)
+            const targetIndex = round % animals.length; 
+            currentTarget = animals[targetIndex];
+
+            // Update UI Instructions
+            document.getElementById('instruction-text').innerText = `Find 2 ${currentTarget.name}s!`;
+            document.getElementById('target-icon').innerText = `${currentTarget.icon}${currentTarget.icon}`;
+            speak(`Find two ${currentTarget.name}s!`);
+
+            // Generate Animals for the Pen
+            // We need 2 correct animals + 4 random distractors
+            let pool = [];
+            pool.push(currentTarget, currentTarget); // The Pair
+
+            // Add distractors
+            for(let i=0; i<4; i++) {
+                let r = animals[Math.floor(Math.random() * animals.length)];
+                // It's okay if distractors match the target, just adds more options
+                pool.push(r);
+            }
+
+            // Shuffle
+            pool.sort(() => Math.random() - 0.5);
+
+            // Create Elements
+            pool.forEach((anim, index) => {
+                const el = document.createElement('div');
+                el.className = 'animal-card';
+                el.innerText = anim.icon;
+                el.dataset.name = anim.name;
+                
+                // Random Scatter Position
+                const left = 10 + Math.random() * 70; // 10-80%
+                const top = 10 + Math.random() * 60; // 10-70%
+                el.style.left = left + "%";
+                el.style.top = top + "%";
+                el.style.zIndex = index + 10;
+
+                makeDraggable(el);
+                pen.appendChild(el);
+            });
+        }
+
+        function makeDraggable(el) {
+            let startX, startY, initialLeft, initialTop;
+            
+            const start = (e) => {
+                e.preventDefault();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                startX = clientX;
+                startY = clientY;
+                
+                // Get current visual position from offset (important for mixed absolute/relative)
+                const rect = el.getBoundingClientRect();
+                
+                // We will use transform for dragging, reset it first if needed
+                // But simplified: Just move using transform from 0,0
+                el.dataset.tx = 0;
+                el.dataset.ty = 0;
+                el.style.zIndex = 1000;
+
+                const move = (e) => {
+                    e.preventDefault();
+                    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+                    const dx = cx - startX;
+                    const dy = cy - startY;
+                    el.style.transform = `translate(${dx}px, ${dy}px) scale(1.2)`;
+                };
+
+                const end = (e) => {
+                    document.removeEventListener('mousemove', move);
+                    document.removeEventListener('mouseup', end);
+                    document.removeEventListener('touchmove', move);
+                    document.removeEventListener('touchend', end);
+                    el.style.zIndex = 20; // reset z
+                    checkDrop(el);
+                };
+
+                document.addEventListener('mousemove', move);
+                document.addEventListener('mouseup', end);
+                document.addEventListener('touchmove', move, {passive: false});
+                document.addEventListener('touchend', end);
+            };
+
+            el.addEventListener('mousedown', start);
+            el.addEventListener('touchstart', start, {passive: false});
+        }
+
+        function checkDrop(el) {
+            const rect = el.getBoundingClientRect();
+            const ark = document.getElementById('ark-container').getBoundingClientRect();
+            
+            // Check if dropped near/on the Ark
+            const isOverArk = (
+                rect.left < ark.right &&
+                rect.right > ark.left &&
+                rect.top < ark.bottom &&
+                rect.bottom > ark.top
+            );
+
+            if (isOverArk) {
+                validateMove(el);
+            } else {
+                // Return to start
+                el.style.transform = `translate(0px, 0px) scale(1)`;
+            }
+        }
+
+        function validateMove(el) {
+            const name = el.dataset.name;
+            
+            if (name === currentTarget.name) {
+                // SUCCESS
+                successMove(el);
+            } else {
+                // FAIL
+                speak(`That is a ${name}. We need ${currentTarget.name}s.`);
+                el.classList.add('shake');
+                el.style.transform = `translate(0px, 0px) scale(1)`;
+                setTimeout(() => el.classList.remove('shake'), 500);
+            }
+        }
+
+        function successMove(el) {
+            speak("Good match!");
+            
+            // Find an empty slot
+            const slot1 = document.getElementById('slot-1');
+            const slot2 = document.getElementById('slot-2');
+            let targetSlot = null;
+
+            if (!slot1.classList.contains('filled')) targetSlot = slot1;
+            else if (!slot2.classList.contains('filled')) targetSlot = slot2;
+
+            if (targetSlot) {
+                // Visually move into slot (we actually just hide the draggable and fill the slot)
+                el.style.visibility = 'hidden';
+                targetSlot.innerHTML = el.innerText;
+                targetSlot.classList.add('filled');
+                
+                matchedInRound++;
+
+                if (matchedInRound === 2) {
+                    // Round Complete
+                    speak("Two by Two! Hooray!");
+                    setTimeout(() => {
+                        round++;
+                        startRound();
+                    }, 1500);
+                }
+            }
+        }
+
+        function speak(text) {
+            if (synth.speaking) synth.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.rate = 1.0;
+            u.pitch = 1.1;
+            synth.speak(u);
+        }
+
+        function winGame() {
+            speak("You did it! The Ark is ready to go!");
+            document.getElementById('progress-bar').style.width = "100%";
+            document.getElementById('end-screen').classList.add('visible');
+            startConfetti();
+        }
+
+        // --- Simple Confetti ---
+        let confettiInterval;
+        function startConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const pieces = [];
+            for(let i=0; i<100; i++) pieces.push({
+                x: Math.random()*canvas.width, y: -20, 
+                color: `hsl(${Math.random()*360}, 100%, 50%)`,
+                size: Math.random()*10+5, speed: Math.random()*5+2 
+            });
+            
+            confettiInterval = setInterval(() => {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                pieces.forEach(p => {
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);

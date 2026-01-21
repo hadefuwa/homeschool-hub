@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Hamed/AppData/**)",
+      "Bash(npm install:*)",
+      "Bash(npm run lint)"
+    ]
+  }
+}
