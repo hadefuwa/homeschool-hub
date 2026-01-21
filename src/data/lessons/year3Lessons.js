@@ -1298,7 +1298,7 @@ What time is "quarter to 6"?
 
 - Remember: quarter = 15 minutes, half = 30 minutes!`,
       quizId: quizId++,
-      assessmentType: 'history-game',
+      assessmentType: 'clock-game',
       categoryId: null,
     }),
 
@@ -2815,91 +2815,20 @@ Full stop (.)|Question mark (?)|Exclamation mark (!)|Comma (,)
       yearId: 'year3',
       subjectId: 'english',
       lessonNumber: 6,
-      title: "Prefixes and Suffixes",
-      emoji: '🔤',
-      content: `# Prefixes and Suffixes 🔤
+      title: "Prefix Power",
+      emoji: '🔌',
+      assessmentType: 'prefix-game',
+      categoryId: null,
+    }),
 
-Prefixes and suffixes are word parts we add to change meanings!
-
-## Prefixes
-
-A prefix goes at the **start** of a word:
-
-**un-** (means "not")
-- happy → **un**happy
-- lock → **un**lock
-
-**re-** (means "again")
-- do → **re**do
-- write → **re**write
-
-**dis-** (means "not" or "opposite")
-- like → **dis**like
-- agree → **dis**agree
-
-**pre-** (means "before")
-- view → **pre**view
-- heat → **pre**heat
-
-## Suffixes
-
-A suffix goes at the **end** of a word:
-
-**-ful** (means "full of")
-- care → care**ful**
-- hope → hope**ful**
-
-**-less** (means "without")
-- care → care**less**
-- hope → hope**less**
-
-**-ly** (makes adverbs)
-- quick → quick**ly**
-- slow → slow**ly**
-
-**-er** (for comparing)
-- fast → fast**er**
-- small → small**er**
-
-## Practice Questions
-
-<!-- QUESTION_START -->
-What does the word "unhappy" mean?
-<!-- OPTIONS -->
-Very happy|Not happy|Happy again|Too happy
-<!-- CORRECT -->
-1
-<!-- EXPLANATION -->
-The prefix "un-" means "not", so "unhappy" means "not happy"!
-<!-- QUESTION_END -->
-
-<!-- QUESTION_START -->
-Which word means "to write again"?
-<!-- OPTIONS -->
-unwrite|writing|rewrite|writer
-<!-- CORRECT -->
-2
-<!-- EXPLANATION -->
-"Rewrite" means "to write again". The prefix "re-" means "again"!
-<!-- QUESTION_END -->
-
-<!-- QUESTION_START -->
-What does "careful" mean?
-<!-- OPTIONS -->
-Without care|Full of care|Not caring|Care again
-<!-- CORRECT -->
-1
-<!-- EXPLANATION -->
-The suffix "-ful" means "full of", so "careful" means "full of care"!
-<!-- QUESTION_END -->
-
-## Remember
-
-- Prefixes go at the start
-- Suffixes go at the end
-- They change word meanings!`,
-      quizId: quizId++,
-      assessmentType: 'history-game',
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'english',
+      lessonNumber: 7,
+      title: "Suffix Superstars",
+      emoji: '🚀',
+      assessmentType: 'suffix-game',
       categoryId: null,
     }),
 
@@ -2999,80 +2928,7 @@ It was cold and we went swimming|It was cold but we went swimming|It was cold or
       lessonNumber: 8,
       title: "Synonyms and Antonyms",
       emoji: '📚',
-      content: `# Synonyms and Antonyms 📚
-
-Synonyms and antonyms help us choose better words!
-
-## Synonyms
-
-Synonyms are words that mean the **same** or nearly the same:
-
-- **happy** = glad, joyful, cheerful, delighted
-- **big** = large, huge, enormous, giant
-- **small** = little, tiny, minute
-- **walk** = stroll, march, stride
-- **said** = replied, answered, shouted, whispered
-
-## Using Synonyms
-
-**Boring:**
-The boy said, "Hello." The girl said, "Hi." The teacher said, "Good morning."
-
-**Better:**
-The boy **whispered**, "Hello." The girl **replied**, "Hi." The teacher **announced**, "Good morning."
-
-## Antonyms
-
-Antonyms are words that mean the **opposite**:
-
-- hot ↔ cold
-- happy ↔ sad
-- big ↔ small
-- fast ↔ slow
-- up ↔ down
-- day ↔ night
-- love ↔ hate
-- hard ↔ soft
-
-## Practice Questions
-
-<!-- QUESTION_START -->
-Which word is a synonym for "happy"?
-<!-- OPTIONS -->
-sad|joyful|angry|tired
-<!-- CORRECT -->
-1
-<!-- EXPLANATION -->
-"Joyful" is a synonym for "happy" - they both mean feeling good and pleased!
-<!-- QUESTION_END -->
-
-<!-- QUESTION_START -->
-What is the antonym of "hot"?
-<!-- OPTIONS -->
-warm|boiling|cold|heat
-<!-- CORRECT -->
-2
-<!-- EXPLANATION -->
-"Cold" is the opposite (antonym) of "hot"!
-<!-- QUESTION_END -->
-
-<!-- QUESTION_START -->
-Which pair are synonyms?
-<!-- OPTIONS -->
-big and small|happy and sad|walk and stroll|hot and cold
-<!-- CORRECT -->
-2
-<!-- EXPLANATION -->
-"Walk" and "stroll" are synonyms - they both mean moving on foot at a gentle pace!
-<!-- QUESTION_END -->
-
-## Remember
-
-- Synonyms mean the same
-- Antonyms mean the opposite
-- Using synonyms makes writing more interesting!`,
-      quizId: quizId++,
-      assessmentType: 'history-game',
+      assessmentType: 'synonyms-antonyms-game',
       categoryId: null,
     }),
 
@@ -3083,90 +2939,29 @@ big and small|happy and sad|walk and stroll|hot and cold
       lessonNumber: 9,
       title: "Apostrophes for Contractions",
       emoji: '✂️',
-      content: `# Apostrophes for Contractions ✂️
+      assessmentType: 'contraction-game',
+      categoryId: null,
+    }),
 
-Apostrophes help us shorten words by showing where letters are missing!
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'english',
+      lessonNumber: 10,
+      title: "Spelling Safari",
+      emoji: '🦁',
+      assessmentType: 'spelling-game',
+      categoryId: null,
+    }),
 
-## What is a Contraction?
-
-A contraction is two words joined together with some letters removed. An apostrophe (') shows where the letters were:
-
-**is**
-- I am → I'm
-- you are → you're
-- he is → he's
-- she is → she's
-- it is → it's
-- we are → we're
-- they are → they're
-
-**not**
-- do not → don't
-- cannot → can't
-- will not → won't
-- should not → shouldn't
-- would not → wouldn't
-
-**have/had/will**
-- I have → I've
-- I had → I'd
-- I will → I'll
-- they have → they've
-
-## Using Contractions
-
-Contractions make writing sound more natural:
-
-**Formal:** I am going to the park. I will not be long.
-**Casual:** I'm going to the park. I won't be long.
-
-## Common Mistakes
-
-❌ its' (wrong)
-✅ it's (it is) or its (belonging to it)
-
-❌ your'e (wrong)
-✅ you're (you are)
-
-## Practice Questions
-
-<!-- QUESTION_START -->
-What is the contraction for "I am"?
-<!-- OPTIONS -->
-I'am|Im'|I'm|Im
-<!-- CORRECT -->
-2
-<!-- EXPLANATION -->
-"I'm" is correct! The apostrophe replaces the 'a' in "I am".
-<!-- QUESTION_END -->
-
-<!-- QUESTION_START -->
-Which contraction means "they are"?
-<!-- OPTIONS -->
-there|their|they're|theyre
-<!-- CORRECT -->
-2
-<!-- EXPLANATION -->
-"They're" means "they are". The apostrophe shows where the 'a' is missing!
-<!-- QUESTION_END -->
-
-<!-- QUESTION_START -->
-What does "won't" mean?
-<!-- OPTIONS -->
-will not|want|won it|would not
-<!-- CORRECT -->
-0
-<!-- EXPLANATION -->
-"Won't" is the contraction for "will not". It's unusual because it doesn't look like the original words!
-<!-- QUESTION_END -->
-
-## Remember
-
-- Apostrophes show missing letters
-- They make two words into one
-- Don't confuse contractions with possessives!`,
-      quizId: quizId++,
-      assessmentType: 'history-game',
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'english',
+      lessonNumber: 11,
+      title: "Adjective Adventure",
+      emoji: '🌟',
+      assessmentType: 'parts-of-speech-game',
       categoryId: null,
     }),
 
@@ -3259,6 +3054,238 @@ We need 2 commas: "We saw elephants, giraffes, zebras and lions." We don't put a
 - Don't put a comma before "and" at the end!`,
       quizId: quizId++,
       assessmentType: 'history-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 18,
+      title: "Place Value to 1,000",
+      emoji: '🔢',
+      content: `# Place Value to 1,000 🔢
+
+Build three-digit numbers with hundreds, tens, and ones.
+
+## How to Play
+
+Drag digit cards into the correct place value columns.
+
+## Example
+
+452 = 4 hundreds, 5 tens, 2 ones`,
+      quizId: quizId++,
+      assessmentType: 'place-value-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 19,
+      title: "Add and Subtract 3-Digit Numbers",
+      emoji: '➕',
+      content: `# Add and Subtract 3-Digit Numbers ➕
+
+Use column methods to add and subtract.
+
+## How to Play
+
+Drag digits into the column layout and solve each step.
+
+## Example
+
+326 + 175 = 501`,
+      quizId: quizId++,
+      assessmentType: 'column-method-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 20,
+      title: "3, 4, and 8 Times Tables",
+      emoji: '✖️',
+      content: `# 3, 4, and 8 Times Tables ✖️
+
+Practise multiplication facts.
+
+## How to Play
+
+Tap the correct product to build each table.
+
+## Tables
+
+- 3 times table
+- 4 times table
+- 8 times table`,
+      quizId: quizId++,
+      assessmentType: 'times-table-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 21,
+      title: "Division with Remainders",
+      emoji: '➗',
+      content: `# Division with Remainders ➗
+
+Share items equally and find the remainder.
+
+## How to Play
+
+Drag counters into groups and record any left over.
+
+## Example
+
+14 ÷ 3 = 4 r 2`,
+      quizId: quizId++,
+      assessmentType: 'division-sharing-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 22,
+      title: "Fractions on a Number Line",
+      emoji: '📏',
+      content: `# Fractions on a Number Line 📏
+
+Place fractions between 0 and 1.
+
+## How to Play
+
+Drag the fraction to the correct point on the line.
+
+## Examples
+
+- 1/2 is in the middle
+- 1/4 is halfway between 0 and 1/2`,
+      quizId: quizId++,
+      assessmentType: 'fraction-line-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 23,
+      title: "Perimeter of 2D Shapes",
+      emoji: '📐',
+      content: `# Perimeter of 2D Shapes 📐
+
+Find the distance around a shape.
+
+## How to Play
+
+Trace the edges and add the lengths.
+
+## Example
+
+Rectangle with sides 5 cm and 3 cm:
+Perimeter = 5 + 3 + 5 + 3 = 16 cm`,
+      quizId: quizId++,
+      assessmentType: 'perimeter-trace-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 24,
+      title: "Time to the Nearest Minute",
+      emoji: '⏱️',
+      content: `# Time to the Nearest Minute ⏱️
+
+Tell the time using minute markings.
+
+## How to Play
+
+Drag the clock hands to show the time given.
+
+## Example
+
+4:37 is 23 minutes to 5.`,
+      quizId: quizId++,
+      assessmentType: 'time-minute-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 25,
+      title: "Money: Add and Subtract Amounts",
+      emoji: '💷',
+      content: `# Money: Add and Subtract Amounts 💷
+
+Work out totals and change.
+
+## How to Play
+
+Drag coins and notes to pay the exact amount.
+
+## Tip
+
+Use 10p and £1 coins to make quick totals.`,
+      quizId: quizId++,
+      assessmentType: 'money-shop-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 26,
+      title: "Angles and Turns",
+      emoji: '🧭',
+      content: `# Angles and Turns 🧭
+
+Identify right, acute, and obtuse angles.
+
+## How to Play
+
+Rotate the arrow to match the angle shown.
+
+## Angles
+
+- Right angle = 90°
+- Acute is smaller than 90°
+- Obtuse is larger than 90°`,
+      quizId: quizId++,
+      assessmentType: 'angle-rotate-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year3',
+      subjectId: 'maths',
+      lessonNumber: 27,
+      title: "Data: Bar Charts",
+      emoji: '📊',
+      content: `# Data: Bar Charts 📊
+
+Read and build bar charts.
+
+## How to Play
+
+Drag bars to the correct height based on the data.`,
+      quizId: quizId++,
+      assessmentType: 'bar-chart-game',
       categoryId: null,
     }),
 

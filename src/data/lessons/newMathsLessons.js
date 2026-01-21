@@ -214,6 +214,7 @@ A Roman numeral will be shown. Choose the correct number. The numbers will be sp
 We will learn the values of I, V, and X.`,
       quizId: null,
       assessmentType: 'maths-game',
+      ttsDisabled: true,
     }),
   ];
 }

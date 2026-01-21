@@ -768,6 +768,50 @@ Think of a modern movie or book that explores one of these themes.`,
       id: lessonId++,
       yearId: 'year5',
       subjectId: 'english',
+      lessonNumber: 13,
+      title: "Adjective Adventure",
+      emoji: '🌟',
+      assessmentType: 'parts-of-speech-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'english',
+      lessonNumber: 10,
+      title: "Spelling Safari",
+      emoji: '🦁',
+      assessmentType: 'spelling-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'english',
+      lessonNumber: 11,
+      title: "Prefix Power",
+      emoji: '🔌',
+      assessmentType: 'prefix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'english',
+      lessonNumber: 12,
+      title: "Suffix Superstars",
+      emoji: '🚀',
+      assessmentType: 'suffix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'english',
       lessonNumber: 9,
       title: "Author Study: Beatrix Potter",
       emoji: '🐰',
@@ -937,6 +981,205 @@ Almost all her adventure groups, like the Famous Five (Timmy the dog), have a lo
 <!-- QUESTION_END -->`,
       quizId: quizId++,
       assessmentType: 'quiz',
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 11,
+      title: "Place Value to 1,000,000",
+      emoji: '🔢',
+      content: `# Place Value to 1,000,000 🔢
+
+Build six-digit numbers and compare them.
+
+## How to Play
+
+Drag digits into the correct place value columns.`,
+      quizId: quizId++,
+      assessmentType: 'place-value-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 12,
+      title: "Decimals to 3 Decimal Places",
+      emoji: '🔍',
+      content: `# Decimals to 3 Decimal Places 🔍
+
+Read and place numbers to thousandths.
+
+## How to Play
+
+Drag the decimal to the correct spot on the number line.`,
+      quizId: quizId++,
+      assessmentType: 'decimal-place-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 13,
+      title: "Adding and Subtracting Fractions",
+      emoji: '🍰',
+      content: `# Adding and Subtracting Fractions 🍰
+
+Combine fractions with the same denominator.
+
+## How to Play
+
+Drag fraction pieces to make the total shown.
+
+## Example
+
+1/8 + 3/8 = 4/8`,
+      quizId: quizId++,
+      assessmentType: 'fraction-add-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 14,
+      title: "Percentages",
+      emoji: '💯',
+      content: `# Percentages 💯
+
+Show parts of a whole as a percentage.
+
+## How to Play
+
+Shade the grid to match the percentage.`,
+      quizId: quizId++,
+      assessmentType: 'percentage-shade-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 15,
+      title: "Prime and Square Numbers",
+      emoji: '🧮',
+      content: `# Prime and Square Numbers 🧮
+
+Sort numbers into prime, composite, and square.
+
+## How to Play
+
+Drag each number to the correct basket.`,
+      quizId: quizId++,
+      assessmentType: 'prime-sort-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 16,
+      title: "Measure Conversions",
+      emoji: '📏',
+      content: `# Measure Conversions 📏
+
+Convert between metric units.
+
+## How to Play
+
+Match the correct conversion pair.
+
+## Examples
+
+- 1 m = 100 cm
+- 1 kg = 1,000 g`,
+      quizId: quizId++,
+      assessmentType: 'unit-conversion-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 17,
+      title: "Angles in Shapes",
+      emoji: '📐',
+      content: `# Angles in Shapes 📐
+
+Find missing angles in triangles and quadrilaterals.
+
+## How to Play
+
+Rotate and snap the angle to complete the shape.`,
+      quizId: quizId++,
+      assessmentType: 'angle-builder-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 18,
+      title: "Volume of Cubes",
+      emoji: '🧊',
+      content: `# Volume of Cubes 🧊
+
+Count cubes to find volume.
+
+## How to Play
+
+Stack cubes to match the target volume.`,
+      quizId: quizId++,
+      assessmentType: 'volume-fill-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 19,
+      title: "Statistics: Line Graphs",
+      emoji: '📈',
+      content: `# Statistics: Line Graphs 📈
+
+Read and plot data over time.
+
+## How to Play
+
+Drag points to the correct coordinates and join them.`,
+      quizId: quizId++,
+      assessmentType: 'line-graph-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year5',
+      subjectId: 'maths',
+      lessonNumber: 20,
+      title: "Scaling on a Grid",
+      emoji: '🗺️',
+      content: `# Scaling on a Grid 🗺️
+
+Enlarge shapes by a scale factor.
+
+## How to Play
+
+Draw the enlarged shape on the grid.`,
+      quizId: quizId++,
+      assessmentType: 'scale-grid-game',
+      categoryId: null,
     }),
 
   ];

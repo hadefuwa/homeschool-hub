@@ -53,6 +53,7 @@ import TypingMathGame from '../components/TypingMathGame';
 import NumberLineGame from '../components/NumberLineGame';
 import ShapeMatchingGame from '../components/ShapeMatchingGame';
 import GraphBuilderGame from '../components/GraphBuilderGame';
+import CapacityFillGame from '../components/CapacityFillGame';
 import CoordinateGame from '../components/CoordinateGame';
 import AngleGame from '../components/AngleGame';
 import HistoryGame from '../components/HistoryGame';
@@ -94,8 +95,48 @@ import SynonymsAntonymsGame from '../components/SynonymsAntonymsGame';
 import SentenceBuildingGame from '../components/SentenceBuildingGame';
 import ReadingComprehensionGame from '../components/ReadingComprehensionGame';
 import CreativeWritingGame from '../components/CreativeWritingGame';
+import SpellingGame from '../components/SpellingGame';
+import PrefixSuffixGame from '../components/PrefixSuffixGame';
 import { Progress } from '../models/Progress';
 import { Year } from '../models/Year';
+
+const mathGameAssessmentTypes = new Set([
+  'tap-to-count-game',
+  'number-bonds-game',
+  'compare-quantities-game',
+  'pattern-builder-game',
+  'position-direction-game',
+  'measurement-compare-game',
+  'time-sequence-game',
+  'skip-counting-game',
+  'fraction-match-game',
+  'column-method-game',
+  'times-table-game',
+  'division-sharing-game',
+  'fraction-line-game',
+  'perimeter-trace-game',
+  'rounding-game',
+  'factors-multiples-game',
+  'decimal-match-game',
+  'area-tiling-game',
+  'decimal-place-game',
+  'fraction-add-game',
+  'percentage-shade-game',
+  'prime-sort-game',
+  'unit-conversion-game',
+  'algebra-balance-game',
+  'ratio-mix-game',
+  'proportion-scale-game',
+  'percentage-change-game',
+  'fdp-tri-match-game',
+  'area-cut-fit-game',
+  'volume-cuboid-game',
+  'nets-fold-game',
+  'stats-averages-game',
+  'scale-grid-game',
+  'symmetry-mirror-game',
+  'volume-fill-game',
+]);
 
 // Error Boundary component
 class ErrorBoundary extends React.Component {
@@ -196,17 +237,18 @@ function LessonViewScreen() {
 
   // Check if this is a technology game and if student has gold/platinum
   const isTechnologyGame = lesson && lesson.subjectId === 'technology' && (
-    lesson.title === 'Clicking Game' ||
-    lesson.title === 'Keyboard Game' ||
-    lesson.title === 'WASD Game' ||
-    lesson.title === 'A-Z Game' ||
-    lesson.title === 'Numbers Game' ||
-    lesson.title === 'Symbols Game' ||
-    lesson.title === 'Flappy Bird Game' ||
-    lesson.title === 'Bubble Pop Game' ||
-    lesson.title === 'Snake Game' ||
-    lesson.title === 'Target Practice Game' ||
-    lesson.title?.includes('TapTapTap')
+    lesson.assessmentType === 'clicking-game' ||
+    lesson.assessmentType === 'keyboard-game' ||
+    lesson.assessmentType === 'wasd-game' ||
+    lesson.assessmentType === 'a-z-game' ||
+    lesson.assessmentType === 'numbers-game' ||
+    lesson.assessmentType === 'symbols-game' ||
+    lesson.assessmentType === 'flappy-bird-game' ||
+    lesson.assessmentType === 'bubble-pop-game' ||
+    lesson.assessmentType === 'snake-game' ||
+    lesson.assessmentType === 'target-practice-game' ||
+    lesson.title?.includes('TapTapTap') ||
+    lesson.assessmentType === 'taptaptap-game'
   );
   const hasGoldOrPlatinumForLesson = lesson && isTechnologyGame && hasGoldOrPlatinum(lesson.id) && !playAnyway;
 
@@ -421,7 +463,7 @@ function LessonViewScreen() {
               </button>
             </div>
           </div>
-        ) : lesson.title === 'Clicking Game' ? (
+        ) : lesson.assessmentType === 'clicking-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -434,7 +476,7 @@ function LessonViewScreen() {
           }}>
             <ClickingGame lesson={lesson} />
           </div>
-        ) : lesson.title === 'Keyboard Game' || lesson.title === 'WASD Game' || lesson.title === 'A-Z Game' || lesson.title === 'Numbers Game' || lesson.title === 'Symbols Game' ? (
+        ) : lesson.assessmentType === 'keyboard-game' || lesson.assessmentType === 'wasd-game' || lesson.assessmentType === 'a-z-game' || lesson.assessmentType === 'numbers-game' || lesson.assessmentType === 'symbols-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -460,7 +502,7 @@ function LessonViewScreen() {
           }}>
             <DrawingGame lesson={lesson} />
           </div>
-        ) : lesson.title === 'Flappy Bird Game' ? (
+        ) : lesson.assessmentType === 'flappy-bird-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -473,7 +515,7 @@ function LessonViewScreen() {
           }}>
             <FlappyBirdGame lesson={lesson} />
           </div>
-        ) : lesson.title === 'Bubble Pop Game' ? (
+        ) : lesson.assessmentType === 'bubble-pop-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -486,7 +528,7 @@ function LessonViewScreen() {
           }}>
             <BubblePopGame lesson={lesson} />
           </div>
-        ) : lesson.title === 'Snake Game' ? (
+        ) : lesson.assessmentType === 'snake-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -499,7 +541,7 @@ function LessonViewScreen() {
           }}>
             <SnakeGame lesson={lesson} />
           </div>
-        ) : lesson.title === 'Target Practice Game' ? (
+        ) : lesson.assessmentType === 'target-practice-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -987,7 +1029,7 @@ function LessonViewScreen() {
               <ShapePatternGame lesson={lesson} />
             </ErrorBoundary>
           </div>
-        ) : lesson.title === 'Money Math' ? (
+        ) : lesson.title === 'Money Math' || lesson.assessmentType === 'money-drag-game' || lesson.assessmentType === 'money-shop-game' || lesson.assessmentType === 'coin-match-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -1002,7 +1044,7 @@ function LessonViewScreen() {
               <MoneyDragGame lesson={lesson} />
             </ErrorBoundary>
           </div>
-        ) : lesson.assessmentType === 'maths-game' ? (
+        ) : lesson.assessmentType === 'maths-game' || (lesson.subjectId === 'maths' && mathGameAssessmentTypes.has(lesson.assessmentType)) ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -1047,7 +1089,7 @@ function LessonViewScreen() {
               <RenaissanceGame lesson={lesson} />
             </ErrorBoundary>
           </div>
-        ) : lesson.title === 'Time and Clocks' || lesson.title.includes("Time:") ? (
+        ) : lesson.title === 'Time and Clocks' || lesson.title.includes("Time:") || lesson.assessmentType === 'clock-game' || lesson.assessmentType === 'time-minute-game' || lesson.assessmentType === 'time-conversion-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -1107,7 +1149,7 @@ function LessonViewScreen() {
               <NumberLineGame lesson={lesson} />
             </ErrorBoundary>
           </div>
-        ) : lesson.assessmentType === 'shape-matching-game' ? (
+        ) : lesson.assessmentType === 'shape-matching-game' || lesson.assessmentType === 'shape-sorting-game' || lesson.assessmentType === 'nets-fold-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -1122,7 +1164,7 @@ function LessonViewScreen() {
               <ShapeMatchingGame lesson={lesson} />
             </ErrorBoundary>
           </div>
-        ) : lesson.assessmentType === 'graph-builder-game' ? (
+        ) : lesson.assessmentType === 'graph-builder-game' || lesson.assessmentType === 'bar-chart-game' || lesson.assessmentType === 'line-graph-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -1137,7 +1179,22 @@ function LessonViewScreen() {
               <GraphBuilderGame lesson={lesson} />
             </ErrorBoundary>
           </div>
-        ) : lesson.assessmentType === 'coordinate-game' ? (
+        ) : lesson.assessmentType === 'capacity-fill-game' ? (
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}>
+            <ErrorBoundary>
+              <CapacityFillGame lesson={lesson} />
+            </ErrorBoundary>
+          </div>
+        ) : lesson.assessmentType === 'coordinate-game' || lesson.assessmentType === 'coordinate-plot-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -1152,7 +1209,7 @@ function LessonViewScreen() {
               <CoordinateGame lesson={lesson} />
             </ErrorBoundary>
           </div>
-        ) : lesson.assessmentType === 'angle-game' ? (
+        ) : lesson.assessmentType === 'angle-game' || lesson.assessmentType === 'angle-rotate-game' || lesson.assessmentType === 'angle-builder-game' ? (
           <div style={{
             flex: 1,
             display: 'flex',
@@ -2090,6 +2147,36 @@ function LessonViewScreen() {
                   <CreativeWritingGame lesson={lesson} />
                 </ErrorBoundary>
               </div>
+            ) : lesson.assessmentType === 'spelling-game' ? (
+              <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              }}>
+                <ErrorBoundary>
+                  <SpellingGame lesson={lesson} />
+                </ErrorBoundary>
+              </div>
+            ) : lesson.assessmentType === 'prefix-game' || lesson.assessmentType === 'suffix-game' ? (
+              <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              }}>
+                <ErrorBoundary>
+                  <PrefixSuffixGame lesson={lesson} />
+                </ErrorBoundary>
+              </div>
             ) : lesson.assessmentType === 'contraction-game' ? (
               <div style={{
                 flex: 1,
@@ -2234,4 +2321,3 @@ function LessonViewScreen() {
 }
 
 export default LessonViewScreen;
-

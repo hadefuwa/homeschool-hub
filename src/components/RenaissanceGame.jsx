@@ -54,6 +54,7 @@ function RenaissanceGame({ lesson }) {
 
   // Stage 2 State
   const [timelineOrder, setTimelineOrder] = useState([]);
+  const [timelineEvents, setTimelineEvents] = useState([]);
 
   // Stage 3 State
   const [selectedInventions, setSelectedInventions] = useState([]);
@@ -61,6 +62,20 @@ function RenaissanceGame({ lesson }) {
   useEffect(() => {
     return () => stop();
   }, []);
+
+  useEffect(() => {
+    const stage = RENAISSANCE_STAGES[currentStageIndex];
+    setMatchedCities([]);
+    setTimelineOrder([]);
+    setSelectedInventions([]);
+
+    if (stage.id === 'timeline') {
+      const shuffled = [...stage.events].sort(() => Math.random() - 0.5);
+      setTimelineEvents(shuffled);
+    } else {
+      setTimelineEvents([]);
+    }
+  }, [currentStageIndex]);
 
   const startStage = () => {
     setGameState('playing');
@@ -145,32 +160,61 @@ function RenaissanceGame({ lesson }) {
       {gameState === 'playing' && currentStage.id === 'timeline' && (
         <div style={cardStyle}>
           <h2>{currentStage.title}</h2>
-          <div style={{ display: 'flex', gap: '10px', flexDirection: 'column', width: '100%' }}>
-            {currentStage.events.map(event => (
-              <button
-                key={event.id}
-                disabled={timelineOrder.includes(event.id)}
-                onClick={() => {
-                  const newOrder = [...timelineOrder, event.id];
-                  setTimelineOrder(newOrder);
-                  const correctSoFar = newOrder.every((id, idx) => id === currentStage.events[idx].id);
-                  if (!correctSoFar) setScore(prev => Math.max(0, prev - 10));
+          <p>{currentStage.instructions}</p>
+          <div style={timelineGrid}>
+            <div style={timelineColumn}>
+              <h3 style={timelineHeading}>Pick the next event</h3>
+              {timelineEvents.map(event => (
+                <button
+                  key={event.id}
+                  disabled={timelineOrder.includes(event.id)}
+                  onClick={() => {
+                    const newOrder = [...timelineOrder, event.id];
+                    setTimelineOrder(newOrder);
+                    const correctSoFar = newOrder.every((id, idx) => id === currentStage.events[idx].id);
+                    if (!correctSoFar) setScore(prev => Math.max(0, prev - 10));
 
-                  if (newOrder.length === 3) {
-                    if (correctSoFar) {
-                      speak("The timeline is perfectly aligned!");
-                      setTimeout(handleStageComplete, 2000);
-                    } else {
-                      speak("The timeline is fragmented. Let us try again.");
-                      setTimelineOrder([]);
+                    if (newOrder.length === currentStage.events.length) {
+                      if (correctSoFar) {
+                        speak("The timeline is perfectly aligned!");
+                        setTimeout(handleStageComplete, 1200);
+                      } else {
+                        speak("The timeline is fragmented. Let us try again.");
+                        setTimelineOrder([]);
+                        setTimelineEvents([...currentStage.events].sort(() => Math.random() - 0.5));
+                      }
                     }
-                  }
-                }}
-                style={timelineButton(timelineOrder.includes(event.id))}
+                  }}
+                  style={timelineButton(timelineOrder.includes(event.id))}
+                >
+                  {event.text}
+                </button>
+              ))}
+              <button
+                onClick={() => setTimelineOrder(prev => prev.slice(0, -1))}
+                disabled={timelineOrder.length === 0}
+                style={undoButton}
               >
-                {timelineOrder.includes(event.id) ? `(${currentStage.events.find(e => e.id === event.id).year})` : ''} {event.text}
+                Undo last pick
               </button>
-            ))}
+            </div>
+            <div style={timelineColumn}>
+              <h3 style={timelineHeading}>Your timeline</h3>
+              <div style={timelineSlots}>
+                {currentStage.events.map((event, idx) => {
+                  const pickedId = timelineOrder[idx];
+                  const pickedEvent = currentStage.events.find(e => e.id === pickedId);
+                  return (
+                    <div key={event.id} style={timelineSlot}>
+                      <div style={timelineSlotLabel}>Step {idx + 1}</div>
+                      <div style={timelineSlotText}>
+                        {pickedEvent ? pickedEvent.text : '---'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -252,6 +296,68 @@ const timelineButton = (active) => ({
   border: '1px solid #5D4037', borderRadius: '10px', cursor: 'pointer',
   fontSize: '16px', fontWeight: 'bold'
 });
+
+const timelineGrid = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: '20px',
+  width: '100%',
+  marginTop: '15px',
+};
+
+const timelineColumn = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  background: 'white',
+  borderRadius: '16px',
+  padding: '16px',
+  border: '1px solid #D7CCC8',
+};
+
+const timelineHeading = {
+  margin: 0,
+  color: '#5D4037',
+  fontSize: '18px',
+};
+
+const timelineSlots = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+};
+
+const timelineSlot = {
+  padding: '12px',
+  borderRadius: '12px',
+  border: '2px dashed #C8B6A6',
+  minHeight: '60px',
+  background: '#F7F2EF',
+  textAlign: 'left',
+};
+
+const timelineSlotLabel = {
+  fontSize: '12px',
+  fontWeight: 'bold',
+  color: '#8D6E63',
+  textTransform: 'uppercase',
+  marginBottom: '6px',
+};
+
+const timelineSlotText = {
+  fontSize: '14px',
+  color: '#4E342E',
+};
+
+const undoButton = {
+  padding: '10px 12px',
+  borderRadius: '8px',
+  border: '1px solid #C8B6A6',
+  background: '#F5F1EE',
+  color: '#5D4037',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+};
 
 const compButton = (active) => ({
   padding: '15px', background: active ? '#BDBDBD' : 'white',

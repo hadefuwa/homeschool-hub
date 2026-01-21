@@ -59,9 +59,10 @@ const LESSON_CONFIGS = {
 
 // Scoring tiers
 const SCORE_TIERS = {
-  GOLD: { name: 'Gold', color: '#FFD700', tries: 1 },
-  SILVER: { name: 'Silver', color: '#C0C0C0', tries: 2 },
-  BRONZE: { name: 'Bronze', color: '#CD7F32', tries: 3 },
+  PLATINUM: { name: 'Platinum', color: '#E5E4E2', tries: 1 },
+  GOLD: { name: 'Gold', color: '#FFD700', tries: 2 },
+  SILVER: { name: 'Silver', color: '#C0C0C0', tries: 3 },
+  BRONZE: { name: 'Bronze', color: '#CD7F32', tries: 4 }, // Increased tries if needed, but let's stick to 3 levels normally.
   FAIL: { name: 'Fail', color: '#dc3545', tries: 0 },
 };
 
@@ -309,9 +310,9 @@ function PhonicsLesson({ lesson }) {
   };
 
   const getScore = (attempts) => {
-    if (attempts === 1) return SCORE_TIERS.GOLD;
-    if (attempts === 2) return SCORE_TIERS.SILVER;
-    if (attempts === 3) return SCORE_TIERS.BRONZE;
+    if (attempts === 1) return SCORE_TIERS.PLATINUM;
+    if (attempts === 2) return SCORE_TIERS.GOLD;
+    if (attempts === 3) return SCORE_TIERS.SILVER;
     return SCORE_TIERS.FAIL;
   };
 
@@ -331,7 +332,7 @@ function PhonicsLesson({ lesson }) {
         lessonNumber: lesson.lessonNumber,
         isCompleted: true,
         completedAt: new Date(),
-        score: score === SCORE_TIERS.GOLD ? 100 : score === SCORE_TIERS.SILVER ? 75 : score === SCORE_TIERS.BRONZE ? 50 : 0,
+        score: score === SCORE_TIERS.PLATINUM ? 100 : score === SCORE_TIERS.GOLD ? 90 : score === SCORE_TIERS.SILVER ? 75 : score === SCORE_TIERS.BRONZE ? 50 : 0,
       });
       addProgress(progress).then(() => {
         saveData();
@@ -409,10 +410,10 @@ function PhonicsLesson({ lesson }) {
                 🔊
               </button>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '30px', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '30px',
               flexWrap: 'wrap',
               marginBottom: '40px'
             }}>
@@ -497,10 +498,10 @@ function PhonicsLesson({ lesson }) {
                 🔊
               </button>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '30px', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '30px',
               flexWrap: 'wrap',
               marginBottom: '40px'
             }}>
@@ -584,10 +585,10 @@ function PhonicsLesson({ lesson }) {
                 🔊
               </button>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '40px', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '40px',
               flexWrap: 'wrap',
               marginBottom: '40px'
             }}>
@@ -737,10 +738,10 @@ function PhonicsLesson({ lesson }) {
                 {selectedLetters.join('').toUpperCase() || '_ _ _'}
               </div>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '20px', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '20px',
               flexWrap: 'wrap',
               marginBottom: '40px'
             }}>
@@ -894,10 +895,10 @@ function PhonicsLesson({ lesson }) {
             )}
           </div>
         )}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          gap: '30px', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '30px',
           flexWrap: 'wrap',
           marginBottom: '20px'
         }}>
@@ -941,9 +942,9 @@ function PhonicsLesson({ lesson }) {
 
   if (gameState === 'completed' && currentScore) {
     return (
-      <div style={{ 
-        width: '100%', 
-        height: '100%', 
+      <div style={{
+        width: '100%',
+        height: '100%',
         minHeight: '600px',
         backgroundColor: '#f0f8ff',
         display: 'flex',
@@ -1010,9 +1011,9 @@ function PhonicsLesson({ lesson }) {
   }
 
   return (
-    <div style={{ 
-      width: '100%', 
-      height: '100%', 
+    <div style={{
+      width: '100%',
+      height: '100%',
       minHeight: '600px',
       backgroundColor: '#f0f8ff',
       display: 'flex',

@@ -783,6 +783,50 @@ scene|seen|sene|sean
     new Lesson({
       id: lessonId++,
       yearId: 'year4',
+      subjectId: 'english',
+      lessonNumber: 7,
+      title: "Adjective Adventure",
+      emoji: '🌟',
+      assessmentType: 'parts-of-speech-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'english',
+      lessonNumber: 8,
+      title: "Spelling Safari",
+      emoji: '🦁',
+      assessmentType: 'spelling-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'english',
+      lessonNumber: 9,
+      title: "Prefix Power",
+      emoji: '🔌',
+      assessmentType: 'prefix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'english',
+      lessonNumber: 10,
+      title: "Suffix Superstars",
+      emoji: '🚀',
+      assessmentType: 'suffix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
       subjectId: 'history',
       lessonNumber: 1,
       title: "The Dark Ages - After Rome",
@@ -7476,7 +7520,205 @@ Italy's flag was officially adopted in 1946.
 Color these flags carefully, paying attention to the correct order of colors!`,
       quizId: null,
       categoryId: null,
-    })
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 14,
+      title: "Place Value to 10,000",
+      emoji: '🔢',
+      content: `# Place Value to 10,000 🔢
+
+Build and compare four-digit numbers.
+
+## How to Play
+
+Drag digits into the thousands, hundreds, tens, and ones columns.
+
+## Example
+
+6,402 = 6 thousands, 4 hundreds, 0 tens, 2 ones`,
+      quizId: quizId++,
+      assessmentType: 'place-value-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 15,
+      title: "Rounding Numbers",
+      emoji: '🎯',
+      content: `# Rounding Numbers 🎯
+
+Round numbers to the nearest 10, 100, or 1,000.
+
+## How to Play
+
+Drag the number to the closest target on the number line.`,
+      quizId: quizId++,
+      assessmentType: 'rounding-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 16,
+      title: "6, 7, 9, 11, and 12 Times Tables",
+      emoji: '✖️',
+      content: `# 6, 7, 9, 11, and 12 Times Tables ✖️
+
+Practise the trickier tables.
+
+## How to Play
+
+Tap the correct product to build each table.`,
+      quizId: quizId++,
+      assessmentType: 'times-table-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 17,
+      title: "Factors and Multiples",
+      emoji: '🧮',
+      content: `# Factors and Multiples 🧮
+
+Find factor pairs and multiples.
+
+## How to Play
+
+Match number cards to create factor pairs or multiples.`,
+      quizId: quizId++,
+      assessmentType: 'factors-multiples-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 18,
+      title: "Fractions and Decimals",
+      emoji: '📏',
+      content: `# Fractions and Decimals 📏
+
+Match tenths and hundredths to decimals.
+
+## How to Play
+
+Drag the decimal to the matching fraction bar.
+
+## Example
+
+0.3 = 3/10`,
+      quizId: quizId++,
+      assessmentType: 'decimal-match-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 19,
+      title: "Area and Perimeter",
+      emoji: '📐',
+      content: `# Area and Perimeter 📐
+
+Find the area and perimeter of rectangles.
+
+## How to Play
+
+Tile the shape to find area, then trace the edge for perimeter.`,
+      quizId: quizId++,
+      assessmentType: 'area-tiling-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 20,
+      title: "Time: 24-Hour Clock",
+      emoji: '🕒',
+      content: `# Time: 24-Hour Clock 🕒
+
+Convert times between 12-hour and 24-hour.
+
+## How to Play
+
+Drag the matching time to the correct clock.`,
+      quizId: quizId++,
+      assessmentType: 'time-conversion-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 21,
+      title: "Coordinates",
+      emoji: '📍',
+      content: `# Coordinates 📍
+
+Plot points on a grid.
+
+## How to Play
+
+Tap the grid square for each coordinate given.`,
+      quizId: quizId++,
+      assessmentType: 'coordinate-plot-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 22,
+      title: "Line Symmetry",
+      emoji: '🪞',
+      content: `# Line Symmetry 🪞
+
+Find and draw lines of symmetry.
+
+## How to Play
+
+Draw the mirror line so both sides match.`,
+      quizId: quizId++,
+      assessmentType: 'symmetry-mirror-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year4',
+      subjectId: 'maths',
+      lessonNumber: 23,
+      title: "Statistics: Line Graphs",
+      emoji: '📈',
+      content: `# Statistics: Line Graphs 📈
+
+Plot data on a line graph.
+
+## How to Play
+
+Drag points to the correct height and connect them.`,
+      quizId: quizId++,
+      assessmentType: 'line-graph-game',
+      categoryId: null,
+    }),
 
   ];
 }

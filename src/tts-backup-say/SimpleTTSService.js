@@ -1,29 +1,44 @@
 /**
- * TTS Service using Electron IPC with say.js (native OS TTS) - DISABLED (Backup)
+ * TTS Service using Electron IPC with say.js (native OS TTS)
  * High-quality speech using Windows SAPI or macOS speech engines
- * Using GoogleTTS instead - this is kept as backup
  */
 class SimpleTTSService {
   constructor() {
     this.initialized = false;
-    this.enabled = false; // Disabled - using GoogleTTS instead
+    this.enabled = true;
     this.rate = 1.0;
     this.volume = 1.0;
     this.lastText = '';
     this.speaking = false;
     this.listeners = new Set();
     
-    // Disabled
-    this.isElectron = false;
+    // Check if we're in Electron
+    this.isElectron = window.electron !== undefined;
+    
+    // Initialize
+    this.init();
   }
 
   async init() {
-    // Disabled
-    this.initialized = false;
+    if (this.initialized) return;
+    
+    try {
+      if (this.isElectron) {
+        // Test IPC connection
+        const result = await window.electron.invoke('tts-get-voices');
+        if (result.success) {
+          console.log('TTS initialized with native OS voices:', result.voices.length);
+        }
+      }
+      this.initialized = true;
+      this.notifyListeners();
+    } catch (error) {
+      console.error('TTS initialization failed:', error);
+    }
   }
 
   isSupported() {
-    return false; // Disabled - using GoogleTTS instead
+    return this.isElectron && this.initialized;
   }
 
   async speak(text) {

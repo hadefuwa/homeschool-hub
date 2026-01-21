@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { coloringGames } from '../data/coloringGames';
 import { speak } from '../utils/textToSpeech';
+import useDataStore from '../store/dataStore';
+import { Progress } from '../models/Progress';
 
 function ColoringGame({ lesson }) {
+    const navigate = useNavigate();
     const [gameData, setGameData] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [filledColors, setFilledColors] = useState({});
     const [feedback, setFeedback] = useState('');
     const [isComplete, setIsComplete] = useState(false);
     const [incorrectStreak, setIncorrectStreak] = useState(0);
+
+    const addProgress = useDataStore(state => state.addProgress);
+    const getNextProgressId = useDataStore(state => state.getNextProgressId);
+    const getUserId = useDataStore(state => state.getUserId);
+    const saveData = useDataStore(state => state.saveData);
+    const getNextLessonUrl = useDataStore(state => state.getNextLessonUrl);
 
     useEffect(() => {
         // Find the game data based on the lesson ID or some other identifier we pass via lesson
@@ -61,7 +71,29 @@ function ColoringGame({ lesson }) {
                 setIsComplete(true);
                 setFeedback('All done! Amazing work!');
                 speak('All done! Amazing work!');
-                // Could trigger parent callback for lesson completion here if passed
+
+                // Save progress
+                if (lesson) {
+                    const userId = getUserId();
+                    const progressId = getNextProgressId();
+                    const progress = new Progress({
+                        id: progressId,
+                        studentId: userId,
+                        activityType: 'Lesson',
+                        activityId: lesson.id,
+                        yearId: lesson.yearId,
+                        subjectId: lesson.subjectId,
+                        lessonNumber: lesson.lessonNumber,
+                        isCompleted: true,
+                        completedAt: new Date(),
+                        score: 100, // Perfect score for completing the coloring
+                    });
+                    addProgress(progress).then(() => {
+                        saveData();
+                    }).catch(err => {
+                        console.error('Error saving coloring progress:', err);
+                    });
+                }
             }
         } else {
             // Incorrect color
@@ -173,9 +205,9 @@ function ColoringGame({ lesson }) {
                 padding: '10px 20px',
                 borderRadius: '20px',
                 backgroundColor: feedback.includes('Correct') || feedback.includes('All done') || feedback.includes('Amazing work') ? '#d4edda' :
-                                 feedback.includes('Oops') || feedback.includes('3 mistakes') ? '#f8d7da' : 'transparent',
+                    feedback.includes('Oops') || feedback.includes('3 mistakes') ? '#f8d7da' : 'transparent',
                 color: feedback.includes('Correct') || feedback.includes('All done') || feedback.includes('Amazing work') ? '#155724' :
-                       feedback.includes('Oops') || feedback.includes('3 mistakes') ? '#721c24' : 'black',
+                    feedback.includes('Oops') || feedback.includes('3 mistakes') ? '#721c24' : 'black',
                 fontWeight: 'bold',
                 fontSize: '18px',
                 textAlign: 'center',
@@ -187,15 +219,65 @@ function ColoringGame({ lesson }) {
             </div>
 
             {isComplete && (
-                <div style={{ marginTop: '20px', fontSize: '40px', animation: 'bounce 1s infinite' }}>
-                    🎉 ⭐ 🎨
+                <div style={{
+                    marginTop: '30px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '20px',
+                    animation: 'fadeIn 0.5s ease'
+                }}>
+                    <div style={{ fontSize: '100px', animation: 'bounce 1s infinite' }}>🎉</div>
+                    <h2 style={{ fontSize: '32px', color: '#28a745' }}>Platinum Medal! 🏆</h2>
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <button
+                            onClick={() => navigate('/lessons')}
+                            style={{
+                                padding: '15px 30px',
+                                fontSize: '18px',
+                                fontWeight: '700',
+                                backgroundColor: 'white',
+                                color: '#333',
+                                border: '2px solid #ddd',
+                                borderRadius: '15px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Back to Lessons
+                        </button>
+                        <button
+                            onClick={() => {
+                                const { url } = getNextLessonUrl(lesson);
+                                navigate(url);
+                            }}
+                            style={{
+                                padding: '15px 40px',
+                                fontSize: '20px',
+                                fontWeight: '700',
+                                backgroundColor: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '15px',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 12px rgba(40, 167, 69, 0.3)',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            Next Lesson →
+                        </button>
+                    </div>
                 </div>
             )}
 
             <style>{`
         @keyframes bounce {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-15px); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
         </div>

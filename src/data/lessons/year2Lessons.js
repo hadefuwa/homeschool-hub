@@ -4372,33 +4372,7 @@ This creates a diamond shape by connecting 4 points!
       lessonNumber: 18,
       title: "TapTapTap: Intermediate Level 1",
       emoji: '👆',
-      content: `# TapTapTap: Intermediate Level 1 👆
-
-Ready for a bit more challenge? This level is faster than the beginner levels!
-
-## How to Play
-
-- Tap the targets as they appear on screen
-- Targets appear every 1.5 seconds (faster than beginner!)
-- Targets are slightly smaller
-- You have 30 seconds to score points!
-
-## Scoring System
-
-- **Bronze**: 10-19 points
-- **Silver**: 20-29 points
-- **Gold**: 30-39 points
-- **Platinum**: 40+ points
-
-You need at least **Bronze** (10 points) to progress!
-
-## Tips
-
-- Focus on accuracy - smaller targets need precise taps
-- Keep your hand steady
-- Practice makes perfect!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'taptaptap-game',
       categoryId: null,
     }),
 
@@ -4409,30 +4383,7 @@ You need at least **Bronze** (10 points) to progress!
       lessonNumber: 19,
       title: "TapTapTap: Intermediate Level 2",
       emoji: '👆',
-      content: `# TapTapTap: Intermediate Level 2 👆
-
-Continue improving your reaction time and accuracy!
-
-## How to Play
-
-- Tap targets as they appear
-- Same speed as Level 1 - keep practicing!
-- 30 seconds to score as many points as you can
-
-## Scoring System
-
-- **Bronze**: 10-19 points
-- **Silver**: 20-29 points
-- **Gold**: 30-39 points
-- **Platinum**: 40+ points
-
-You need at least **Bronze** (10 points) to progress!
-
-## Challenge
-
-Can you improve your score from Level 1? Try to get a higher medal!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'taptaptap-game',
       categoryId: null,
     }),
 
@@ -4443,27 +4394,7 @@ Can you improve your score from Level 1? Try to get a higher medal!`,
       lessonNumber: 20,
       title: "Flappy Bird Game",
       emoji: '🐦',
-      content: `# Flappy Bird Game 🐦
-
-Master your skills!
-
-## How to Play
-
-- Press **SPACE** to make the bird jump
-- Navigate through the pipes
-- The pipes are faster and the gaps are smaller!
-- Stay focused!
-
-## Scoring System
-
-- **Bronze**: 1-5 points
-- **Silver**: 6-11 points
-- **Gold**: 12-19 points
-- **Platinum**: 20+ points
-
-You need at least **Bronze** (1 point) to progress!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'flappy-bird-game',
       categoryId: null,
     }),
 
@@ -4983,6 +4914,50 @@ Express your imagination through writing! Let's learn how to write creatively.
 Write a short story about an adventure!`,
       quizId: quizId++,
       assessmentType: 'creative-writing-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year2',
+      subjectId: 'english',
+      lessonNumber: 11,
+      title: "Adjective Adventure",
+      emoji: '🌟',
+      assessmentType: 'parts-of-speech-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year2',
+      subjectId: 'english',
+      lessonNumber: 12,
+      title: "Spelling Safari",
+      emoji: '🦁',
+      assessmentType: 'spelling-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year2',
+      subjectId: 'english',
+      lessonNumber: 13,
+      title: "Prefix Power",
+      emoji: '🔌',
+      assessmentType: 'prefix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year2',
+      subjectId: 'english',
+      lessonNumber: 14,
+      title: "Suffix Superstars",
+      emoji: '🚀',
+      assessmentType: 'suffix-game',
       categoryId: null,
     })
 

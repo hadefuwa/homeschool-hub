@@ -10,6 +10,7 @@ export class Lesson {
     emoji = '📚',
     quizId = null,
     assessmentType = null,
+    ttsDisabled = false,
   }) {
     this.id = id;
     this.yearId = yearId;
@@ -21,6 +22,7 @@ export class Lesson {
     this.emoji = emoji;
     this.quizId = quizId;
     this.assessmentType = assessmentType;
+    this.ttsDisabled = ttsDisabled;
   }
 
   toJSON() {
@@ -35,6 +37,7 @@ export class Lesson {
       emoji: this.emoji,
       quizId: this.quizId,
       assessmentType: this.assessmentType,
+      ttsDisabled: this.ttsDisabled,
     };
   }
 
@@ -50,6 +53,7 @@ export class Lesson {
       emoji: json.emoji ?? '📚',
       quizId: json.quizId ?? null,
       assessmentType: json.assessmentType ?? null,
+      ttsDisabled: json.ttsDisabled ?? false,
     });
   }
 }

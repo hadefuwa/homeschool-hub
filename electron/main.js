@@ -438,8 +438,8 @@ ipcMain.handle('open-external', async (event, url) => {
 // TTS state management using say.js (native OS TTS)
 let currentTTSProcess = null;
 
-// IPC handlers for TTS using say.js
-ipcMain.handle('tts-speak', async (event, { text }) => {
+// IPC handlers for TTS using say.js (native OS TTS - Windows SAPI)
+ipcMain.handle('tts-speak', async (event, { text, voice }) => {
   try {
     // Stop any current speech
     if (currentTTSProcess) {
@@ -451,9 +451,42 @@ ipcMain.handle('tts-speak', async (event, { text }) => {
       return { success: false, error: 'Invalid text provided' };
     }
 
-    // Use native OS TTS (Windows SAPI, macOS say, etc.)
+    // Try multiple voice names - prefer female voices
+    const voicePriority = [
+      'Microsoft Susan - English (United Kingdom)',
+      'Microsoft Hazel - English (United Kingdom)',
+      'Microsoft Zira Desktop - English (United States)',
+      'Microsoft Zira Desktop',
+      'Microsoft Emma - English (United States)',
+      'Microsoft Emma',
+      'Microsoft Aria Online - English (United States)',
+      'Microsoft Aria',
+      'Microsoft David Desktop',
+      'Microsoft George - English (United Kingdom)'
+    ];
+    
+    let selectedVoice = voice;
+    if (!selectedVoice) {
+      // Try each voice in priority order
+      const availableVoices = say.getInstalledVoices();
+      console.log('Available voices:', availableVoices);
+      
+      for (const tryVoice of voicePriority) {
+        if (availableVoices && availableVoices.includes(tryVoice)) {
+          selectedVoice = tryVoice;
+          console.log('Selected voice:', selectedVoice);
+          break;
+        }
+      }
+      
+      if (!selectedVoice) {
+        selectedVoice = availableVoices && availableVoices[0];
+        console.log('Using first available voice:', selectedVoice);
+      }
+    }
+    
     return new Promise((resolve) => {
-      say.speak(text, null, 1.0, (err) => {
+      say.speak(text, selectedVoice, 1.0, (err) => {
         currentTTSProcess = null;
         if (err) {
           console.error('TTS error:', err);
@@ -484,8 +517,8 @@ ipcMain.handle('tts-stop', async () => {
 ipcMain.handle('tts-get-voices', async () => {
   try {
     // Get available voices from the OS
-    const voices = say.getInstalledVoices();
-    return { success: true, voices: voices || [] };
+    const voices = say.getInstalledVoices() || [];
+    return { success: true, voices };
   } catch (error) {
     console.error('Error getting voices:', error);
     return { success: false, error: error.message, voices: [] };

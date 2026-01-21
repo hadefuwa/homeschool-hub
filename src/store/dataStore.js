@@ -1038,7 +1038,7 @@ const useDataStore = create((set, get) => ({
         else if (score >= 100) medal = 'Gold';
         else if (score >= 80) medal = 'Silver';
       }
-    } else if (lesson.title === 'Flappy Bird Game') {
+    } else if (lesson.assessmentType === 'flappy-bird-game') {
       const difficultyMap = {
         'nursery': 5,
         'reception': 10,
@@ -1050,19 +1050,19 @@ const useDataStore = create((set, get) => ({
       if (score >= platinumTarget) medal = 'Platinum';
       else if (score >= Math.ceil(platinumTarget * 0.6)) medal = 'Gold';
       else if (score >= Math.ceil(platinumTarget * 0.3)) medal = 'Silver';
-    } else if (lesson.title === 'Bubble Pop Game') {
+    } else if (lesson.assessmentType === 'bubble-pop-game') {
       if (score >= 200) medal = 'Platinum';
       else if (score >= 150) medal = 'Gold';
       else if (score >= 100) medal = 'Silver';
-    } else if (lesson.title === 'Snake Game') {
+    } else if (lesson.assessmentType === 'snake-game') {
       if (score >= 100) medal = 'Platinum';
       else if (score >= 70) medal = 'Gold';
       else if (score >= 40) medal = 'Silver';
-    } else if (lesson.title === 'Target Practice Game') {
+    } else if (lesson.assessmentType === 'target-practice-game') {
       if (score >= 150) medal = 'Platinum';
       else if (score >= 100) medal = 'Gold';
       else if (score >= 50) medal = 'Silver';
-    } else if (lesson.title?.includes('TapTapTap')) {
+    } else if (lesson.assessmentType === 'taptaptap-game' || lesson.title?.includes('TapTapTap')) {
       let level = 1;
       if (lesson.title.includes('Level 6')) level = 6;
       else if (lesson.title.includes('Level 5')) level = 5;
@@ -1096,14 +1096,40 @@ const useDataStore = create((set, get) => ({
       if (score >= threshold.platinum) medal = 'Platinum';
       else if (score >= threshold.gold) medal = 'Gold';
       else if (score >= threshold.silver) medal = 'Silver';
+    } else if (lesson.assessmentType === 'clicking-game') {
+      const isHardMode = lesson.yearId === 'reception' && lesson.lessonNumber === 2;
+      const thresholds = isHardMode 
+        ? { platinum: 350, gold: 250, silver: 150 }
+        : { platinum: 300, gold: 200, silver: 100 };
+      
+      if (score >= thresholds.platinum) medal = 'Platinum';
+      else if (score >= thresholds.gold) medal = 'Gold';
+      else if (score >= thresholds.silver) medal = 'Silver';
+    } else if (lesson.assessmentType === 'a-z-game') {
+      if (score >= 250) medal = 'Platinum'; // High accuracy implied if score is 250+ out of 260
+      else if (score >= 200) medal = 'Gold';
+      else if (score >= 100) medal = 'Silver';
+    } else if (lesson.assessmentType === 'numbers-game' || lesson.assessmentType === 'symbols-game') {
+      if (score >= 90) medal = 'Platinum';
+      else if (score >= 80) medal = 'Gold';
+      else if (score >= 60) medal = 'Silver';
+    } else if (lesson.assessmentType === 'keyboard-game' || lesson.assessmentType === 'wasd-game') {
+      if (score >= 140) medal = 'Platinum';
+      else if (score >= 120) medal = 'Gold';
+      else if (score >= 80) medal = 'Silver';
+    } else if (lesson.assessmentType === 'coloring-game') {
+      if (score >= 100) medal = 'Platinum';
+      else if (score >= 90) medal = 'Gold';
+      else if (score >= 75) medal = 'Silver';
+      else if (score >= 50) medal = 'Bronze';
     } else if (lesson.subjectId === 'art') {
       if (score >= 100) medal = 'Platinum';
       else if (score >= 90) medal = 'Gold';
       else if (score >= 75) medal = 'Silver';
       else if (score >= 60) medal = 'Bronze';
     } else {
-      // Default score-based thresholds for all other lessons (including English/Phonics)
-      if (score >= 95) medal = 'Platinum';
+      // Default score-based thresholds for all other lessons (including English/Phonics/Math/History)
+      if (score >= 98 || score === 100) medal = 'Platinum';
       else if (score >= 85) medal = 'Gold';
       else if (score >= 70) medal = 'Silver';
       else medal = 'Bronze';

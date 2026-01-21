@@ -74,6 +74,317 @@ Tap the numbers to hear them! Then play the game! 🎮
     new Lesson({
       id: lessonId++,
       yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 2,
+      title: "Counting to 20",
+      emoji: '🔢',
+      content: `# Counting to 20 🔢
+
+Let's count all the way to 20!
+
+## How to Play
+
+Tap the numbers in order and listen to them.
+
+## Try It
+
+Count objects as you tap: 1, 2, 3 ... 20!`,
+      quizId: quizId++,
+      assessmentType: 'tap-to-count-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 3,
+      title: "Number Bonds to 5",
+      emoji: '🧩',
+      content: `# Number Bonds to 5 🧩
+
+Let's make totals of 5.
+
+## How to Play
+
+Drag counters into two groups to make 5.
+
+## Examples
+
+- 2 and 3 make 5
+- 4 and 1 make 5`,
+      quizId: quizId++,
+      assessmentType: 'number-bonds-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 4,
+      title: "Number Bonds to 10",
+      emoji: '🧩',
+      content: `# Number Bonds to 10 🧩
+
+Let's make totals of 10.
+
+## How to Play
+
+Drag counters into two groups to make 10.
+
+## Examples
+
+- 6 and 4 make 10
+- 7 and 3 make 10`,
+      quizId: quizId++,
+      assessmentType: 'number-bonds-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 5,
+      title: "Compare Quantities",
+      emoji: '⚖️',
+      content: `# Compare Quantities ⚖️
+
+Let's find which group has more or fewer.
+
+## How to Play
+
+Drag the sign to show which group is greater.
+
+## Words to Know
+
+- More
+- Fewer
+- Equal`,
+      quizId: quizId++,
+      assessmentType: 'compare-quantities-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 6,
+      title: "2D Shapes Sorting",
+      emoji: '🔷',
+      content: `# 2D Shapes Sorting 🔷
+
+Sort shapes by their names.
+
+## How to Play
+
+Drag each shape into the correct box.
+
+## Shapes
+
+- Circle
+- Triangle
+- Square
+- Rectangle`,
+      quizId: quizId++,
+      assessmentType: 'shape-sorting-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 7,
+      title: "3D Shapes Matching",
+      emoji: '🧊',
+      content: `# 3D Shapes Matching 🧊
+
+Match the 3D shapes to their names.
+
+## How to Play
+
+Tap the correct name for each shape.
+
+## Shapes
+
+- Cube
+- Sphere
+- Cylinder
+- Cone`,
+      quizId: quizId++,
+      assessmentType: 'shape-matching-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 8,
+      title: "Patterns and Sequences",
+      emoji: '🟡',
+      content: `# Patterns and Sequences 🟡
+
+Build repeating patterns.
+
+## How to Play
+
+Drag the next shape or colour to continue the pattern.
+
+## Example
+
+Red, blue, red, blue, ...`,
+      quizId: quizId++,
+      assessmentType: 'pattern-builder-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 9,
+      title: "Position and Direction",
+      emoji: '🧭',
+      content: `# Position and Direction 🧭
+
+Learn words like left, right, and behind.
+
+## How to Play
+
+Move the character to follow the directions.
+
+## Words to Know
+
+- Left / Right
+- Above / Below
+- In front / Behind`,
+      quizId: quizId++,
+      assessmentType: 'position-direction-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 10,
+      title: "Length and Height",
+      emoji: '📏',
+      content: `# Length and Height 📏
+
+Compare objects by length and height.
+
+## How to Play
+
+Drag objects into order from shortest to tallest.
+
+## Words to Know
+
+- Shorter / Taller
+- Longer / Shorter`,
+      quizId: quizId++,
+      assessmentType: 'measurement-compare-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 11,
+      title: "Capacity: Full and Empty",
+      emoji: '🥤',
+      content: `# Capacity: Full and Empty 🥤
+
+Learn about full, empty, and half full.
+
+## How to Play
+
+Fill containers to match the picture.
+
+## Words to Know
+
+- Full
+- Half full
+- Empty`,
+      quizId: quizId++,
+      assessmentType: 'capacity-fill-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 12,
+      title: "Time: Daily Routine",
+      emoji: '🕒',
+      content: `# Time: Daily Routine 🕒
+
+Put the day in order.
+
+## How to Play
+
+Drag the pictures into morning, afternoon, and night.
+
+## Examples
+
+- Breakfast is in the morning.
+- Bedtime is at night.`,
+      quizId: quizId++,
+      assessmentType: 'time-sequence-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 13,
+      title: "Money: Coins to 10p",
+      emoji: '🪙',
+      content: `# Money: Coins to 10p 🪙
+
+Learn the value of small coins.
+
+## How to Play
+
+Match the coin to its value.
+
+## Coins
+
+- 1p, 2p, 5p, 10p`,
+      quizId: quizId++,
+      assessmentType: 'coin-match-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 14,
+      title: "Data: Sorting and Pictograms",
+      emoji: '📊',
+      content: `# Data: Sorting and Pictograms 📊
+
+Sort objects and make a simple pictogram.
+
+## How to Play
+
+Drag each item into a category to build the chart.`,
+      quizId: quizId++,
+      assessmentType: 'graph-builder-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
       subjectId: 'english',
       lessonNumber: 1,
       title: "Letter A",
@@ -1061,7 +1372,7 @@ Learn to use the keyboard with this fun game!
 
 You need at least **Bronze** (1 point) to progress to the next lesson!`,
       quizId: null,
-      assessmentType: null,
+      assessmentType: 'flappy-bird-game',
       categoryId: null,
     }),
 
@@ -1072,26 +1383,7 @@ You need at least **Bronze** (1 point) to progress to the next lesson!`,
       lessonNumber: 8,
       title: "Bubble Pop Game",
       emoji: '🫧',
-      content: `# Bubble Pop Game 🫧
-
-Practice your mouse clicking skills!
-
-## How to Play
-
-- **Click** on the colorful bubbles to pop them
-- You have 30 seconds to pop as many as you can
-- Each bubble is worth 10 points
-
-## Scoring System
-
-- **Bronze**: 10-99 points
-- **Silver**: 100-149 points
-- **Gold**: 150-199 points
-- **Platinum**: 200+ points
-
-You need at least **Bronze** (10 points) to progress to the next lesson!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'bubble-pop-game',
       categoryId: null,
     }),
 
@@ -1102,26 +1394,7 @@ You need at least **Bronze** (10 points) to progress to the next lesson!`,
       lessonNumber: 9,
       title: "Snake Game",
       emoji: '🐍',
-      content: `# Snake Game 🐍
-
-Learn to use arrow keys with this classic game!
-
-## How to Play
-
-- Use **Arrow Keys** (↑ ↓ ← →) to move the snake
-- Eat the red food to grow and score points
-- Avoid hitting the walls or yourself!
-
-## Scoring System
-
-- **Bronze**: 10-39 points
-- **Silver**: 40-69 points
-- **Gold**: 70-99 points
-- **Platinum**: 100+ points
-
-You need at least **Bronze** (10 points) to progress to the next lesson!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'snake-game',
       categoryId: null,
     }),
 
@@ -1132,26 +1405,7 @@ You need at least **Bronze** (10 points) to progress to the next lesson!`,
       lessonNumber: 10,
       title: "Target Practice Game",
       emoji: '🎯',
-      content: `# Target Practice Game 🎯
-
-Improve your mouse precision and accuracy!
-
-## How to Play
-
-- **Click** on the targets that appear on screen
-- Smaller targets are worth more points!
-- You have 30 seconds to score as many points as possible
-
-## Scoring System
-
-- **Bronze**: 10-49 points
-- **Silver**: 50-99 points
-- **Gold**: 100-149 points
-- **Platinum**: 150+ points
-
-You need at least **Bronze** (10 points) to progress to the next lesson!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'target-practice-game',
       categoryId: null,
     }),
 

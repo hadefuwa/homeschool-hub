@@ -1,6 +1,6 @@
 {
   "name": "homeschool-hub",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "A cross-platform homeschool learning management application",
   "main": "electron/main.js",
   "type": "module",
@@ -26,11 +26,13 @@
     "@dicebear/core": "^9.3.0",
     "@monaco-editor/react": "^4.7.0",
     "electron-updater": "^6.1.7",
+    "google-tts-api": "^2.0.2",
     "phaser": "^3.90.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.20.0",
+    "responsivevoice": "^0.4.1",
     "say": "^0.16.0",
     "uuid": "^13.0.0",
     "zustand": "^4.4.7"

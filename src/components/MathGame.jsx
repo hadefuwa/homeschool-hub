@@ -88,7 +88,7 @@ const LESSON_CONFIGS = {
   40: { type: 'place-value-1000000', title: 'Place Value to 1,000,000', maxNumber: 999999 },
   // Year 6 - Negative Numbers
   41: { type: 'negative-numbers', title: 'Negative Numbers', maxAbsValue: 10 },
-  43: { type: 'counting-to-100', title: 'Counting to 100', numbers: Array.from({length: 100}, (_, i) => i + 1) },
+  43: { type: 'counting-to-100', title: 'Counting to 100', numbers: Array.from({ length: 100 }, (_, i) => i + 1) },
   44: { type: 'advanced-addition', title: 'Advanced Addition', maxSum: 100 },
   45: { type: 'advanced-subtraction', title: 'Advanced Subtraction', maxDifference: 100 },
   46: { type: 'telling-time', title: 'Telling Time' },
@@ -98,10 +98,27 @@ const LESSON_CONFIGS = {
   50: { type: 'measurement-temperature', title: 'Measurement: Temperature' },
   51: { type: 'patterns-what-comes-next', title: 'Patterns: What Comes Next?' },
   52: { type: 'roman-numerals', title: 'Roman Numerals' },
+  53: { type: 'number-bonds', title: 'Number Bonds to 5', maxSum: 5 },
+  54: { type: 'number-bonds', title: 'Number Bonds to 10', maxSum: 10 },
+  55: { type: 'compare-quantities', title: 'Compare Quantities', maxNumber: 20 },
+  56: { type: 'skip-counting', title: 'Skip Counting', steps: [2, 5, 10], maxNumber: 100 },
+  57: { type: 'measurement-compare', title: 'Length and Mass', maxNumber: 50 },
+  58: { type: 'position-direction', title: 'Position and Direction' },
+  59: { type: 'time-sequence', title: 'Time Sequence' },
+  60: { type: 'rounding', title: 'Rounding Numbers', maxNumber: 999 },
+  61: { type: 'factors-multiples', title: 'Factors and Multiples', maxNumber: 60 },
+  62: { type: 'decimals-3dp', title: 'Decimals to 3 Decimal Places' },
+  63: { type: 'fraction-add', title: 'Adding and Subtracting Fractions' },
+  64: { type: 'prime-square', title: 'Prime and Square Numbers', maxNumber: 60 },
+  65: { type: 'percentage-change', title: 'Percentage Change' },
+  66: { type: 'add-sub-3digit', title: 'Add and Subtract 3-Digit Numbers' },
+  67: { type: 'multiplication', tables: [3, 4, 8], maxProduct: 96, title: 'Times Tables 3, 4, 8' },
+  68: { type: 'multiplication', tables: [6, 7, 9, 11, 12], maxProduct: 144, title: 'Times Tables 6, 7, 9, 11, 12' },
 };
 
 // Scoring tiers
 const SCORE_TIERS = {
+  PLATINUM: { name: 'Platinum', color: '#E5E4E2', tries: 1 },
   GOLD: { name: 'Gold', color: '#FFD700', tries: 1 },
   SILVER: { name: 'Silver', color: '#C0C0C0', tries: 2 },
   BRONZE: { name: 'Bronze', color: '#CD7F32', tries: 3 },
@@ -122,31 +139,31 @@ const renderPieChart = (fraction, size = 100) => {
   const radius = size / 2 - 8;
   const center = size / 2;
   const strokeWidth = 2;
-  
+
   // Create paths for each slice
   const slices = [];
   const sliceAngle = (2 * Math.PI) / denominator;
-  
+
   for (let i = 0; i < denominator; i++) {
     const startAngle = i * sliceAngle - Math.PI / 2; // Start from top
     const endAngle = (i + 1) * sliceAngle - Math.PI / 2;
-    
+
     const x1 = center + radius * Math.cos(startAngle);
     const y1 = center + radius * Math.sin(startAngle);
     const x2 = center + radius * Math.cos(endAngle);
     const y2 = center + radius * Math.sin(endAngle);
-    
+
     const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
-    
+
     const pathData = [
       `M ${center} ${center}`,
       `L ${x1} ${y1}`,
       `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
       'Z'
     ].join(' ');
-    
+
     const isFilled = i < numerator;
-    
+
     slices.push(
       <path
         key={i}
@@ -157,7 +174,7 @@ const renderPieChart = (fraction, size = 100) => {
       />
     );
   }
-  
+
   return (
     <svg width={size} height={size} style={{ display: 'block' }}>
       {slices}
@@ -210,6 +227,45 @@ function MathGame({ lesson }) {
 
     const title = lesson.title.toLowerCase();
     const yearId = lesson.yearId;
+    const assessmentType = lesson.assessmentType;
+
+    if (assessmentType === 'number-bonds-game') {
+      return title.includes('10') ? 54 : 53;
+    }
+    if (assessmentType === 'compare-quantities-game') return 55;
+    if (assessmentType === 'skip-counting-game') return 56;
+    if (assessmentType === 'measurement-compare-game') return 57;
+    if (assessmentType === 'position-direction-game') return 58;
+    if (assessmentType === 'time-sequence-game') return 59;
+    if (assessmentType === 'rounding-game') return 60;
+    if (assessmentType === 'factors-multiples-game') return 61;
+    if (assessmentType === 'decimal-place-game') return 62;
+    if (assessmentType === 'fraction-add-game') return 63;
+    if (assessmentType === 'prime-sort-game') return 64;
+    if (assessmentType === 'percentage-change-game') return 65;
+    if (assessmentType === 'column-method-game') return 66;
+    if (assessmentType === 'times-table-game') {
+      if (title.includes('3, 4, and 8')) return 67;
+      if (title.includes('6, 7, 9, 11, and 12')) return 68;
+      return 17;
+    }
+    if (assessmentType === 'division-sharing-game') return 18;
+    if (assessmentType === 'fraction-match-game' || assessmentType === 'fraction-line-game') return 19;
+    if (assessmentType === 'decimal-match-game') return 21;
+    if (assessmentType === 'unit-conversion-game') return 22;
+    if (assessmentType === 'algebra-balance-game') return 23;
+    if (assessmentType === 'percentage-shade-game') return 26;
+    if (assessmentType === 'symmetry-mirror-game') return 27;
+    if (assessmentType === 'volume-fill-game') return 28;
+    if (assessmentType === 'stats-averages-game') return 29;
+    if (assessmentType === 'ratio-mix-game' || assessmentType === 'proportion-scale-game') return 30;
+    if (assessmentType === 'fdp-tri-match-game') return 31;
+    if (assessmentType === 'perimeter-trace-game') return 36;
+    if (assessmentType === 'area-tiling-game') return 39;
+    if (assessmentType === 'area-cut-fit-game') return 39;
+    if (assessmentType === 'scale-grid-game') return 30;
+    if (assessmentType === 'nets-fold-game') return 49;
+    if (assessmentType === 'volume-cuboid-game') return 28;
 
     // Early years lessons (nursery, reception, year1, year2)
     if (title.includes('number 1') && !title.includes('numbers 1-5')) return 1;
@@ -233,7 +289,7 @@ function MathGame({ lesson }) {
     if (title.includes('place value to 100') && yearId === 'year2') return 32;
     if (title.includes('addition to 20') && yearId === 'year2') return 33;
     if (title.includes('subtraction to 20') && yearId === 'year2') return 34;
-    
+
     // Year 3+ lessons - check by year and title
     if (title.includes('multiplication tables') || title.includes('multiplication')) return 17;
     if (title.includes('division basics') || title.includes('division')) return 18;
@@ -245,23 +301,23 @@ function MathGame({ lesson }) {
     if (title.includes('algebra introduction') || (title.includes('algebra') && yearId === 'year6')) return 23;
     if (title.includes('statistics and data') || title.includes('statistics')) return 24;
     if (title.includes('advanced problem solving') || title.includes('problem solving')) return 25;
-    
+
     // Year 3 lessons
     if (title.includes('place value to 1000') && yearId === 'year3') return 35;
     if (title.includes('perimeter') && yearId === 'year3') return 36;
     if (title.includes('mass and capacity') && yearId === 'year3') return 37;
-    
+
     // Year 4 lessons
     if (title.includes('place value to 10,000') || title.includes('place value to 10000')) return 38;
     if (title.includes('area by counting squares') && yearId === 'year4') return 39;
-    
+
     // Year 5 lessons
     if (title.includes('place value to 1,000,000') || title.includes('place value to 1000000')) return 40;
     if (title.includes('percentages') && yearId === 'year5') return 26;
     if (title.includes('symmetry') && yearId === 'year5') return 27;
     if (title.includes('volume') && yearId === 'year5') return 28;
     if (title.includes('mean, median, mode') || title.includes('mean median mode')) return 29;
-    
+
     // Year 6 lessons
     if (title.includes('negative numbers')) return 41;
     if (title.includes('ratio and proportion') || title.includes('ratio')) return 30;
@@ -278,6 +334,21 @@ function MathGame({ lesson }) {
     if (title.includes('measurement: temperature')) return 50;
     if (title.includes('patterns: what comes next?')) return 51;
     if (title.includes('roman numerals')) return 52;
+    if (title.includes('number bonds')) return title.includes('10') ? 54 : 53;
+    if (title.includes('compare quantities')) return 55;
+    if (title.includes('count in 2s') || title.includes('skip counting')) return 56;
+    if (title.includes('length and height') || title.includes('length and mass')) return 57;
+    if (title.includes('position and direction')) return 58;
+    if (title.includes('daily routine')) return 59;
+    if (title.includes('rounding')) return 60;
+    if (title.includes('factors and multiples')) return 61;
+    if (title.includes('decimals to 3')) return 62;
+    if (title.includes('adding and subtracting fractions')) return 63;
+    if (title.includes('prime and square')) return 64;
+    if (title.includes('percentage change')) return 65;
+    if (title.includes('add and subtract 3-digit')) return 66;
+    if (title.includes('3, 4, and 8 times tables')) return 67;
+    if (title.includes('6, 7, 9, 11, and 12 times tables')) return 68;
 
     // If no match found, log warning and use a safe default
     console.warn(`MathGame: No config found for lesson "${lesson.title}" (Year: ${yearId}, Lesson #: ${lesson.lessonNumber}). Using default config.`);
@@ -286,10 +357,11 @@ function MathGame({ lesson }) {
 
   const mathLessonNumber = getMathLessonNumber();
   const config = LESSON_CONFIGS[mathLessonNumber] || LESSON_CONFIGS[1];
-  
+  const isTtsDisabled = Boolean(lesson?.ttsDisabled) || config?.type === 'roman-numerals';
+
   // Memoize mathLessonNumber to prevent unnecessary re-renders
   const stableMathLessonNumber = React.useMemo(() => mathLessonNumber, [lesson?.id, lesson?.title, lesson?.yearId]);
-  
+
   // Safety check - if config is invalid, use default
   if (!config || !config.type) {
     console.error('Invalid config for math lesson:', mathLessonNumber, 'Using default');
@@ -350,10 +422,10 @@ function MathGame({ lesson }) {
   // Use ref to prevent re-initialization if user is working on the problem
   useEffect(() => {
     // Only initialize if we haven't already initialized for this lesson
-    if (initializedLessonIdRef.current !== lesson?.id && 
-        gameState === 'validation' && 
-        config && 
-        config.type) {
+    if (initializedLessonIdRef.current !== lesson?.id &&
+      gameState === 'validation' &&
+      config &&
+      config.type) {
       console.log('Component mounted, generating initial validation for lesson:', lesson?.id);
       try {
         // Set initialized flag BEFORE calling generateValidation to prevent multiple calls
@@ -371,6 +443,8 @@ function MathGame({ lesson }) {
   }, [lesson?.id, gameState, stableMathLessonNumber, config?.type]);
 
   const handleNumberClick = async (number) => {
+    if (isTtsDisabled) return;
+
     try {
       // Stop any current speech first
       stop();
@@ -403,16 +477,16 @@ function MathGame({ lesson }) {
     console.log('=== handleContinue START ===');
     console.log('Current gameState:', gameState);
     console.log('Config:', config);
-    
+
     // Generate validation question
     generateValidation();
-    
+
     // Change to validation state
     console.log('Setting gameState to validation');
     setGameState('validation');
     setValidationAttempts(0);
     setActivityObjectCount(null);
-    
+
     console.log('=== handleContinue END ===');
   };
 
@@ -422,18 +496,18 @@ function MathGame({ lesson }) {
       console.log('generateValidation already in progress, skipping...');
       return;
     }
-    
+
     isGeneratingValidationRef.current = true;
-    
+
     // Clear any pending speak timeout
     if (speakTimeoutRef.current) {
       clearTimeout(speakTimeoutRef.current);
       speakTimeoutRef.current = null;
     }
-    
+
     // Stop any current speech immediately
     stop();
-    
+
     // Generate a random question based on the lesson type
     let answer;
     let questionText = '';
@@ -486,7 +560,7 @@ function MathGame({ lesson }) {
     } else if (config.type === 'counting-to-10') {
       // Random question types for counting to 10
       const questionType = Math.floor(Math.random() * 3);
-      
+
       if (questionType === 0) {
         // "What number comes after X?"
         const baseNumber = Math.floor(Math.random() * 9) + 1; // 1-9
@@ -507,7 +581,7 @@ function MathGame({ lesson }) {
     } else if (config.type === 'counting-to-20') {
       // Random question types for counting to 20
       const questionType = Math.floor(Math.random() * 3);
-      
+
       if (questionType === 0) {
         // "What number comes after X?"
         const baseNumber = Math.floor(Math.random() * 19) + 1; // 1-19
@@ -683,7 +757,7 @@ function MathGame({ lesson }) {
     } else if (config.type === 'fractions-decimals-percentages') {
       // Year 6: Converting Fractions/Decimals/Percentages
       const questionType = Math.floor(Math.random() * 6);
-      
+
       if (questionType === 0) {
         // Convert fraction to decimal
         const fraction = config.fractions[Math.floor(Math.random() * config.fractions.length)];
@@ -869,7 +943,7 @@ function MathGame({ lesson }) {
     } else if (config.type === 'percentages') {
       // Year 5: Percentages
       const questionType = Math.floor(Math.random() * 3);
-      
+
       if (questionType === 0) {
         // Convert fraction to percentage
         const fraction = config.fractions[Math.floor(Math.random() * config.fractions.length)];
@@ -926,9 +1000,9 @@ function MathGame({ lesson }) {
         pentagon: { lines: 5, name: 'pentagon' },
         hexagon: { lines: 6, name: 'hexagon' },
       };
-      
+
       const questionType = Math.floor(Math.random() * 2);
-      
+
       if (questionType === 0) {
         // "How many lines of symmetry does a [shape] have?"
         const shapeKeys = Object.keys(shapes);
@@ -936,7 +1010,7 @@ function MathGame({ lesson }) {
         const shape = shapes[shapeKey];
         answer = shape.lines;
         questionText = `How many lines of symmetry does a ${shape.name} have?`;
-        
+
         if (shape.lines === 'many') {
           // For circle, use "many" as answer
           answer = 'many';
@@ -971,7 +1045,7 @@ function MathGame({ lesson }) {
     } else if (config.type === 'volume') {
       // Year 5: Volume
       const questionType = Math.floor(Math.random() * 2);
-      
+
       if (questionType === 0) {
         // Calculate volume of a rectangular prism
         const length = Math.floor(Math.random() * 5) + 2; // 2-6
@@ -1006,7 +1080,7 @@ function MathGame({ lesson }) {
     } else if (config.type === 'mean-median-mode') {
       // Year 5: Mean, Median, Mode
       const questionType = Math.floor(Math.random() * 3);
-      
+
       if (questionType === 0) {
         // Mean (Average)
         const dataSet = [];
@@ -1077,7 +1151,7 @@ function MathGame({ lesson }) {
     } else if (config.type === 'ratio-proportion') {
       // Year 6: Ratio and Proportion
       const questionType = Math.floor(Math.random() * 3);
-      
+
       if (questionType === 0) {
         // Simplifying ratios: "What is 4:6 in simplest form?"
         const ratios = [
@@ -1472,67 +1546,176 @@ function MathGame({ lesson }) {
       questionText = `What is ${num1} - ${num2}?`;
       options = [answer, answer + 1, answer - 1, answer + 10].filter(n => n > 0 && n <= 100);
     } else if (config.type === 'telling-time') {
-        const hour = Math.floor(Math.random() * 12) + 1;
-        const minute = Math.floor(Math.random() * 12) * 5;
-        answer = `${hour}:${minute.toString().padStart(2, '0')}`;
-        questionText = `What time is it?`;
-        const wrong1 = `${(hour % 12) + 1}:${minute.toString().padStart(2, '0')}`;
-        const wrong2 = `${hour}:${((minute + 5) % 60).toString().padStart(2, '0')}`;
-        const wrong3 = `${(hour + 1) % 12}:${((minute + 10) % 60).toString().padStart(2, '0')}`;
-        options = [answer, wrong1, wrong2, wrong3];
+      const hour = Math.floor(Math.random() * 12) + 1;
+      const minute = Math.floor(Math.random() * 12) * 5;
+      answer = `${hour}:${minute.toString().padStart(2, '0')}`;
+      questionText = `What time is it?`;
+      const wrong1 = `${(hour % 12) + 1}:${minute.toString().padStart(2, '0')}`;
+      const wrong2 = `${hour}:${((minute + 5) % 60).toString().padStart(2, '0')}`;
+      const wrong3 = `${(hour + 1) % 12}:${((minute + 10) % 60).toString().padStart(2, '0')}`;
+      options = [answer, wrong1, wrong2, wrong3];
     } else if (config.type === 'money-math-counting-coins') {
-        const coins = [1, 5, 10, 25];
-        let numCoins = Math.floor(Math.random() * 5) + 3;
-        let currentSum = 0;
-        let coinObjects = [];
-        for (let i = 0; i < numCoins; i++) {
-            const coin = coins[Math.floor(Math.random() * coins.length)];
-            currentSum += coin;
-            coinObjects.push(coin);
-        }
-        answer = currentSum;
-        questionText = `How much money is this?`;
-        options = [answer, answer + 1, answer - 1, answer + 5].filter(n => n > 0);
+      const coins = [1, 5, 10, 25];
+      let numCoins = Math.floor(Math.random() * 5) + 3;
+      let currentSum = 0;
+      let coinObjects = [];
+      for (let i = 0; i < numCoins; i++) {
+        const coin = coins[Math.floor(Math.random() * coins.length)];
+        currentSum += coin;
+        coinObjects.push(coin);
+      }
+      answer = currentSum;
+      questionText = `How much money is this?`;
+      options = [answer, answer + 1, answer - 1, answer + 5].filter(n => n > 0);
     } else if (config.type === 'fractions-equivalents') {
-        const den = Math.floor(Math.random() * 4) + 2; // 2-5
-        const num = Math.floor(Math.random() * (den - 1)) + 1;
-        const multiplier = Math.floor(Math.random() * 3) + 2; // 2-4
-        const equivalentNum = num * multiplier;
-        const equivalentDen = den * multiplier;
-        answer = `${equivalentNum}/${equivalentDen}`;
-        questionText = `Which fraction is equivalent to ${num}/${den}?`;
-        options = [answer, `${num+1}/${den}`, `${num}/${den+1}`, `${equivalentNum+1}/${equivalentDen}`];
+      const den = Math.floor(Math.random() * 4) + 2; // 2-5
+      const num = Math.floor(Math.random() * (den - 1)) + 1;
+      const multiplier = Math.floor(Math.random() * 3) + 2; // 2-4
+      const equivalentNum = num * multiplier;
+      const equivalentDen = den * multiplier;
+      answer = `${equivalentNum}/${equivalentDen}`;
+      questionText = `Which fraction is equivalent to ${num}/${den}?`;
+      options = [answer, `${num + 1}/${den}`, `${num}/${den + 1}`, `${equivalentNum + 1}/${equivalentDen}`];
     } else if (config.type === 'geometry-3d-shapes') {
-        const shapes = ['cube', 'sphere', 'cone', 'cylinder', 'pyramid'];
-        answer = shapes[Math.floor(Math.random() * shapes.length)];
-        questionText = `What shape is this?`;
-        options = [...shapes].sort(() => Math.random() - 0.5);
+      const shapes = ['cube', 'sphere', 'cone', 'cylinder', 'pyramid'];
+      answer = shapes[Math.floor(Math.random() * shapes.length)];
+      questionText = `What shape is this?`;
+      options = [...shapes].sort(() => Math.random() - 0.5);
     } else if (config.type === 'measurement-temperature') {
-        answer = Math.floor(Math.random() * 100);
-        questionText = `What is the temperature?`;
-        options = [answer, answer + 5, answer - 5, answer + 10].filter(n => n >= 0);
+      answer = Math.floor(Math.random() * 100);
+      questionText = `What is the temperature?`;
+      options = [answer, answer + 5, answer - 5, answer + 10].filter(n => n >= 0);
     } else if (config.type === 'patterns-what-comes-next') {
-        const start = Math.floor(Math.random() * 10) + 1;
-        const step = Math.floor(Math.random() * 5) + 1;
-        const sequence = [start, start + step, start + 2 * step];
-        answer = start + 3 * step;
-        questionText = `What comes next in the pattern: ${sequence.join(', ')}, ...?`;
-        options = [answer, answer+step, answer-step, answer+1];
+      const start = Math.floor(Math.random() * 10) + 1;
+      const step = Math.floor(Math.random() * 5) + 1;
+      const sequence = [start, start + step, start + 2 * step];
+      answer = start + 3 * step;
+      questionText = `What comes next in the pattern: ${sequence.join(', ')}, ...?`;
+      options = [answer, answer + step, answer - step, answer + 1];
+    } else if (config.type === 'number-bonds') {
+      const total = Math.floor(Math.random() * (config.maxSum - 2)) + 3;
+      const addend = Math.floor(Math.random() * (total - 1)) + 1;
+      answer = total - addend;
+      questionText = `What makes ${total} with ${addend}?`;
+      options = [answer, answer + 1, answer - 1, total].filter(n => n > 0 && n <= config.maxSum + 2);
+    } else if (config.type === 'compare-quantities') {
+      const a = Math.floor(Math.random() * config.maxNumber) + 1;
+      const b = Math.floor(Math.random() * config.maxNumber) + 1;
+      answer = Math.max(a, b);
+      questionText = `Which number is greater: ${a} or ${b}?`;
+      options = [a, b, answer + 1, answer - 1].filter(n => n > 0 && n <= config.maxNumber + 2);
+    } else if (config.type === 'skip-counting') {
+      const step = config.steps[Math.floor(Math.random() * config.steps.length)];
+      const base = step * (Math.floor(Math.random() * 6) + 1);
+      answer = base + step * 3;
+      const seq = [base, base + step, base + step * 2];
+      questionText = `What comes next in counting by ${step}: ${seq.join(', ')}, ...?`;
+      options = [answer, answer + step, answer - step, answer + 1].filter(n => n > 0 && n <= config.maxNumber);
+    } else if (config.type === 'measurement-compare') {
+      const a = Math.floor(Math.random() * config.maxNumber) + 1;
+      const b = Math.floor(Math.random() * config.maxNumber) + 1;
+      answer = Math.max(a, b);
+      const unit = Math.random() > 0.5 ? 'cm' : 'g';
+      questionText = `Which is greater: ${a}${unit} or ${b}${unit}?`;
+      options = [a, b, answer + 1, answer - 1].filter(n => n > 0);
+    } else if (config.type === 'position-direction') {
+      const prompts = [
+        { question: 'Which word means up?', answer: 'above', options: ['above', 'below', 'left', 'right'] },
+        { question: 'Which word means down?', answer: 'below', options: ['above', 'below', 'left', 'right'] },
+        { question: 'Which word means behind?', answer: 'behind', options: ['in front', 'behind', 'left', 'right'] },
+        { question: 'Which word means in front?', answer: 'in front', options: ['in front', 'behind', 'left', 'right'] },
+      ];
+      const prompt = prompts[Math.floor(Math.random() * prompts.length)];
+      answer = prompt.answer;
+      questionText = prompt.question;
+      options = prompt.options;
+    } else if (config.type === 'time-sequence') {
+      const prompts = [
+        { question: 'What comes after morning?', answer: 'afternoon', options: ['morning', 'afternoon', 'night', 'evening'] },
+        { question: 'What comes after afternoon?', answer: 'evening', options: ['morning', 'afternoon', 'evening', 'night'] },
+        { question: 'What comes after evening?', answer: 'night', options: ['morning', 'evening', 'night', 'afternoon'] },
+      ];
+      const prompt = prompts[Math.floor(Math.random() * prompts.length)];
+      answer = prompt.answer;
+      questionText = prompt.question;
+      options = prompt.options;
+    } else if (config.type === 'rounding') {
+      const num = Math.floor(Math.random() * (config.maxNumber - 10)) + 10;
+      const roundTo = Math.random() > 0.5 ? 10 : 100;
+      const rounded = Math.round(num / roundTo) * roundTo;
+      answer = rounded;
+      questionText = `What is ${num} rounded to the nearest ${roundTo}?`;
+      options = [rounded, rounded + roundTo, rounded - roundTo, num].filter(n => n >= 0);
+    } else if (config.type === 'factors-multiples') {
+      const num = Math.floor(Math.random() * (config.maxNumber - 10)) + 10;
+      const factors = [];
+      for (let i = 2; i <= 10; i += 1) {
+        if (num % i === 0) factors.push(i);
+      }
+      answer = factors.length ? factors[Math.floor(Math.random() * factors.length)] : 2;
+      const wrong1 = answer + 1;
+      const wrong2 = answer + 2;
+      const wrong3 = answer + 3;
+      questionText = `Which number is a factor of ${num}?`;
+      options = [answer, wrong1, wrong2, wrong3].filter(n => n > 1);
+    } else if (config.type === 'decimals-3dp') {
+      const value = Math.floor(Math.random() * 900) + 100;
+      const str = value.toString();
+      const tenths = str[0];
+      const hundredths = str[1];
+      const thousandths = str[2];
+      const prompts = [
+        { place: 'tenths', digit: tenths },
+        { place: 'hundredths', digit: hundredths },
+        { place: 'thousandths', digit: thousandths },
+      ];
+      const prompt = prompts[Math.floor(Math.random() * prompts.length)];
+      answer = parseInt(prompt.digit, 10);
+      questionText = `What is the ${prompt.place} digit in 0.${str}?`;
+      options = [answer, (answer + 1) % 10, (answer + 2) % 10, (answer + 3) % 10];
+    } else if (config.type === 'fraction-add') {
+      const den = [4, 6, 8][Math.floor(Math.random() * 3)];
+      const a = Math.floor(Math.random() * (den - 1)) + 1;
+      const b = Math.floor(Math.random() * (den - a)) + 1;
+      answer = `${a + b}/${den}`;
+      questionText = `What is ${a}/${den} + ${b}/${den}?`;
+      options = [answer, `${a + b + 1}/${den}`, `${a + b - 1}/${den}`, `${a}/${den}`];
+    } else if (config.type === 'prime-square') {
+      const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+      const squares = [4, 9, 16, 25, 36, 49];
+      const isPrime = Math.random() > 0.5;
+      answer = isPrime ? primes[Math.floor(Math.random() * primes.length)] : squares[Math.floor(Math.random() * squares.length)];
+      questionText = isPrime ? 'Which number is prime?' : 'Which number is a square number?';
+      const wrongPool = isPrime ? squares : primes;
+      options = [answer, wrongPool[0], wrongPool[1], wrongPool[2]].sort(() => Math.random() - 0.5);
+    } else if (config.type === 'percentage-change') {
+      const base = (Math.floor(Math.random() * 9) + 2) * 10;
+      const percent = [10, 20, 25, 50][Math.floor(Math.random() * 4)];
+      answer = Math.round(base * (1 + percent / 100));
+      questionText = `Increase ${base} by ${percent}%`;
+      options = [answer, answer - 1, answer + 1, base + percent].filter(n => n > 0);
+    } else if (config.type === 'add-sub-3digit') {
+      const isAdd = Math.random() > 0.5;
+      const num1 = Math.floor(Math.random() * 900) + 100;
+      const num2 = Math.floor(Math.random() * 900) + 100;
+      answer = isAdd ? num1 + num2 : Math.max(num1, num2) - Math.min(num1, num2);
+      questionText = isAdd ? `What is ${num1} + ${num2}?` : `What is ${Math.max(num1, num2)} - ${Math.min(num1, num2)}?`;
+      options = [answer, answer + 10, answer - 10, answer + 1].filter(n => n >= 0);
     } else if (config.type === 'roman-numerals') {
-        const romanMap = { 1: 'I', 4: 'IV', 5: 'V', 9: 'IX', 10: 'X', 40: 'XL', 50: 'L', 90: 'XC', 100: 'C' };
-        const num = Math.floor(Math.random() * 20) + 1;
-        let roman = '';
-        let n = num;
-        const sortedKeys = Object.keys(romanMap).map(Number).sort((a,b) => b-a);
-        for(let key of sortedKeys) {
-            while(n >= key) {
-                roman += romanMap[key];
-                n -= key;
-            }
+      const romanMap = { 1: 'I', 4: 'IV', 5: 'V', 9: 'IX', 10: 'X', 40: 'XL', 50: 'L', 90: 'XC', 100: 'C' };
+      const num = Math.floor(Math.random() * 20) + 1;
+      let roman = '';
+      let n = num;
+      const sortedKeys = Object.keys(romanMap).map(Number).sort((a, b) => b - a);
+      for (let key of sortedKeys) {
+        while (n >= key) {
+          roman += romanMap[key];
+          n -= key;
         }
-        answer = num;
-        questionText = `What is ${roman} in numbers?`;
-        options = [num, num + 1, num - 1, num + 2].filter(n => n > 0);
+      }
+      answer = num;
+      questionText = `What is ${roman} in numbers?`;
+      options = [num, num + 1, num - 1, num + 2].filter(n => n > 0);
     }
 
     // Ensure we have exactly 4 options, remove duplicates, and shuffle
@@ -1549,12 +1732,12 @@ function MathGame({ lesson }) {
         // For other types with a single number, use that number as max but ensure at least 5
         maxNum = Math.max(config.number, 5);
       }
-      
+
       const randomNum = Math.floor(Math.random() * maxNum) + 1;
       if (!uniqueOptions.includes(randomNum) && randomNum <= maxNum) {
         uniqueOptions.push(randomNum);
       }
-      
+
       // Safety check to prevent infinite loop
       if (uniqueOptions.length < 4 && uniqueOptions.length >= maxNum) {
         // If we've exhausted all possible numbers, just add any missing numbers up to maxNum
@@ -1566,16 +1749,16 @@ function MathGame({ lesson }) {
         break;
       }
     }
-    
+
     // Ensure the answer is included in the options before slicing
     if (!uniqueOptions.includes(answer)) {
       uniqueOptions.push(answer);
     }
-    
+
     // Shuffle and take first 4, but ensure answer is included
     uniqueOptions.sort(() => Math.random() - 0.5);
     let finalOptions = uniqueOptions.slice(0, 4);
-    
+
     // If answer is not in final options, replace a random wrong option with the answer
     if (!finalOptions.includes(answer)) {
       const wrongOptions = finalOptions.filter(opt => opt !== answer);
@@ -1585,35 +1768,39 @@ function MathGame({ lesson }) {
         finalOptions[indexToReplace] = answer;
       }
     }
-    
+
     // Final shuffle to randomize position of correct answer
     options = finalOptions.sort(() => Math.random() - 0.5);
-    
+
     console.log('generateValidation - Answer:', answer, 'Question:', questionText, 'Options:', options);
-    
+
     // Increment generation ID to track this question generation
     questionGenerationIdRef.current += 1;
     const thisGenerationId = questionGenerationIdRef.current;
-    
+
     // Store the question text in a ref to avoid stale closure issues
     currentQuestionTextRef.current = questionText;
-    
+
     setCorrectAnswer(answer);
     setValidationOptions(options);
     setQuestionText(questionText);
-    
+
     // Reset the generation flag after state is set
     isGeneratingValidationRef.current = false;
-    
+
+    if (isTtsDisabled) {
+      return;
+    }
+
     // Clear any existing timeout first to prevent multiple TTS calls
     if (speakTimeoutRef.current) {
       clearTimeout(speakTimeoutRef.current);
       speakTimeoutRef.current = null;
     }
-    
+
     // Stop any current speech immediately
     stop();
-    
+
     // Speak the question after a delay to ensure state is updated and any previous speech has stopped
     speakTimeoutRef.current = setTimeout(async () => {
       // Only speak if this is still the current generation (prevents stale TTS)
@@ -1622,22 +1809,22 @@ function MathGame({ lesson }) {
         speakTimeoutRef.current = null;
         return;
       }
-      
+
       // Get the current question text from ref to ensure we have the latest value
       const textToSpeak = currentQuestionTextRef.current;
-      
+
       // Double-check that speech is stopped before starting new speech
       stop();
       // Small delay to ensure stop completes
       await new Promise(resolve => setTimeout(resolve, 150));
-      
+
       // Check again after the delay to ensure we're still on the same generation
       if (questionGenerationIdRef.current !== thisGenerationId) {
         console.log('Skipping TTS - question generation changed during delay');
         speakTimeoutRef.current = null;
         return;
       }
-      
+
       // Final check - ensure no other speech is playing
       if (isSpeaking()) {
         console.log('Skipping TTS - speech already in progress');
@@ -1668,20 +1855,25 @@ function MathGame({ lesson }) {
     }
 
     // Handle both number and string comparisons (for percentages with fractions)
-    const isCorrect = option === correctAnswer || 
-                     (typeof option === 'string' && typeof correctAnswer === 'string' && option === correctAnswer) ||
-                     (typeof option === 'number' && typeof correctAnswer === 'number' && option === correctAnswer);
+    const isCorrect = option === correctAnswer ||
+      (typeof option === 'string' && typeof correctAnswer === 'string' && option === correctAnswer) ||
+      (typeof option === 'number' && typeof correctAnswer === 'number' && option === correctAnswer);
     const newAttempts = validationAttempts + 1;
     setValidationAttempts(newAttempts);
 
     if (isCorrect) {
       const score = getScore(newAttempts);
       await completeLesson(score);
-      } else {
+    } else {
       if (newAttempts >= 3) {
         const score = SCORE_TIERS.FAIL;
         await completeLesson(score);
       } else {
+        if (isTtsDisabled) {
+          generateValidation();
+          return;
+        }
+
         // Stop any ongoing speech (like the question being read) before speaking "try again"
         stop();
         // Clear any pending speak timeout
@@ -1719,9 +1911,9 @@ function MathGame({ lesson }) {
   };
 
   const getScore = (attempts) => {
-    if (attempts === 1) return SCORE_TIERS.GOLD;
-    if (attempts === 2) return SCORE_TIERS.SILVER;
-    if (attempts === 3) return SCORE_TIERS.BRONZE;
+    if (attempts === 1) return SCORE_TIERS.PLATINUM;
+    if (attempts === 2) return SCORE_TIERS.GOLD;
+    if (attempts === 3) return SCORE_TIERS.SILVER;
     return SCORE_TIERS.FAIL;
   };
 
@@ -1745,7 +1937,7 @@ function MathGame({ lesson }) {
         lessonNumber: lesson.lessonNumber,
         isCompleted: true,
         completedAt: new Date(),
-        score: score === SCORE_TIERS.GOLD ? 100 : score === SCORE_TIERS.SILVER ? 75 : score === SCORE_TIERS.BRONZE ? 50 : 0,
+        score: score === SCORE_TIERS.PLATINUM ? 100 : score === SCORE_TIERS.GOLD ? 90 : score === SCORE_TIERS.SILVER ? 75 : score === SCORE_TIERS.BRONZE ? 50 : 0,
       });
       try {
         await addProgress(progress);
@@ -1863,22 +2055,22 @@ function MathGame({ lesson }) {
       // Counting objects - show objects to count
       let objectCount = activityObjectCount;
       if (objectCount === null) {
-        objectCount = config.type === 'match-1' ? 1 : config.type === 'match-2' ? 2 : config.type === 'match-3' ? 3 : 
-                     config.type === 'count-1-3' ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 5) + 1;
+        objectCount = config.type === 'match-1' ? 1 : config.type === 'match-2' ? 2 : config.type === 'match-3' ? 3 :
+          config.type === 'count-1-3' ? Math.floor(Math.random() * 3) + 1 : Math.floor(Math.random() * 5) + 1;
         setActivityObjectCount(objectCount);
       }
       const objects = ['🍎', '🍌', '🍊', '🍇', '🍓'];
       const displayObjects = objects.slice(0, objectCount);
-      
+
       return (
         <div style={{ textAlign: 'center', padding: '40px' }}>
           <h2 style={{ fontSize: '42px', marginBottom: '40px', color: '#333', fontWeight: 'bold' }}>
             Count the objects! 👀
           </h2>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            gap: '30px', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '30px',
             flexWrap: 'wrap',
             marginBottom: '40px',
           }}>
@@ -1923,7 +2115,7 @@ function MathGame({ lesson }) {
       );
     } else {
       // Show numbers in a grid for tapping
-      const numbersToShow = config.numbers || (config.type === 'counting-to-10' 
+      const numbersToShow = config.numbers || (config.type === 'counting-to-10'
         ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
 
@@ -1932,10 +2124,10 @@ function MathGame({ lesson }) {
           <h2 style={{ fontSize: '36px', marginBottom: '40px', color: '#333', fontWeight: 'bold' }}>
             Tap a number to hear it! 🔢
           </h2>
-          <div style={{ 
-            display: 'grid', 
+          <div style={{
+            display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-            gap: '20px', 
+            gap: '20px',
             maxWidth: '800px',
             margin: '0 auto 40px auto',
           }}>
@@ -2012,7 +2204,7 @@ function MathGame({ lesson }) {
 
   const renderValidation = () => {
     console.log('renderValidation called! correctAnswer:', correctAnswer, 'validationOptions:', validationOptions, 'validationObjects:', validationObjects);
-    
+
     // Safety check
     if (!config || !config.type) {
       return (
@@ -2021,17 +2213,17 @@ function MathGame({ lesson }) {
         </div>
       );
     }
-    
+
     // Find the question text based on correct answer
     let displayQuestionText = questionText || 'Select the correct answer!';
-    const showObjects = validationObjects.length > 0 && 
+    const showObjects = validationObjects.length > 0 &&
       (config.type === 'count-1-3' || config.type === 'match-1' || config.type === 'match-2' || config.type === 'match-3' || config.type === 'count-1-5');
-    
+
     // If validation hasn't been generated yet, show loading
     // Trigger initialization if needed (fallback - but only once)
     if (!correctAnswer || !validationOptions || validationOptions.length === 0) {
       console.log('Validation not ready, waiting for initialization...');
-      
+
       // Fallback: If the main useEffect didn't trigger, do it here
       // But only if we haven't already tried to initialize this lesson
       if (!isInitialized && initializedLessonIdRef.current !== lesson?.id && config && config.type) {
@@ -2043,14 +2235,14 @@ function MathGame({ lesson }) {
           generateValidation();
         });
       }
-      
+
       return (
         <div style={{ textAlign: 'center', padding: '40px' }}>
           <h2 style={{ fontSize: '36px', color: '#333' }}>Loading game...</h2>
         </div>
       );
     }
-    
+
     // Use stored questionText for complex types (multiplication, division, etc.), otherwise reconstruct
     if (!questionText || questionText === 'Select the correct answer!') {
       if (config.type === 'recognize-1' || config.type === 'recognize-2' || config.type === 'recognize-3') {
@@ -2095,10 +2287,10 @@ function MathGame({ lesson }) {
           {displayQuestionText}
         </h2>
         {showObjects && (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            gap: '30px', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '30px',
             flexWrap: 'wrap',
             marginBottom: '40px',
           }}>
@@ -2107,10 +2299,10 @@ function MathGame({ lesson }) {
             ))}
           </div>
         )}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          gap: '30px', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '30px',
           flexWrap: 'wrap',
           marginBottom: '30px',
           maxWidth: '800px',
@@ -2122,7 +2314,7 @@ function MathGame({ lesson }) {
             let letterSpacing = 'normal';
             const isFraction = typeof option === 'string' && option.includes('/');
             const showPieChart = isFraction && config.type === 'fractions-basic';
-            
+
             // Handle string options (fractions, decimals, etc.)
             if (typeof option === 'string') {
               displayText = option;
@@ -2154,10 +2346,10 @@ function MathGame({ lesson }) {
                 displayText = emoji;
               }
             }
-            
+
             // Adjust font size for longer text (fractions, decimals)
             const fontSize = typeof option === 'string' && option.length > 3 ? '40px' : '70px';
-            
+
             return (
               <button
                 key={index}
@@ -2207,9 +2399,9 @@ function MathGame({ lesson }) {
 
   if (gameState === 'completed' && currentScore) {
     return (
-      <div style={{ 
-        width: '100%', 
-        height: '100%', 
+      <div style={{
+        width: '100%',
+        height: '100%',
         minHeight: '600px',
         backgroundColor: '#f0f8ff',
         display: 'flex',
@@ -2334,9 +2526,9 @@ function MathGame({ lesson }) {
   }
 
   return (
-    <div style={{ 
-      width: '100%', 
-      height: '100%', 
+    <div style={{
+      width: '100%',
+      height: '100%',
       minHeight: '600px',
       backgroundColor: '#f0f8ff',
       display: 'flex',

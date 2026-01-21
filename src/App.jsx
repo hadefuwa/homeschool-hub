@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import useDataStore from './store/dataStore';
-import SimpleTTSBar from './components/SimpleTTSBar';
+import GoogleTTSBar from './components/GoogleTTSBar';
 import TopNavigation from './components/TopNavigation';
 import SubjectSelectionScreen from './screens/SubjectSelectionScreen';
 import LessonsListScreen from './screens/LessonsListScreen';
@@ -85,7 +85,7 @@ function App() {
         <TopNavigation />
         
         {/* TTS Bar - under navigation */}
-        <SimpleTTSBar />
+        <GoogleTTSBar />
           
           <div style={{ 
             flex: 1, 

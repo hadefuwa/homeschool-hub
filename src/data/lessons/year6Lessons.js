@@ -317,6 +317,50 @@ A play that is very funny|A serious play with a sad ending|A play about animals|
       id: lessonId++,
       yearId: 'year6',
       subjectId: 'english',
+      lessonNumber: 5,
+      title: "Adjective Adventure",
+      emoji: '🌟',
+      assessmentType: 'parts-of-speech-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'english',
+      lessonNumber: 6,
+      title: "Spelling Safari",
+      emoji: '🦁',
+      assessmentType: 'spelling-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'english',
+      lessonNumber: 7,
+      title: "Prefix Power",
+      emoji: '🔌',
+      assessmentType: 'prefix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'english',
+      lessonNumber: 8,
+      title: "Suffix Superstars",
+      emoji: '🚀',
+      assessmentType: 'suffix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'english',
       lessonNumber: 2,
       title: "Introduction to Shakespeare",
       emoji: '📜',
@@ -2178,7 +2222,213 @@ Identify themes in a Shakespeare play and connect them to modern life.`,
       quizId: quizId++,
       assessmentType: 'english-game',
       categoryId: null,
-    })
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 14,
+      title: "Algebra Basics",
+      emoji: '⚖️',
+      content: `# Algebra Basics ⚖️
+
+Solve equations by balancing both sides.
+
+## How to Play
+
+Drag numbers and symbols to keep the balance equal.
+
+## Example
+
+x + 7 = 12, so x = 5`,
+      quizId: quizId++,
+      assessmentType: 'algebra-balance-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 15,
+      title: "Ratio",
+      emoji: '🧪',
+      content: `# Ratio 🧪
+
+Compare quantities using ratios.
+
+## How to Play
+
+Mix colours or ingredients to match the ratio.
+
+## Example
+
+2:3 means 2 parts of one colour to 3 parts of another.`,
+      quizId: quizId++,
+      assessmentType: 'ratio-mix-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 16,
+      title: "Proportion",
+      emoji: '⚖️',
+      content: `# Proportion ⚖️
+
+Scale recipes and models.
+
+## How to Play
+
+Drag the correct scaled amounts into the boxes.`,
+      quizId: quizId++,
+      assessmentType: 'proportion-scale-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 17,
+      title: "Percentage Change",
+      emoji: '📉',
+      content: `# Percentage Change 📉
+
+Find increases and decreases.
+
+## How to Play
+
+Move the slider to the new value and read the change.
+
+## Example
+
+Increase 50 by 10% to get 55.`,
+      quizId: quizId++,
+      assessmentType: 'percentage-change-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 18,
+      title: "Fractions, Decimals, and Percentages",
+      emoji: '🔁',
+      content: `# Fractions, Decimals, and Percentages 🔁
+
+Match equivalent values.
+
+## How to Play
+
+Connect the fraction, decimal, and percentage that match.`,
+      quizId: quizId++,
+      assessmentType: 'fdp-tri-match-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 19,
+      title: "Area of Triangles and Parallelograms",
+      emoji: '📐',
+      content: `# Area of Triangles and Parallelograms 📐
+
+Find the area using base and height.
+
+## How to Play
+
+Drag the height line and calculate the area.
+
+## Example
+
+Triangle area = (base × height) ÷ 2`,
+      quizId: quizId++,
+      assessmentType: 'area-cut-fit-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 20,
+      title: "Volume of Cuboids",
+      emoji: '🧊',
+      content: `# Volume of Cuboids 🧊
+
+Calculate volume using length, width, and height.
+
+## How to Play
+
+Fill the cuboid with unit cubes to match the volume.`,
+      quizId: quizId++,
+      assessmentType: 'volume-cuboid-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 21,
+      title: "Coordinates and Graphs",
+      emoji: '📍',
+      content: `# Coordinates and Graphs 📍
+
+Plot points in all four quadrants.
+
+## How to Play
+
+Tap the grid for each coordinate given.`,
+      quizId: quizId++,
+      assessmentType: 'coordinate-plot-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 22,
+      title: "Geometry: Nets and Properties",
+      emoji: '📦',
+      content: `# Geometry: Nets and Properties 📦
+
+Match nets to 3D shapes.
+
+## How to Play
+
+Fold the net and choose the correct shape.`,
+      quizId: quizId++,
+      assessmentType: 'nets-fold-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year6',
+      subjectId: 'maths',
+      lessonNumber: 23,
+      title: "Statistics: Averages and Range",
+      emoji: '📊',
+      content: `# Statistics: Averages and Range 📊
+
+Find mean, median, mode, and range.
+
+## How to Play
+
+Drag the data into order, then select the correct statistic.`,
+      quizId: quizId++,
+      assessmentType: 'stats-averages-game',
+      categoryId: null,
+    }),
 
   ];
 }

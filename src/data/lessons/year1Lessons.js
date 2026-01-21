@@ -163,6 +163,253 @@ Three plus one equals four!
     new Lesson({
       id: lessonId++,
       yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 3,
+      title: "Place Value to 20",
+      emoji: '🔟',
+      content: `# Place Value to 20 🔟
+
+Let's build numbers with tens and ones.
+
+## How to Play
+
+Drag tens and ones to make the number shown.
+
+## Example
+
+14 = 1 ten and 4 ones`,
+      quizId: quizId++,
+      assessmentType: 'place-value-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 4,
+      title: "Place Value to 100",
+      emoji: '🔢',
+      content: `# Place Value to 100 🔢
+
+Let's make two-digit numbers.
+
+## How to Play
+
+Drag tens and ones to build the number.
+
+## Example
+
+37 = 3 tens and 7 ones`,
+      quizId: quizId++,
+      assessmentType: 'place-value-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 5,
+      title: "Add and Subtract within 20",
+      emoji: '➕',
+      content: `# Add and Subtract within 20 ➕
+
+Use a number line to add and subtract.
+
+## How to Play
+
+Hop along the number line to find the answer.
+
+## Examples
+
+- 9 + 5 = 14
+- 16 - 7 = 9`,
+      quizId: quizId++,
+      assessmentType: 'number-line-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 6,
+      title: "Count in 2s, 5s, and 10s",
+      emoji: '🔁',
+      content: `# Count in 2s, 5s, and 10s 🔁
+
+Let's practise skip counting.
+
+## How to Play
+
+Tap the next number in the sequence.
+
+## Sequences
+
+- 2, 4, 6, 8, 10
+- 5, 10, 15, 20
+- 10, 20, 30, 40`,
+      quizId: quizId++,
+      assessmentType: 'skip-counting-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 7,
+      title: "Fractions: Halves and Quarters",
+      emoji: '🍰',
+      content: `# Fractions: Halves and Quarters 🍰
+
+Find halves and quarters of shapes.
+
+## How to Play
+
+Match the shaded shape to the fraction.
+
+## Examples
+
+- Half is 1 out of 2 equal parts
+- Quarter is 1 out of 4 equal parts`,
+      quizId: quizId++,
+      assessmentType: 'fraction-match-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 8,
+      title: "Time: O'Clock and Half Past",
+      emoji: '🕒',
+      content: `# Time: O'Clock and Half Past 🕒
+
+Tell the time to the hour and half hour.
+
+## How to Play
+
+Drag the clock hands to match the time.
+
+## Examples
+
+- 3 o'clock
+- Half past 7`,
+      quizId: quizId++,
+      assessmentType: 'clock-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 9,
+      title: "Money: Coins to £1",
+      emoji: '💷',
+      content: `# Money: Coins to £1 💷
+
+Make totals using coins.
+
+## How to Play
+
+Drag coins to make the given amount.
+
+## Coins
+
+- 1p, 2p, 5p, 10p, 20p, 50p, £1`,
+      quizId: quizId++,
+      assessmentType: 'money-drag-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 10,
+      title: "Length and Mass",
+      emoji: '📏',
+      content: `# Length and Mass 📏
+
+Compare objects by length and mass.
+
+## How to Play
+
+Drag items to sort from lightest to heaviest or shortest to longest.`,
+      quizId: quizId++,
+      assessmentType: 'measurement-compare-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 11,
+      title: "2D and 3D Shapes",
+      emoji: '🧊',
+      content: `# 2D and 3D Shapes 🧊
+
+Match shapes to their names.
+
+## How to Play
+
+Tap the correct name for each shape.
+
+## Shapes
+
+- Circle, square, triangle, rectangle
+- Cube, sphere, cylinder, cone`,
+      quizId: quizId++,
+      assessmentType: 'shape-matching-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 12,
+      title: "Patterns",
+      emoji: '🟣',
+      content: `# Patterns 🟣
+
+Continue the pattern.
+
+## How to Play
+
+Drag the missing shape or colour to finish the pattern.`,
+      quizId: quizId++,
+      assessmentType: 'pattern-builder-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 13,
+      title: "Data: Pictograms",
+      emoji: '📊',
+      content: `# Data: Pictograms 📊
+
+Build a pictogram from a set of items.
+
+## How to Play
+
+Drag items into the chart and compare totals.`,
+      quizId: quizId++,
+      assessmentType: 'graph-builder-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
       subjectId: 'english',
       lessonNumber: 1,
       title: "Sentence Scramble",
@@ -1128,32 +1375,7 @@ You may see console messages about "play() request was interrupted" or "createRa
       lessonNumber: 8,
       title: "TapTapTap: Beginner Level 1",
       emoji: '👆',
-      content: `# TapTapTap: Beginner Level 1 👆
-
-Welcome to TapTapTap! A fun game that helps you practice your clicking and reaction skills!
-
-## How to Play
-
-- Tap or click the colorful targets as they appear on the screen
-- Be quick! Targets disappear after 2 seconds
-- Try to tap as many targets as you can in 30 seconds!
-
-## Scoring System
-
-- **Bronze**: 5-9 points
-- **Silver**: 10-14 points
-- **Gold**: 15-19 points
-- **Platinum**: 20+ points
-
-You need at least **Bronze** (5 points) to progress to the next lesson!
-
-## Tips
-
-- Keep your eyes on the screen
-- Tap quickly but accurately
-- Don't worry if you miss some - just keep trying!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'taptaptap-game',
       categoryId: null,
     }),
 
@@ -1164,30 +1386,7 @@ You need at least **Bronze** (5 points) to progress to the next lesson!
       lessonNumber: 9,
       title: "TapTapTap: Beginner Level 2",
       emoji: '👆',
-      content: `# TapTapTap: Beginner Level 2 👆
-
-Keep practicing your tapping skills! This level is the same difficulty as Level 1 - perfect for getting better!
-
-## How to Play
-
-- Tap the colorful targets as they appear
-- Targets appear every 2 seconds
-- You have 30 seconds to score as many points as possible!
-
-## Scoring System
-
-- **Bronze**: 5-9 points
-- **Silver**: 10-14 points
-- **Gold**: 15-19 points
-- **Platinum**: 20+ points
-
-You need at least **Bronze** (5 points) to progress!
-
-## Challenge
-
-Can you beat your previous score? Try to get a higher medal this time!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'taptaptap-game',
       categoryId: null,
     }),
 
@@ -1198,27 +1397,50 @@ Can you beat your previous score? Try to get a higher medal this time!`,
       lessonNumber: 10,
       title: "Flappy Bird Game",
       emoji: '🐦',
-      content: `# Flappy Bird Game 🐦
+      assessmentType: 'flappy-bird-game',
+      categoryId: null,
+    }),
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'english',
+      lessonNumber: 1,
+      title: "Adjective Adventure",
+      emoji: '🌟',
+      assessmentType: 'parts-of-speech-game',
+      categoryId: null,
+    }),
 
-Practice your timing and control!
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'english',
+      lessonNumber: 2,
+      title: "Spelling Safari",
+      emoji: '🦁',
+      assessmentType: 'spelling-game',
+      categoryId: null,
+    }),
 
-## How to Play
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'english',
+      lessonNumber: 3,
+      title: "Prefix Power",
+      emoji: '🔌',
+      assessmentType: 'prefix-game',
+      categoryId: null,
+    }),
 
-- Press **SPACE** to make the bird jump
-- Navigate through the pipes
-- The gap is a bit smaller now!
-- Try to find a good rhythm
-
-## Scoring System
-
-- **Bronze**: 1-4 points
-- **Silver**: 5-9 points
-- **Gold**: 10-14 points
-- **Platinum**: 15+ points
-
-You need at least **Bronze** (1 point) to progress!`,
-      quizId: null,
-      assessmentType: null,
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'english',
+      lessonNumber: 4,
+      title: "Suffix Superstars",
+      emoji: '🚀',
+      assessmentType: 'suffix-game',
       categoryId: null,
     }),
 

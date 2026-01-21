@@ -661,49 +661,7 @@ Tap the numbers to hear them! Then play the game to test what you learned! 🎮
       lessonNumber: 1,
       title: "Clicking Game",
       emoji: '🎯',
-      content: `# Clicking Game 🎯
-
-
-
-Welcome to the Accuracy Clicking Game!
-
-
-
-## How to Play
-
-
-
-- Click on the red circles as they appear on the screen
-
-- The circles start large and get smaller and faster as time goes on
-
-- You have 30 seconds to score as many points as possible
-
-- Each circle you click gives you 10 points
-
-
-
-## Scoring System
-
-
-
-- **Bronze**: 0-99 points
-
-- **Silver**: 100-199 points
-
-- **Gold**: 200-299 points
-
-- **Platinum**: 300+ points
-
-
-
-## Ready to Play?
-
-
-
-Click the button below to start the game!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'clicking-game',
       categoryId: null,
     }),
 
@@ -714,65 +672,7 @@ Click the button below to start the game!`,
       lessonNumber: 2,
       title: "Keyboard Game",
       emoji: '⌨️',
-      content: `# Keyboard Game ⌨️
-
-
-
-Welcome to the Keyboard Game!
-
-
-
-## How to Play
-
-
-
-- Watch for arrows that appear on the screen ⬆️⬇️⬅️➡️
-
-- Press the matching key on your keyboard
-
-- Use **WASD** keys or **Arrow Keys**
-
-- You have 45 seconds to score as many points as possible!
-
-- Each correct key press gives you 10 points
-
-
-
-## Controls
-
-
-
-- **⬆️ Up Arrow** = Press **↑** or **W**
-
-- **⬇️ Down Arrow** = Press **↓** or **S**
-
-- **⬅️ Left Arrow** = Press **←** or **A**
-
-- **➡️ Right Arrow** = Press **→** or **D**
-
-
-
-## Scoring System
-
-
-
-- **Bronze**: 0-99 points
-
-- **Silver**: 100-149 points
-
-- **Gold**: 150-199 points
-
-- **Platinum**: 200+ points
-
-
-
-## Ready to Play?
-
-
-
-Click the button below to start the game!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'keyboard-game',
       categoryId: null,
     }),
 
@@ -783,13 +683,7 @@ Click the button below to start the game!`,
       lessonNumber: 3,
       title: "WASD Game",
       emoji: '⌨️',
-      content: `# WASD Game ⌨️
-
-Welcome to the WASD Keyboard Game!
-
-Press the matching keys as letters appear on screen. Use W, A, S, D keys only!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'wasd-game',
       categoryId: null,
     }),
 
@@ -800,13 +694,7 @@ Press the matching keys as letters appear on screen. Use W, A, S, D keys only!`,
       lessonNumber: 4,
       title: "A-Z Game",
       emoji: '🔤',
-      content: `# A-Z Game 🔤
-
-Welcome to the A-Z Keyboard Game!
-
-Type the letters A to Z in order as they appear on screen.`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'a-z-game',
       categoryId: null,
     }),
 
@@ -817,13 +705,7 @@ Type the letters A to Z in order as they appear on screen.`,
       lessonNumber: 5,
       title: "Numbers Game",
       emoji: '🔢',
-      content: `# Numbers Game 🔢
-
-Welcome to the Numbers Keyboard Game!
-
-Type the numbers 0 to 9 in order as they appear on screen.`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'numbers-game',
       categoryId: null,
     }),
 
@@ -834,23 +716,7 @@ Type the numbers 0 to 9 in order as they appear on screen.`,
       lessonNumber: 6,
       title: "Symbols Game",
       emoji: '🔣',
-      content: `# Symbols Game 🔣
-
-Welcome to the Symbols Keyboard Game!
-
-Type the symbols using Shift + number keys:
-- ! = Shift + 1
-- " = Shift + 2
-- £ = Shift + 3
-- $ = Shift + 4
-- % = Shift + 5
-- ^ = Shift + 6
-- & = Shift + 7
-- * = Shift + 8
-- ( = Shift + 9
-- ) = Shift + 0`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'symbols-game',
       categoryId: null,
     }),
 
@@ -861,27 +727,7 @@ Type the symbols using Shift + number keys:
       lessonNumber: 7,
       title: "Flappy Bird Game",
       emoji: '🐦',
-      content: `# Flappy Bird Game (Nursery) 🐦
-
-Super easy mode! Just key tapping fun!
-
-## How to Play
-
-- Press **SPACE** to make the bird jump
-- The bird floats very gently
-- The pipes are very far apart
-- Just try to tap!
-
-## Scoring System
-
-- **Bronze**: 1 point
-- **Silver**: 2 points
-- **Gold**: 3 points
-- **Platinum**: 5+ points
-
-You need at least **Bronze** (1 point) to progress!`,
-      quizId: null,
-      assessmentType: null,
+      assessmentType: 'flappy-bird-game',
       categoryId: null,
     }),
 
@@ -1584,6 +1430,28 @@ Words that rhyme belong to the same word family! They share ending sounds.
 Say these words out loud and listen to how they rhyme!`,
       quizId: null,
       categoryId: 'word-families',
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'nursery',
+      subjectId: 'english',
+      lessonNumber: 31,
+      title: "Letter Fun",
+      emoji: '🔤',
+      assessmentType: 'sight-word-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'nursery',
+      subjectId: 'english',
+      lessonNumber: 32,
+      title: "First Words",
+      emoji: '📖',
+      assessmentType: 'spelling-game',
+      categoryId: null,
     }),
 
     new Lesson({

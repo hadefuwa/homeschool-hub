@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useDataStore from '../store/dataStore';
 import { Progress } from '../models/Progress';
-import { speak, stop, isSpeaking } from '../utils/textToSpeech';
+import { useGoogleTTS } from '../hooks/useGoogleTTS';
 import YouTubeEmbed from './YouTubeEmbed';
 
 
@@ -23,70 +23,33 @@ function GenericLetterLesson({ lesson, letter, videoId, questions }) {
   const saveData = useDataStore(state => state.saveData);
   const getNextLessonUrl = useDataStore(state => state.getNextLessonUrl);
   const disableStudyMode = useDataStore(state => state.disableStudyMode);
+  const { speak, stop, speaking } = useGoogleTTS();
 
   const handleStartQuiz = () => {
     setStage('quiz');
   };
 
-  const waitForSpeechToComplete = () => {
-    return new Promise((resolve) => {
-      const checkInterval = setInterval(() => {
-        if (!isSpeaking()) {
-          clearInterval(checkInterval);
-          resolve();
-        }
-      }, 100);
-    });
-  };
-
   const speakQuestion = async (word) => {
-    try {
-      stop();
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Ask the question
-      await speak(`Does ${word} start with the letter ${letter.toUpperCase()}?`, { rate: 0.8 });
-
-      // Wait for the question to finish speaking
-      await waitForSpeechToComplete();
-
-      // Wait a bit more
-      await new Promise(resolve => setTimeout(resolve, 400));
-
-      // Say the word 5 times
-      await speak(`${word}. ${word}. ${word}. ${word}. ${word}.`, { rate: 0.7 });
-
-      // Wait for the repetitions to finish
-      await waitForSpeechToComplete();
-    } catch (error) {
-      // Silently ignore "stopped" errors since they're intentional
-      if (!error.message.includes('stopped') && !error.message.includes('invalidated')) {
-        console.error('Error speaking question:', error);
-      }
-    }
+    const text = `${word}. Does ${word} start with the letter ${letter.toUpperCase()}? ${word}. ${word}. ${word}.`;
+    await speak(text, { rate: 0.8 });
   };
 
   // Auto-speak question when it changes or when quiz starts
   useEffect(() => {
-    let cancelled = false;
-
     if (stage === 'quiz' && !showResult && lastAnswer === null) {
       const currentQuestion = questions[currentQuestionIndex];
-      const timer = setTimeout(async () => {
-        if (!cancelled) {
-          await speakQuestion(currentQuestion.word);
-        }
+      const timer = setTimeout(() => {
+        speakQuestion(currentQuestion.word);
       }, 500);
 
       return () => {
-        cancelled = true;
         clearTimeout(timer);
         stop();
       };
     }
   }, [stage, currentQuestionIndex, showResult, lastAnswer]);
 
-  const handleAnswer = async (answer) => {
+  const handleAnswer = (answer) => {
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
 
@@ -94,20 +57,12 @@ function GenericLetterLesson({ lesson, letter, videoId, questions }) {
 
     if (isCorrect) {
       setScore(score + 1);
-      try {
-        await speak('Correct!', { rate: 0.8 });
-      } catch (error) {
-        console.error('Error speaking:', error);
-      }
+      speak('Correct!', { rate: 0.8 });
     } else {
-      try {
-        await speak(`Not quite. Try to listen for the ${letter.toUpperCase()} sound.`, { rate: 0.8 });
-      } catch (error) {
-        console.error('Error speaking:', error);
-      }
+      speak(`Not quite. Try to listen for the ${letter.toUpperCase()} sound.`, { rate: 0.8 });
     }
 
-    setTimeout(async () => {
+    setTimeout(() => {
       setLastAnswer(null);
       const nextIndex = currentQuestionIndex + 1;
 
