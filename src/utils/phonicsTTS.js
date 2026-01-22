@@ -64,22 +64,52 @@ export const speakPhoneme = async (letter, options = {}) => {
   const lowerLetter = letter.toLowerCase();
   const phoneme = PHONEME_MAP[lowerLetter];
   
-  if (!phoneme) {
-    // Fallback to letter name
-    return speakLetter(letter, options);
-  }
-  
-  // Use a word that contains the sound for better pronunciation
-  const soundWord = getSoundWord(lowerLetter);
-  
   // Use centralized TTS (edge-tts in Electron, Web Speech API fallback)
   // Note: edge-tts doesn't support rate/pitch, but volume works
+  // The goal is to speak the most accurate phoneme sound possible
   try {
-    await baseSpeak(soundWord, {
-      volume: options.volume !== undefined ? options.volume : 1.0,
-      rate: options.rate !== undefined ? options.rate : 0.7, // For Web Speech API fallback
-      pitch: options.pitch !== undefined ? options.pitch : 1.2, // For Web Speech API fallback
-    });
+    if (phoneme) {
+        // For a limited set of phonemes, we might have a direct "sound-alike" string
+        // Otherwise, the TTS engine will just speak the letter.
+        // This is a pragmatic workaround given limitations of generic TTS for pure phonemes.
+        const soundAlikeText = {
+            'a': 'ah', // for short 'a'
+            'e': 'eh', // for short 'e'
+            'i': 'ih', // for short 'i'
+            'o': 'oh', // for short 'o'
+            'u': 'uh', // for short 'u'
+            'm': 'mmm',
+            's': 'sss',
+            't': 'tuh',
+            'b': 'buh',
+            'c': 'kuh',
+            'd': 'duh',
+            'f': 'fff',
+            'g': 'guh',
+            'h': 'huh',
+            'j': 'juh',
+            'k': 'kuh',
+            'l': 'lll',
+            'n': 'nnn',
+            'p': 'puh',
+            'q': 'kwuh', // 'qu' sound
+            'r': 'rrr',
+            'v': 'vvv',
+            'w': 'wuh',
+            'x': 'ks',
+            'y': 'yuh',
+            'z': 'zzz',
+        }[lowerLetter];
+
+        await baseSpeak(soundAlikeText || lowerLetter, { // Speak sound-alike or just the letter
+            volume: options.volume !== undefined ? options.volume : 1.0,
+            rate: options.rate !== undefined ? options.rate : 0.7,
+            pitch: options.pitch !== undefined ? options.pitch : 1.2,
+        });
+    } else {
+        // Fallback to speaking the letter name
+        await speakLetter(letter, options);
+    }
   } catch (error) {
     console.error('Error speaking phoneme:', error);
     throw error;
@@ -138,41 +168,7 @@ export const speakWordSlowlyThenBlended = async (word, options = {}) => {
   await speakBlend(word, { rate: 0.8, ...options });
 };
 
-/**
- * Get a word that contains the target sound for better pronunciation
- */
-function getSoundWord(letter) {
-  const soundWords = {
-    'a': 'apple',
-    'e': 'egg',
-    'i': 'igloo',
-    'o': 'octopus',
-    'u': 'umbrella',
-    'm': 'mmm', // Just the sound
-    's': 'sss', // Just the sound
-    't': 'ttt', // Just the sound
-    'b': 'ball',
-    'c': 'cat',
-    'd': 'dog',
-    'f': 'fish',
-    'g': 'goat',
-    'h': 'hat',
-    'j': 'jam',
-    'k': 'kite',
-    'l': 'lion',
-    'n': 'nest',
-    'p': 'pig',
-    'q': 'queen',
-    'r': 'rabbit',
-    'v': 'van',
-    'w': 'web',
-    'x': 'box',
-    'y': 'yak',
-    'z': 'zebra',
-  };
-  
-  return soundWords[letter] || letter;
-}
+
 
 /**
  * Stop current speech

@@ -135,6 +135,13 @@ const NUMBER_NAMES = {
   16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen', 20: 'twenty',
 };
 
+const QUANTITY_THEMES = [
+  { name: 'Sunset', colors: ['#FF6B6B', '#FFD166', '#FCA311', '#F77F00'], accent: '#F2545B' },
+  { name: 'Ocean', colors: ['#4D96FF', '#6BCB77', '#3FC1C9', '#0096C7'], accent: '#1B6CA8' },
+  { name: 'Garden', colors: ['#7F9F80', '#A5BE8A', '#D2E69C', '#F2E2AE'], accent: '#4E8D7C' },
+  { name: 'Candy', colors: ['#FF99C8', '#FCF6BD', '#D0F4DE', '#A9DEF9'], accent: '#F76E9E' },
+];
+
 // Helper function to render a pie chart for a fraction
 const renderPieChart = (fraction, size = 100) => {
   const [numerator, denominator] = fraction.split('/').map(Number);
@@ -202,6 +209,7 @@ function MathGame({ lesson }) {
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [validationOptions, setValidationOptions] = useState([]);
   const [validationObjects, setValidationObjects] = useState([]);
+  const [compareQuantities, setCompareQuantities] = useState(null);
   const [activityObjectCount, setActivityObjectCount] = useState(null);
   const [highlightedOptionIndex, setHighlightedOptionIndex] = useState(-1);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -387,6 +395,7 @@ function MathGame({ lesson }) {
     setValidationOptions([]);
     setQuestionText('');
     setValidationObjects([]);
+    setCompareQuantities(null);
     setValidationAttempts(0);
 
     // Clear any pending speak timeout
@@ -518,6 +527,7 @@ function MathGame({ lesson }) {
     let answer;
     let questionText = '';
     let options = [];
+    setCompareQuantities(null);
 
     if (config.type === 'recognize-1' || config.type === 'recognize-2' || config.type === 'recognize-3') {
       // Simple recognition: "Find the number X"
@@ -1662,14 +1672,30 @@ function MathGame({ lesson }) {
       const total = Math.floor(Math.random() * (config.maxSum - 2)) + 3;
       const addend = Math.floor(Math.random() * (total - 1)) + 1;
       answer = total - addend;
-      questionText = `What makes ${total} with ${addend}?`;
+      questionText = `What plus ${addend} equals ${total}?`;
       options = [answer, answer + 1, answer - 1, total].filter(n => n > 0 && n <= config.maxSum + 2);
     } else if (config.type === 'compare-quantities') {
       const a = Math.floor(Math.random() * config.maxNumber) + 1;
-      const b = Math.floor(Math.random() * config.maxNumber) + 1;
+      let b = Math.floor(Math.random() * config.maxNumber) + 1;
+      while (b === a) {
+        b = Math.floor(Math.random() * config.maxNumber) + 1;
+      }
       answer = Math.max(a, b);
-      questionText = `Which number is greater: ${a} or ${b}?`;
+      questionText = 'Which group has more? Tap the bigger group or the bigger number.';
       options = [a, b, answer + 1, answer - 1].filter(n => n > 0 && n <= config.maxNumber + 2);
+      const leftThemeIndex = Math.floor(Math.random() * QUANTITY_THEMES.length);
+      let rightThemeIndex = Math.floor(Math.random() * QUANTITY_THEMES.length);
+      while (rightThemeIndex === leftThemeIndex) {
+        rightThemeIndex = Math.floor(Math.random() * QUANTITY_THEMES.length);
+      }
+      setCompareQuantities({
+        leftCount: a,
+        rightCount: b,
+        leftThemeIndex,
+        rightThemeIndex,
+        leftLabel: 'Garden A',
+        rightLabel: 'Garden B',
+      });
     } else if (config.type === 'skip-counting') {
       const step = config.steps[Math.floor(Math.random() * config.steps.length)];
       const base = step * (Math.floor(Math.random() * 6) + 1);
@@ -2322,6 +2348,7 @@ function MathGame({ lesson }) {
     let displayQuestionText = questionText || 'Select the correct answer!';
     const showObjects = validationObjects.length > 0 &&
       (config.type === 'count-1-3' || config.type === 'match-1' || config.type === 'match-2' || config.type === 'match-3' || config.type === 'count-1-5');
+    const showCompareQuantities = config.type === 'compare-quantities' && compareQuantities;
 
     // If validation hasn't been generated yet, show loading
     // Trigger initialization if needed (fallback - but only once)
@@ -2366,6 +2393,105 @@ function MathGame({ lesson }) {
             {validationObjects.map((obj, index) => (
               <div key={index} style={{ fontSize: '100px' }}>{obj}</div>
             ))}
+          </div>
+        )}
+        {showCompareQuantities && (
+          <div style={{
+            background: 'linear-gradient(135deg, #fff7e6 0%, #f0f9ff 100%)',
+            borderRadius: '28px',
+            padding: '30px',
+            marginBottom: '30px',
+            boxShadow: '0 12px 24px rgba(0,0,0,0.12)',
+            border: '2px solid #f0d9b5',
+          }}>
+            <div style={{ fontSize: '22px', color: '#444', fontWeight: 'bold', marginBottom: '18px' }}>
+              Tap the bigger garden
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: '24px',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+            }}>
+              {(['left', 'right']).map((side) => {
+                const isLeft = side === 'left';
+                const count = isLeft ? compareQuantities.leftCount : compareQuantities.rightCount;
+                const theme = QUANTITY_THEMES[isLeft ? compareQuantities.leftThemeIndex : compareQuantities.rightThemeIndex];
+                const label = isLeft ? compareQuantities.leftLabel : compareQuantities.rightLabel;
+                const columns = count <= 10 ? 5 : 6;
+
+                return (
+                  <button
+                    key={side}
+                    onClick={() => handleValidationAnswer(count)}
+                    onTouchStart={() => handleValidationAnswer(count)}
+                    style={{
+                      minWidth: '260px',
+                      padding: '18px',
+                      borderRadius: '22px',
+                      border: `3px solid ${theme.accent}`,
+                      background: `linear-gradient(160deg, ${theme.colors[0]}20 0%, #ffffff 60%)`,
+                      cursor: 'pointer',
+                      boxShadow: '0 10px 18px rgba(0,0,0,0.15)',
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                      e.currentTarget.style.boxShadow = '0 14px 24px rgba(0,0,0,0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = '0 10px 18px rgba(0,0,0,0.15)';
+                    }}
+                  >
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '12px',
+                    }}>
+                      <div style={{
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        color: '#333',
+                      }}>
+                        {label}
+                      </div>
+                      <div style={{
+                        backgroundColor: theme.accent,
+                        color: '#fff',
+                        padding: '4px 10px',
+                        borderRadius: '999px',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                      }}>
+                        {count}
+                      </div>
+                    </div>
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: `repeat(${columns}, 24px)`,
+                      gap: '8px',
+                      justifyContent: 'center',
+                      padding: '8px 0',
+                    }}>
+                      {Array.from({ length: count }).map((_, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            background: theme.colors[index % theme.colors.length],
+                            boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.15)',
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
         <div style={{
@@ -2430,7 +2556,7 @@ function MathGame({ lesson }) {
                   fontSize: fontSize,
                   fontWeight: 'bold',
                   color: '#333',
-                  backgroundColor: '#fff',
+                  backgroundColor: index === highlightedOptionIndex ? '#e3f2fd' : '#fff',
                   border: '5px solid #2196F3',
                   borderRadius: '25px',
                   cursor: 'pointer',
@@ -2445,7 +2571,6 @@ function MathGame({ lesson }) {
                   letterSpacing: letterSpacing,
                   padding: showPieChart ? '10px' : '0',
                   transform: index === highlightedOptionIndex ? 'scale(1.1)' : 'scale(1)',
-                  backgroundColor: index === highlightedOptionIndex ? '#e3f2fd' : '#fff',
                   borderColor: index === highlightedOptionIndex ? '#1976D2' : '#2196F3',
                 }}
                 onMouseEnter={(e) => {
