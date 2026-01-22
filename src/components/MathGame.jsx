@@ -586,7 +586,7 @@ function MathGame({ lesson }) {
       }
     } else if (config.type === 'counting-to-20') {
       // Random question types for counting to 20
-      const questionType = Math.floor(Math.random() * 3);
+      const questionType = Math.floor(Math.random() * 5); 
 
       if (questionType === 0) {
         // "What number comes after X?"
@@ -595,15 +595,32 @@ function MathGame({ lesson }) {
         questionText = `What number comes after ${NUMBER_NAMES[baseNumber]}?`;
         options = [answer, baseNumber, baseNumber + 2, baseNumber - 1].filter(n => n > 0 && n <= 20);
       } else if (questionType === 1) {
-        // "How many fingers and toes together?"
-        answer = 20;
-        questionText = 'How many fingers and toes do you have all together?';
-        options = [15, 18, 20, 22];
+        // "What number comes before X?"
+        const baseNumber = Math.floor(Math.random() * 19) + 2; // 2-20
+        answer = baseNumber - 1;
+        questionText = `What number comes before ${NUMBER_NAMES[baseNumber]}?`;
+        options = [answer, baseNumber, baseNumber + 1, baseNumber - 2].filter(n => n > 0 && n <= 20);
+      } else if (questionType === 2) {
+        // "Which number is smaller?"
+        const num1 = Math.floor(Math.random() * 10) + 1; // 1-10
+        const num2 = Math.floor(Math.random() * 10) + 11; // 11-20
+        answer = Math.min(num1, num2);
+        questionText = `Which number is smaller: ${num1} or ${num2}?`;
+        options = [num1, num2, num1 + 1, num2 - 1].filter(n => n > 0 && n <= 20);
+      } else if (questionType === 3) {
+        // "Which number is bigger?"
+        const num1 = Math.floor(Math.random() * 10) + 1; // 1-10
+        const num2 = Math.floor(Math.random() * 10) + 11; // 11-20
+        answer = Math.max(num1, num2);
+        questionText = `Which number is bigger: ${num1} or ${num2}?`;
+        options = [num1, num2, num1 + 1, num2 - 1].filter(n => n > 0 && n <= 20);
       } else {
-        // "What is the biggest number?"
-        answer = 20;
-        questionText = 'What is the biggest number we learned?';
-        options = [15, 18, 19, 20];
+        // "Count the objects"
+        answer = Math.floor(Math.random() * 10) + 11; // 11-20
+        questionText = `How many objects do you see?`;
+        options = [answer, answer - 1, answer + 1, answer - 2].filter(n => n > 0 && n <= 20);
+        const objects = ['🍎', '🍌', '🍊', '🍇', '🍓', '🥝', '🍍', '🍑', '🍒', '🍈', '🥥', '🥭', '🍉', '🍐', '🍏', '🍋', '🫐', '🫒', '🫑', '🥑'];
+        setValidationObjects(objects.slice(0, answer));
       }
     } else if (config.type === 'recognize-1-10') {
       // Reception: Recognize numbers 1-10
@@ -649,16 +666,27 @@ function MathGame({ lesson }) {
       options = options.slice(0, 4);
     } else if (config.type === 'counting-to-20-advanced') {
       // Year 2: Advanced counting to 20
-      const questionType = Math.floor(Math.random() * 3);
+      const questionType = Math.floor(Math.random() * 4);
       if (questionType === 0) {
-        const baseNumber = Math.floor(Math.random() * 19) + 1;
-        answer = baseNumber + 1;
-        questionText = `What number comes after ${NUMBER_NAMES[baseNumber]}?`;
-        options = [answer, baseNumber, baseNumber + 2, baseNumber - 1].filter(n => n > 0 && n <= 20);
+        // "What is X + Y?"
+        const num1 = Math.floor(Math.random() * 10) + 1; // 1-10
+        const num2 = Math.floor(Math.random() * (20 - num1)) + 1; // ensures sum is <= 20
+        answer = num1 + num2;
+        questionText = `What is ${num1} + ${num2}?`;
+        options = [answer, answer + 1, answer - 1, answer + 2].filter(n => n > 0 && n <= 20);
       } else if (questionType === 1) {
-        answer = 20;
-        questionText = 'How many fingers and toes do you have all together?';
-        options = [15, 18, 20, 22];
+        // "What is X - Y?"
+        const num1 = Math.floor(Math.random() * 10) + 11; // 11-20
+        const num2 = Math.floor(Math.random() * (num1-1)) + 1;
+        answer = num1 - num2;
+        questionText = `What is ${num1} - ${num2}?`;
+        options = [answer, answer + 1, answer - 1, answer + 2].filter(n => n > 0 && n <= 20);
+      } else if (questionType === 2) {
+        // "What number is missing?"
+        const start = Math.floor(Math.random() * 17) + 1; // 1-17
+        answer = start + 1;
+        questionText = `What number is missing? ${start}, __, ${start + 2}`;
+        options = [answer, start, start + 2, start + 3].filter(n => n > 0 && n <= 20);
       } else {
         const num = Math.floor(Math.random() * 15) + 6; // 6-20
         answer = num;
