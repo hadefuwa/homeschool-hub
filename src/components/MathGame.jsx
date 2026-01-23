@@ -1964,11 +1964,12 @@ function MathGame({ lesson }) {
 
         // Loop audio for reception/nursery, Position and Direction, OR Time Sequence
         const isLoopingLesson =
-          lesson.yearId === 'reception' ||
-          lesson.yearId === 'nursery' ||
-          lesson.yearId === 'year1' ||
-          lesson.title?.includes('Position and Direction') ||
-          lesson.assessmentType === 'time-sequence-game';
+          (lesson.yearId === 'reception' ||
+            lesson.yearId === 'nursery' ||
+            lesson.yearId === 'year1') &&
+          config.type !== 'counting-to-20' &&
+          lesson.title?.includes('Position and Direction') !== true &&
+          lesson.assessmentType !== 'time-sequence-game';
 
         if (isLoopingLesson) {
           // Add a small pause after the question
