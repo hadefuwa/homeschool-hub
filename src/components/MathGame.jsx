@@ -116,6 +116,7 @@ const LESSON_CONFIGS = {
   68: { type: 'multiplication', tables: [6, 7, 9, 11, 12], maxProduct: 144, title: 'Times Tables 6, 7, 9, 11, 12' },
   69: { type: 'large-multiplication', title: 'Large Multiplication (3-4 Digit Numbers)' },
   70: { type: 'large-division', title: 'Large Division (3-4 Digit Numbers)' },
+  71: { type: 'add-sub-within-20', title: 'Add and Subtract within 20', maxNumber: 20 },
 };
 
 // Scoring tiers
@@ -352,6 +353,7 @@ function MathGame({ lesson }) {
     if (title.includes('position and direction')) return 58;
     if (title.includes('daily routine')) return 59;
     if (title.includes('rounding')) return 60;
+    if (title.includes('add and subtract within 20')) return 71;
     if (title.includes('factors and multiples')) return 61;
     if (title.includes('decimals to 3')) return 62;
     if (title.includes('adding and subtracting fractions')) return 63;
@@ -1332,12 +1334,37 @@ function MathGame({ lesson }) {
         }
         options = options.slice(0, 4);
       }
+    } else if (config.type === 'add-sub-within-20') {
+      const isAdd = Math.random() > 0.5;
+      if (isAdd) {
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * (20 - num1)) + 1;
+        answer = num1 + num2;
+        questionText = `${num1} + ${num2} = ?`;
+        setArithmeticVisual({ type: 'addition', a: num1, b: num2 });
+      } else {
+        const num1 = Math.floor(Math.random() * 15) + 5;
+        const num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
+        answer = num1 - num2;
+        questionText = `${num1} - ${num2} = ?`;
+        setArithmeticVisual({ type: 'subtraction', a: num1, b: num2 });
+      }
+      const wrong1 = answer + 1;
+      const wrong2 = answer - 1;
+      const wrong3 = answer + 2;
+      options = [answer, wrong1, wrong2, wrong3].filter(n => n >= 0 && n <= 20).sort(() => Math.random() - 0.5);
+      while (options.length < 4) {
+        const random = Math.floor(Math.random() * 21);
+        if (!options.includes(random)) options.push(random);
+      }
+      options = options.slice(0, 4);
     } else if (config.type === 'addition-to-20') {
       // Year 2: Addition to 20
       const num1 = Math.floor(Math.random() * 15) + 1;
       const num2 = Math.floor(Math.random() * (20 - num1)) + 1;
       answer = num1 + num2;
       questionText = `${num1} + ${num2} = ?`;
+      setArithmeticVisual({ type: 'addition', a: num1, b: num2 });
       const wrong1 = answer + 1;
       const wrong2 = answer - 1;
       const wrong3 = num1 + num2 + 2;
@@ -1353,6 +1380,7 @@ function MathGame({ lesson }) {
       const num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
       answer = num1 - num2;
       questionText = `${num1} - ${num2} = ?`;
+      setArithmeticVisual({ type: 'subtraction', a: num1, b: num2 });
       const wrong1 = answer + 1;
       const wrong2 = answer - 1;
       const wrong3 = num1 - num2 - 2;
@@ -1975,42 +2003,37 @@ function MathGame({ lesson }) {
           // Add a small pause after the question
           await new Promise(resolve => setTimeout(resolve, 600));
 
-          // Infinite loop for reading options until question changes or component unmounts
-          while (isMountedRef.current && questionGenerationIdRef.current === thisGenerationId) {
+          // Read options once (no looping) to avoid TTS spam
+          for (let i = 0; i < options.length; i++) {
+            // Check if still on the same generation to prevent overlapping speech
+            if (questionGenerationIdRef.current !== thisGenerationId || !isMountedRef.current) break;
 
-            for (let i = 0; i < options.length; i++) {
-              // Check if still on the same generation to prevent overlapping speech
-              if (questionGenerationIdRef.current !== thisGenerationId || !isMountedRef.current) break;
+            setHighlightedOptionIndex(i);
+            const option = options[i];
 
-              setHighlightedOptionIndex(i);
-              const option = options[i];
+            // Determine how to speak the option
+            let speechLabel = option.toString();
+            // Strip emojis for cleaner TTS
+            speechLabel = speechLabel.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}]/gu, '').trim();
 
-              // Determine how to speak the option
-              let speechLabel = option.toString();
-              // Strip emojis for cleaner TTS
-              speechLabel = speechLabel.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}]/gu, '').trim();
-
-              if (config.type === 'percentages') {
-                speechLabel = `${option} percent`;
-              } else if (typeof option === 'string' && option.includes('/')) {
-                const [num, den] = option.split('/');
-                speechLabel = `${num} over ${den}`;
-              } else if (NUMBER_NAMES[option]) {
-                speechLabel = NUMBER_NAMES[option];
-              }
-
-              // Speak option
-              await speak(speechLabel, { volume: 1.0, rate: 0.6, pitch: 1.2 });
-
-              // Add pause
-              await new Promise(resolve => setTimeout(resolve, 800));
+            if (config.type === 'percentages') {
+              speechLabel = `${option} percent`;
+            } else if (typeof option === 'string' && option.includes('/')) {
+              const [num, den] = option.split('/');
+              speechLabel = `${num} over ${den}`;
+            } else if (NUMBER_NAMES[option]) {
+              speechLabel = NUMBER_NAMES[option];
             }
 
-            // Pause between loops
-            if (isMountedRef.current && questionGenerationIdRef.current === thisGenerationId) {
-              setHighlightedOptionIndex(-1); // Clear highlight during pause
-              await new Promise(resolve => setTimeout(resolve, 1500));
-            }
+            // Speak option
+            await speak(speechLabel, { volume: 1.0, rate: 0.6, pitch: 1.2 });
+
+            // Add pause
+            await new Promise(resolve => setTimeout(resolve, 800));
+          }
+
+          if (isMountedRef.current && questionGenerationIdRef.current === thisGenerationId) {
+            setHighlightedOptionIndex(-1);
           }
         }
       } catch (err) {

@@ -662,28 +662,33 @@ function registerHTMLGameProtocol() {
   protocol.registerFileProtocol('htmlgame', (request, callback) => {
     let url = request.url.replace('htmlgame://', '').replace(/\/$/, ''); // Remove trailing slash
     
+    // Parse the URL to separate the path from query string
+    const urlObj = new URL('htmlgame://' + url);
+    const pathname = urlObj.pathname.replace(/^\//, ''); // Remove leading slash
+    
     // Ensure it starts with html-games
-    if (!url.startsWith('html-games/')) {
-      url = 'html-games/' + url;
+    let cleanPath = pathname;
+    if (!cleanPath.startsWith('html-games/')) {
+      cleanPath = 'html-games/' + cleanPath;
     }
     
     let filePath;
     
     if (isDev) {
       // Development: serve from public folder
-      filePath = path.join(__dirname, '../public', url);
+      filePath = path.join(__dirname, '../public', cleanPath);
     } else {
       // Production: serve from dist folder (packaged in resources)
       // In packaged app, dist folder is at resources/app/dist
       const appPath = app.getAppPath();
-      filePath = path.join(appPath, 'dist', url);
+      filePath = path.join(appPath, 'dist', cleanPath);
     }
     
     // Normalize path separators for Windows
     filePath = path.normalize(filePath);
     
     console.log('[HTMLGame Protocol] Request:', request.url);
-    console.log('[HTMLGame Protocol] Resolved URL:', url);
+    console.log('[HTMLGame Protocol] Resolved URL:', cleanPath);
     console.log('[HTMLGame Protocol] File Path:', filePath);
     
     // Check if file exists

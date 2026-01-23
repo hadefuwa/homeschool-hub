@@ -245,3 +245,35 @@ Checklist Before Shipping
 - Lesson appears in the correct year list
 - `assessmentType` routes to a working game in `LessonViewScreen.jsx`
 - Visual model exists for each question (see rules above)
+
+
+How to Import HTML Game Lessons
+-------------------------------
+We support HTML games via `HTMLGameEmbed`.
+
+Steps (Strict):
+1) Put your HTML file in `public/html-games/`.
+   - Example: `public/html-games/my-game.html`
+2) Add a lesson with `assessmentType: 'html-game'` in the correct year file.
+3) Map the lesson title to the HTML file in `src/screens/LessonViewScreen.jsx`.
+   - There are existing examples (search for `HTMLGameEmbed`).
+
+Example mapping:
+```jsx
+<HTMLGameEmbed url="/html-games/my-game.html" height="100%" lesson={lesson} />
+```
+
+Optional: HTML Game → App messages
+----------------------------------
+From inside the HTML game, you can send messages to control TTS and completion.
+
+```js
+// Speak text
+window.parent.postMessage({ type: 'html-game-tts', text: 'Hello!' }, '*');
+
+// Stop TTS
+window.parent.postMessage({ type: 'html-game-tts-stop' }, '*');
+
+// Mark lesson complete
+window.parent.postMessage({ type: 'html-game-complete' }, '*');
+```

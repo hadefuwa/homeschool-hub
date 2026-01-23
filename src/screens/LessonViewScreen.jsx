@@ -1115,6 +1115,9 @@ function LessonViewScreen() {
             borderRadius: '8px',
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}>
+            {/* Info button with instructions */}
+            <InfoButton content={lesson.content} title={lesson.title} />
+            
             <ErrorBoundary>
               <PlaceValueGame lesson={lesson} />
             </ErrorBoundary>
@@ -1312,6 +1315,40 @@ function LessonViewScreen() {
           }}>
             <ErrorBoundary>
               <HTMLGameEmbed url="/html-games/famous-people-from-history.html" height="100%" lesson={lesson} />
+            </ErrorBoundary>
+          </div>
+        ) : lesson.title === 'Place Value to 100' ? (
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}>
+            <ErrorBoundary>
+              <HTMLGameEmbed url="/html-games/place_value_100.html" height="100%" lesson={lesson} />
+            </ErrorBoundary>
+          </div>
+        ) : lesson.assessmentType?.startsWith('fractions-pizza-') ? (
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}>
+            <ErrorBoundary>
+              <HTMLGameEmbed 
+                url={`/html-games/fractions.html?level=${lesson.assessmentType.replace('fractions-pizza-', '')}`} 
+                height="100%" 
+                lesson={lesson} 
+              />
             </ErrorBoundary>
           </div>
         ) : lesson.title === 'Ancient Mesopotamia - The First Civilization' ? (

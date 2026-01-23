@@ -409,6 +409,53 @@ Drag each item into a category to build the chart.`,
     new Lesson({
       id: lessonId++,
       yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 15,
+      title: "Fractions: Halves",
+      emoji: '🍕',
+      content: `# Fractions: Halves 🍕
+
+Let's learn about halves!
+
+## What is a Half?
+
+A half (½) means one part out of two equal parts.
+
+## Examples
+- Half a pizza 🍕 = ½
+- Half an apple 🍎 = ½
+
+Click the pizza slices to practice!`,
+      quizId: null,
+      assessmentType: 'fractions-pizza-1',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
+      subjectId: 'maths',
+      lessonNumber: 16,
+      title: "Fractions: Quarters",
+      emoji: '🍕',
+      content: `# Fractions: Quarters 🍕
+
+Now let's learn about quarters!
+
+## What is a Quarter?
+
+A quarter (¼) means one part out of four equal parts.
+
+## Practice
+You'll work with halves (½) and quarters (¼) together!`,
+      quizId: null,
+      assessmentType: 'fractions-pizza-2',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'reception',
       subjectId: 'english',
       lessonNumber: 1,
       title: "Letter A",

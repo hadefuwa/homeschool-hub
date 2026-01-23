@@ -192,17 +192,36 @@ Drag tens and ones to make the number shown.
       emoji: '🔢',
       content: `# Place Value to 100 🔢
 
-Let's make two-digit numbers.
+Build numbers using tens and ones!
+
+## What You'll See
+
+- **Target number** at the top (like 37)
+- **Empty slots** for tens and ones
+- **Draggable cards** with numbers to choose from
 
 ## How to Play
 
-Drag tens and ones to build the number.
+1. Look at the target number
+2. Drag the correct **tens** card to the tens slot
+3. Drag the correct **ones** card to the ones slot
+4. Watch the visual blocks build your number!
 
-## Example
+## Understanding Place Value
 
-37 = 3 tens and 7 ones`,
+**37** means:
+- **3 tens** = 30 (three groups of 10 blocks)
+- **7 ones** = 7 (seven single blocks)
+
+The blocks will show you exactly what each number looks like!
+
+## Tips
+
+- The tens digit shows how many groups of 10
+- The ones digit shows how many single blocks
+- You'll see the blocks appear as you drag the cards`,
       quizId: quizId++,
-      assessmentType: 'place-value-game',
+      assessmentType: 'html-game',
       categoryId: null,
     }),
 
@@ -212,21 +231,21 @@ Drag tens and ones to build the number.
       subjectId: 'maths',
       lessonNumber: 5,
       title: "Add and Subtract within 20",
-      emoji: '➕',
-      content: `# Add and Subtract within 20 ➕
+      emoji: '+',
+      content: `# Add and Subtract within 20 +
 
-Use a number line to add and subtract.
+Use blocks to add and subtract.
 
 ## How to Play
 
-Hop along the number line to find the answer.
+Count the blocks and pick the correct answer.
 
 ## Examples
 
 - 9 + 5 = 14
 - 16 - 7 = 9`,
       quizId: quizId++,
-      assessmentType: 'number-line-game',
+      assessmentType: 'maths-game',
       categoryId: null,
     }),
 
@@ -452,6 +471,49 @@ Choose the correct answer.
 - 9,504 ÷ 72`,
       quizId: quizId++,
       assessmentType: 'maths-game',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 16,
+      title: "Fractions Review: Halves & Quarters",
+      emoji: '🍕',
+      content: `# Fractions Review: Halves & Quarters 🍕
+
+Let's practice halves and quarters again!
+
+## Remember
+- Half (½) = 1 out of 2
+- Quarter (¼) = 1 out of 4
+
+Time to become an expert!`,
+      quizId: null,
+      assessmentType: 'fractions-pizza-2',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year1',
+      subjectId: 'maths',
+      lessonNumber: 17,
+      title: "Fractions: Thirds",
+      emoji: '🍕',
+      content: `# Fractions: Thirds 🍕
+
+Time to learn about thirds!
+
+## What is a Third?
+
+A third (⅓) means one part out of three equal parts.
+
+## Challenge
+Mix halves and thirds together!`,
+      quizId: null,
+      assessmentType: 'fractions-pizza-3',
       categoryId: null,
     }),
 

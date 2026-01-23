@@ -154,7 +154,14 @@ class TTSService {
 
   async speak(text, options = {}) {
     if (!text || !this.enabled) return;
-    
+
+    console.log('[TTS] speak', {
+      text,
+      options,
+      autoRead: this.autoRead,
+      enabled: this.enabled,
+    });
+
     // Stop any current speech first
     if (this.speaking) {
       await this.stop();

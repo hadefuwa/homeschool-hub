@@ -320,6 +320,28 @@ Type the missing numbers! 🎮`,
       yearId: 'year2',
       subjectId: 'maths',
       lessonNumber: 8,
+      title: "Fractions: Mixed Practice",
+      emoji: '🍕',
+      content: `# Fractions: Mixed Practice 🍕
+
+Practice all the fractions you know!
+
+## Fractions
+- Halves (½)
+- Thirds (⅓)
+- Quarters (¼)
+
+Let's mix them all!`,
+      quizId: null,
+      assessmentType: 'fractions-pizza-4',
+      categoryId: null,
+    }),
+
+    new Lesson({
+      id: lessonId++,
+      yearId: 'year2',
+      subjectId: 'maths',
+      lessonNumber: 8,
       title: "Length Measurement",
       emoji: '📏',
       content: `# Length Measurement 📏

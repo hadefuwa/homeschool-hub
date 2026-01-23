@@ -87,7 +87,8 @@ const useDataStore = create((set, get) => ({
       // Version 6: Halved again for testing (Bronze=3, Silver=5, Gold=13, Platinum=25)
       // Version 7: Fixed _getMedalForProgress to accept lessons parameter for recalculation
       // Version 8: Rebuild pointsActivities array with correct values during recalculation
-      const POINTS_SYSTEM_VERSION = 8;
+      // Version 10: Allow negative balances and add system marker
+      const POINTS_SYSTEM_VERSION = 10;
 
       // Recalculate points if version has changed
       const hasUserProgress = appData.progress && appData.progress.length > 0;
@@ -1294,7 +1295,7 @@ const useDataStore = create((set, get) => ({
       totalPoints += pointsEarned;
 
       // Rebuild the pointsActivity record with correct values
-      newPointsActivities.push({
+      newPointsActivities.push(new PointsActivity({
         id: progress.id,
         studentId: progress.studentId,
         activityType: 'lesson',
@@ -1304,13 +1305,34 @@ const useDataStore = create((set, get) => ({
         lessonTitle: lesson.title,
         yearId: lesson.yearId,
         medal: medal
-      });
+      }));
     });
 
+
+
     // Update both points balance and activities array
-    appData.pointsBalance = totalPoints;
+    // Account for spent points!
+    const totalSpent = appData.purchases.reduce((total, p) => total + (p.pointsSpent || 0), 0);
+    // ALLOW NEGATIVE BALANCES as per user request
+    appData.pointsBalance = totalPoints - totalSpent;
+    
+    // Add a marker activity so user sees the update
+    const markerId = Math.max(...newPointsActivities.map(a => a.id), 0) + 1;
+    newPointsActivities.push(new PointsActivity({
+      id: markerId,
+      studentId: appData.students[0]?.id || 1, // Default to first student
+      activityType: 'system',
+      activityId: 'recalc_v10',
+      pointsEarned: 0,
+      earnedAt: new Date(),
+      lessonTitle: 'Points System Updated',
+      yearId: 'system',
+      medal: 'Platinum' // Just to make it look nice/special
+    }));
+
     appData.pointsActivities = newPointsActivities;
-    console.log(`[DataStore] Awarded ${totalPoints} retroactive points and rebuilt ${newPointsActivities.length} activity records`);
+    console.log(`[DataStore] Awarded ${totalPoints} retroactive points, deducted ${totalSpent} spent points. Final balance: ${appData.pointsBalance}`);
+    console.log(`[DataStore] Rebuilt ${newPointsActivities.length} activity records`);
   },
 
   // Purchase reward

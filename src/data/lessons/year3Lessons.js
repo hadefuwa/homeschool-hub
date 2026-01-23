@@ -206,63 +206,18 @@ This means: 12 shared equally into 3 groups = 4 in each group
       emoji: '🍕',
       content: `# Fractions Introduction 🍕
 
+Let's learn more complex fractions!
 
+## Thirds & Sixths
 
-Let's learn about fractions!
+Learn about thirds (⅓) and sixths (⅙).
 
+## Connection
+Notice: 2 sixths = 1 third!
 
-
-## How to Play
-
-
-
-Tap the numbers to hear them! Then play the game! 🎮
-
-
-
-## What is a Fraction?
-
-
-
-A fraction shows part of a whole!
-
-
-
-## Common Fractions
-
-
-
-- Half (½) - One part out of two
-
-- Quarter (¼) - One part out of four
-
-- Third (⅓) - One part out of three
-
-
-
-## Examples
-
-
-
-- Half a pizza 🍕 = ½
-
-- Quarter of a cake 🎂 = ¼
-
-- Third of a chocolate bar 🍫 = ⅓
-
-
-
-## Fun Activities
-
-
-
-- Practice with fractions
-
-- Draw fraction pictures
-
-- Play the fraction game!`,
-      quizId: quizId++,
-      assessmentType: 'maths-game',
+Practice these related fractions together.`,
+      quizId: null,
+      assessmentType: 'fractions-pizza-6',
       categoryId: null,
     }),
 
