@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [react({
     exclude: [/.*\/data\/.*/, /.*\/models\/.*/]
   })],
-  base: './', // Use relative paths for Electron file:// protocol
+  base: process.env.VITE_APP_BASE || './',
   root: '.',
   build: {
     outDir: 'dist',
@@ -18,16 +18,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Separate Monaco Editor into its own chunk (it's very large)
           'monaco-editor': ['@monaco-editor/react'],
-          // Separate Phaser game engine into its own chunk
           'phaser': ['phaser'],
-          // Separate React vendor libraries
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
         },
       },
     },
-    chunkSizeWarningLimit: 1000, // Increase warning limit since we're splitting chunks
+    chunkSizeWarningLimit: 1000,
   },
   resolve: {
     alias: {
@@ -36,7 +33,6 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    strictPort: true, // Fail if port 3000 is already in use
+    strictPort: true,
   },
 });
-

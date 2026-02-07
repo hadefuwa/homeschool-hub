@@ -6,6 +6,12 @@ A cross-platform homeschool learning management application built with **React**
 ![Electron](https://img.shields.io/badge/Electron-28.0.0-47848F?logo=electron)
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)
 
+## 🌐 Web deployment (ks2-lab)
+
+- The app can now run in a browser using a web shim for `window.electronAPI` backed by `localStorage` for data and activity logs.
+- GitHub Pages deploy workflow is available at `.github/workflows/deploy-pages.yml`.
+- For project-page hosting on `hadefuwa/ks2-lab`, builds should use `VITE_APP_BASE=/ks2-lab/`.
+
 ## 🚀 Features
 
 ### Core Features
